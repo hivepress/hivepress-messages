@@ -1,0 +1,67 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HivePress Messages\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-09-30 12:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/"
+
+#: includes/components/class-hp-message.php:242
+#, php-format
+msgid "Chat with %s"
+msgstr ""
+
+#. Author of the plugin
+msgid "HivePress"
+msgstr ""
+
+#. Name of the plugin
+msgid "HivePress Messages"
+msgstr ""
+
+#. URI of the plugin
+#. Author URI of the plugin
+msgid "https://hivepress.co/"
+msgstr ""
+
+#: includes/settings.php:21
+msgid "Message Sent"
+msgstr ""
+
+#: includes/settings.php:69
+msgid "My Messages"
+msgstr ""
+
+#: includes/settings.php:34
+msgid "New Message"
+msgstr ""
+
+#: templates/user/account/chat.php:27 templates/user/account/chats.php:25
+msgid "No messages yet."
+msgstr ""
+
+#. Description of the plugin
+msgid "Private messages for HivePress plugin."
+msgstr ""
+
+#: includes/settings.php:40 includes/settings.php:61
+#: templates/listing/content/actions/message.php:5
+#: templates/listing/content/actions/message.php:8
+#: templates/listing/single/actions/message.php:5
+#: templates/listing/single/actions/message.php:8
+#: templates/vendor/single/actions/message.php:5
+#: templates/vendor/single/actions/message.php:8
+msgid "Send Message"
+msgstr ""
+
+#: includes/settings.php:41
+msgid "Your message has been sent."
+msgstr ""
