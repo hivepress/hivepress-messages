@@ -8,7 +8,7 @@
  * Text Domain: hivepress-messages
  * Domain Path: /languages/
  *
- * @package HivePress/Messages
+ * @package HivePress\Messages
  */
 
 // Exit if accessed directly.

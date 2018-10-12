@@ -2,7 +2,7 @@
 /**
  * Contains plugin settings.
  *
- * @package HivePress/Messages
+ * @package HivePress\Messages
  */
 
 // Exit if accessed directly.
