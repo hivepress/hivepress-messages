@@ -1,8 +1,7 @@
 <?php
 /**
  * Plugin Name: HivePress Messages
- * Plugin URI: https://hivepress.co/
- * Description: Private messages for HivePress plugin.
+ * Description: Private messages add-on for HivePress plugin.
  * Version: 1.0.0
  * Author: HivePress
  * Author URI: https://hivepress.co/
