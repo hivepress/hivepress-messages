@@ -29,14 +29,3 @@ if ( ! empty( $messages ) ) :
 	</div>
 	<?php
 endif;
-
-echo hivepress()->form->render_form(
-	'message__send',
-	[
-		'submit_button' => [
-			'attributes' => [
-				'class' => 'alt',
-			],
-		],
-	]
-);

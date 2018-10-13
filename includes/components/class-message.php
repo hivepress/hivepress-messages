@@ -20,13 +20,11 @@ class Message extends \HivePress\Component {
 		parent::__construct( $settings );
 
 		// Send message.
+		add_filter( 'hivepress/form/form_values/message__send', [ $this, 'set_form_values' ] );
 		add_action( 'hivepress/form/submit_form/message__send', [ $this, 'send' ] );
 
 		// Delete messages.
 		add_action( 'delete_user', [ $this, 'delete' ] );
-
-		// Manage forms.
-		add_filter( 'hivepress/form/form_values/message__send', [ $this, 'set_form_values' ] );
 
 		if ( ! is_admin() ) {
 
@@ -52,19 +50,17 @@ class Message extends \HivePress\Component {
 		// Get recipient.
 		$recipient = get_userdata( absint( $values['user_id'] ) );
 
-		if ( false !== $recipient && get_current_user_id() !== absint( $recipient->ID ) ) {
+		if ( false !== $recipient && get_current_user_id() !== $recipient->ID ) {
 
 			// Set arguments.
 			$args = [
-				'comment_post_ID'      => absint( $values['post_id'] ),
 				'comment_type'         => 'hp_message',
-				'comment_content'      => $values['text'],
-				'comment_approved'     => 1,
-				'comment_karma'        => $recipient->ID,
 				'user_id'              => get_current_user_id(),
 				'comment_author'       => hivepress()->user->get_name(),
 				'comment_author_email' => hivepress()->user->get_email(),
-				'comment_date'         => current_time( 'mysql' ),
+				'comment_karma'        => $recipient->ID,
+				'comment_post_ID'      => absint( $values['post_id'] ),
+				'comment_content'      => $values['message'],
 			];
 
 			if ( wp_insert_comment( $args ) !== false ) {
@@ -77,7 +73,7 @@ class Message extends \HivePress\Component {
 						'placeholders' => [
 							'user_name'    => $recipient->display_name,
 							'message_url'  => hivepress()->template->get_url( 'message__chat', [ get_current_user_id() ] ),
-							'message_text' => $values['text'],
+							'message_text' => $values['message'],
 						],
 					]
 				);
@@ -207,7 +203,7 @@ class Message extends \HivePress\Component {
 				if ( ! empty( $message->user_id ) ) {
 					if ( ! isset( $chats[ $message->user_id ] ) ) {
 						$chats[ $message->user_id ] = $message;
-					} elseif ( empty( $chats[ $message->user_id ]->comment_post_ID ) ) {
+					} elseif ( empty( $chats[ $message->user_id ]->comment_post_ID ) && ! empty( $message->comment_post_ID ) ) {
 						$chats[ $message->user_id ]->comment_post_ID = $message->comment_post_ID;
 					}
 				}

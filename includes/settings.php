@@ -23,7 +23,7 @@ $settings = [
 								'name'        => esc_html__( 'Message Received', 'hivepress-messages' ),
 								'description' => esc_html__( 'This email is sent to users when new message is received, the following placeholders are available: %user_name%, %message_url%, %message_text%.', 'hivepress-messages' ),
 								'type'        => 'textarea',
-								'default'     => hp_sanitize_html(__( 'Hi, %user_name%! You received a new message, click on the following link to view it: %message_url%', 'hivepress-messages' )),
+								'default'     => hp_sanitize_html( __( 'Hi, %user_name%! You received a new message, click on the following link to view it: %message_url%', 'hivepress-messages' ) ),
 								'required'    => true,
 								'order'       => 30,
 							],
@@ -49,7 +49,7 @@ $settings = [
 				'success_message' => esc_html__( 'Your message has been sent.', 'hivepress-messages' ),
 
 				'fields'          => [
-					'text'    => [
+					'message' => [
 						'type'       => 'textarea',
 						'max_length' => 2048,
 						'required'   => true,
@@ -98,8 +98,8 @@ $settings = [
 
 				'areas'  => [
 					'content' => [
-						'chats' => [
-							'path'  => 'message/chats',
+						'loop' => [
+							'path'  => 'message/parts/loop-chat',
 							'order' => 20,
 						],
 					],
@@ -111,9 +111,14 @@ $settings = [
 
 				'areas'  => [
 					'content' => [
-						'chat' => [
-							'path'  => 'message/chat',
+						'loop'      => [
+							'path'  => 'message/parts/loop-message',
 							'order' => 20,
+						],
+
+						'send_form' => [
+							'path'  => 'message/parts/send-form',
+							'order' => 30,
 						],
 					],
 				],
@@ -122,8 +127,8 @@ $settings = [
 			'archive_listing' => [
 				'areas' => [
 					'actions' => [
-						'message' => [
-							'path'  => 'listing/content/actions/message',
+						'reply_link' => [
+							'path'  => 'message/parts/reply-link',
 							'order' => 10,
 						],
 					],
@@ -133,8 +138,8 @@ $settings = [
 			'single_listing'  => [
 				'areas' => [
 					'actions' => [
-						'message' => [
-							'path'  => 'listing/single/actions/message',
+						'reply_button' => [
+							'path'  => 'message/parts/reply-button',
 							'order' => 10,
 						],
 					],
@@ -144,8 +149,8 @@ $settings = [
 			'single_vendor'   => [
 				'areas' => [
 					'actions' => [
-						'message' => [
-							'path'  => 'vendor/single/actions/message',
+						'contact_button' => [
+							'path'  => 'message/parts/contact-button',
 							'order' => 10,
 						],
 					],
