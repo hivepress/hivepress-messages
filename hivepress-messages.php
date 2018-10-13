@@ -1,15 +1,14 @@
 <?php
 /**
  * Plugin Name: HivePress Messages
- * Plugin URI: https://hivepress.co/
- * Description: Private messages for HivePress plugin.
+ * Description: Private messages add-on for HivePress plugin.
  * Version: 1.0.0
  * Author: HivePress
  * Author URI: https://hivepress.co/
  * Text Domain: hivepress-messages
  * Domain Path: /languages/
  *
- * @package HivePress/Messages
+ * @package HivePress\Messages
  */
 
 // Exit if accessed directly.

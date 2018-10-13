@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HivePress Messages\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-07 20:11+0000\n"
+"POT-Creation-Date: 2018-10-13 10:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -31,12 +31,11 @@ msgid ""
 msgstr ""
 
 #: includes/settings.php:46 includes/settings.php:69
-#: templates/listing/content/actions/message.php:5
-#: templates/listing/content/actions/message.php:8
-#: templates/listing/single/actions/message.php:5
-#: templates/listing/single/actions/message.php:8
-#: templates/vendor/single/actions/message.php:5
-#: templates/vendor/single/actions/message.php:8
+#: templates/message/parts/contact-button.php:5
+#: templates/message/parts/contact-popup.php:8
+#: templates/message/parts/reply-button.php:5
+#: templates/message/parts/reply-link.php:5
+#: templates/message/parts/reply-popup.php:8
 msgid "Send Message"
 msgstr ""
 
@@ -48,12 +47,13 @@ msgstr ""
 msgid "My Messages"
 msgstr ""
 
-#: includes/components/class-message.php:298
+#: includes/components/class-message.php:294
 #, php-format
 msgid "Chat with %s"
 msgstr ""
 
-#: templates/message/chat.php:28 templates/message/chats.php:26
+#: templates/message/parts/loop-chat.php:26
+#: templates/message/parts/loop-message.php:28
 msgid "No messages yet."
 msgstr ""
 
@@ -62,14 +62,14 @@ msgid "HivePress Messages"
 msgstr ""
 
 #. Description of the plugin
-msgid "Private messages for HivePress plugin."
+msgid "Private messages add-on for HivePress plugin."
+msgstr ""
+
+#. Author of the plugin
+msgid "HivePress"
 msgstr ""
 
 #. URI of the plugin
 #. Author URI of the plugin
 msgid "https://hivepress.co/"
-msgstr ""
-
-#. Author of the plugin
-msgid "HivePress"
 msgstr ""
