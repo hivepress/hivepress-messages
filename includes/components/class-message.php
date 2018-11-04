@@ -52,6 +52,15 @@ class Message extends \HivePress\Component {
 
 		if ( false !== $recipient && get_current_user_id() !== $recipient->ID ) {
 
+			// Get post ID.
+			$post_id = hp_get_post_id(
+				[
+					'post__in'    => [ absint( $values['post_id'] ) ],
+					'post_type'   => 'hp_listing',
+					'post_status' => 'publish',
+				]
+			);
+
 			// Set arguments.
 			$args = [
 				'comment_type'         => 'hp_message',
@@ -59,7 +68,7 @@ class Message extends \HivePress\Component {
 				'comment_author'       => hivepress()->user->get_name(),
 				'comment_author_email' => hivepress()->user->get_email(),
 				'comment_karma'        => $recipient->ID,
-				'comment_post_ID'      => absint( $values['post_id'] ),
+				'comment_post_ID'      => $post_id,
 				'comment_content'      => $values['message'],
 			];
 
