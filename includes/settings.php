@@ -127,8 +127,8 @@ $settings = [
 			'archive_listing' => [
 				'areas' => [
 					'actions' => [
-						'reply_link' => [
-							'path'  => 'message/parts/reply-link',
+						'message_link' => [
+							'path'  => 'listing/parts/message-link',
 							'order' => 10,
 						],
 					],
@@ -138,8 +138,8 @@ $settings = [
 			'single_listing'  => [
 				'areas' => [
 					'actions' => [
-						'reply_button' => [
-							'path'  => 'message/parts/reply-button',
+						'message_button' => [
+							'path'  => 'listing/parts/message-button',
 							'order' => 10,
 						],
 					],
@@ -149,8 +149,8 @@ $settings = [
 			'single_vendor'   => [
 				'areas' => [
 					'actions' => [
-						'contact_button' => [
-							'path'  => 'message/parts/contact-button',
+						'message_button' => [
+							'path'  => 'vendor/parts/message-button',
 							'order' => 10,
 						],
 					],

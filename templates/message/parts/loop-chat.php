@@ -8,11 +8,11 @@ if ( ! empty( $chats ) ) :
 		<?php foreach ( $chats as $chat ) : ?>
 		<tr>
 			<td>
-				<a href="<?php echo esc_url( hivepress()->template->get_url( 'message__chat', [ $chat->user_id ] ) ); ?>"><i class="hp-icon fas fa-reply"></i><?php echo esc_html( $chat->comment_author ); ?></a>
+				<a href="<?php echo esc_url( hivepress()->template->get_url( 'message__chat', [ $chat->user_id ] ) ); ?>"><i class="hp-icon fas fa-reply"></i><span><?php echo esc_html( $chat->comment_author ); ?></span></a>
 			</td>
 			<td>
 				<?php if ( ! empty( $chat->comment_post_ID ) ) : ?>
-				<a href="<?php echo esc_url( get_permalink( $chat->comment_post_ID ) ); ?>" target="_blank"><i class="hp-icon fas fa-external-link-alt"></i><?php echo esc_html( get_the_title( $chat->comment_post_ID ) ); ?></a>
+				<a href="<?php echo esc_url( get_permalink( $chat->comment_post_ID ) ); ?>" target="_blank"><i class="hp-icon fas fa-external-link-alt"></i><span><?php echo esc_html( get_the_title( $chat->comment_post_ID ) ); ?></span></a>
 				<?php endif; ?>
 			</td>
 			<td>
