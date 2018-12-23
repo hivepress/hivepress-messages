@@ -146,6 +146,17 @@ $settings = [
 				],
 			],
 
+			'archive_vendor'  => [
+				'areas' => [
+					'actions' => [
+						'message_link' => [
+							'path'  => 'vendor/parts/message-link',
+							'order' => 10,
+						],
+					],
+				],
+			],
+
 			'single_vendor'   => [
 				'areas' => [
 					'actions' => [
