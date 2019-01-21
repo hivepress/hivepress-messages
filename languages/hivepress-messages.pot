@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HivePress Messages\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-13 10:54+0000\n"
+"POT-Creation-Date: 2019-01-21 18:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -31,11 +31,12 @@ msgid ""
 msgstr ""
 
 #: includes/settings.php:46 includes/settings.php:69
-#: templates/message/parts/contact-button.php:5
-#: templates/message/parts/contact-popup.php:8
-#: templates/message/parts/reply-button.php:5
-#: templates/message/parts/reply-link.php:5
-#: templates/message/parts/reply-popup.php:8
+#: templates/listing/parts/message-button.php:5
+#: templates/listing/parts/message-link.php:5
+#: templates/listing/parts/message-popup.php:8
+#: templates/vendor/parts/message-button.php:5
+#: templates/vendor/parts/message-link.php:5
+#: templates/vendor/parts/message-popup.php:8
 msgid "Send Message"
 msgstr ""
 
@@ -47,12 +48,20 @@ msgstr ""
 msgid "My Messages"
 msgstr ""
 
-#: includes/components/class-message.php:294
+#: includes/components/class-message.php:303
 #, php-format
 msgid "Chat with %s"
 msgstr ""
 
-#: templates/message/parts/loop-chat.php:26
+#: templates/message/parts/loop-chat.php:10
+msgid "Sender"
+msgstr ""
+
+#: templates/message/parts/loop-chat.php:12
+msgid "Date"
+msgstr ""
+
+#: templates/message/parts/loop-chat.php:33
 #: templates/message/parts/loop-message.php:28
 msgid "No messages yet."
 msgstr ""
