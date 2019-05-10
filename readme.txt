@@ -4,17 +4,17 @@ Tags: hivepress, messages, directory, listings, classifieds
 Requires at least: 4.7
 Tested up to: 5.0
 Requires PHP: 5.6
-Stable tag: 1.0.1
+Stable tag: 1.1.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Private messages add-on for HivePress plugin.
+Private messages extension for HivePress plugin.
 
 == Description ==
 
-HivePress Messages is an add-on for [HivePress](https://wordpress.org/plugins/hivepress/), a multipurpose listing & directory plugin. It allows users to reply to listings and send direct messages.
+HivePress Messages is an extension for [HivePress](https://wordpress.org/plugins/hivepress/) plugin. It allows users to send private messages.
 
-[Demo](https://demo.hivepress.co/) | [Documentation](https://docs.hivepress.co/article/hivepress-messages/) | [Support](https://github.com/hivepress/hivepress-messages/issues)
+[Demo](https://demo.hivepress.io/) | [Documentation](https://hivepress.io/docs/) | [Support](https://hivepress.io/support/)
 
 == Installation ==
 
