@@ -47,6 +47,18 @@ class Message extends Controller {
 		$args = hp\merge_arrays(
 			[
 				'routes' => [
+					[
+						'path'      => '/messages',
+						'rest'      => true,
+
+						'endpoints' => [
+							[
+								'methods' => 'POST',
+								'action'  => 'send_message',
+							],
+						],
+					],
+
 					'view_chats' => [
 						'title'    => esc_html__( 'My Messages', 'hivepress-messages' ),
 						'path'     => '/account/chats',
@@ -59,6 +71,30 @@ class Message extends Controller {
 		);
 
 		parent::init( $args );
+	}
+
+	/**
+	 * Sends message.
+	 *
+	 * @param WP_REST_Request $request API request.
+	 * @return WP_Rest_Response
+	 */
+	public function send_message( $request ) {
+
+		// Check authentication.
+		if ( ! is_user_logged_in() ) {
+			return hp\rest_error( 401 );
+		}
+
+		// todo.
+		return new \WP_Rest_Response(
+			[
+				'data' => [
+					'id' => $message->get_id(),
+				],
+			],
+			200
+		);
 	}
 
 	/**

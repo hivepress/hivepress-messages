@@ -1,4 +1,4 @@
-'hivepress-messages'<?php
+<?php
 /**
  * Message send form.
  *
@@ -65,7 +65,7 @@ class Message_Send extends Model_Form {
 	public function __construct( $args = [] ) {
 		$args = hp\merge_arrays(
 			[
-				'message' => esc_html__( 'Your message has been sent', 'hivepress-messages' ),
+				'message' => esc_html__( 'Message has been sent', 'hivepress-messages' ),
 				'action'  => hp\get_rest_url( '/messages' ),
 
 				'fields'  => [
