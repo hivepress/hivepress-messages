@@ -49,11 +49,22 @@ class Message extends Comment {
 		$args = hp\merge_arrays(
 			[
 				'fields'  => [
-					'content'      => [
+					'text'         => [
 						'label'      => esc_html__( 'Message', 'hivepress-messages' ),
 						'type'       => 'textarea',
 						'max_length' => 2048,
 						'required'   => true,
+					],
+
+					'sender_name'  => [
+						'type'       => 'text',
+						'max_length' => 256,
+						'required'   => true,
+					],
+
+					'sender_email' => [
+						'type'     => 'email',
+						'required' => true,
 					],
 
 					'sender_id'    => [
@@ -75,10 +86,12 @@ class Message extends Comment {
 				],
 
 				'aliases' => [
-					'comment_content' => 'content',
-					'user_id'         => 'sender_id',
-					'comment_karma'   => 'recipient_id',
-					'comment_post_ID' => 'listing_id',
+					'comment_content'      => 'text',
+					'comment_author'       => 'sender_name',
+					'comment_author_email' => 'sender_email',
+					'user_id'              => 'sender_id',
+					'comment_karma'        => 'recipient_id',
+					'comment_post_ID'      => 'listing_id',
 				],
 			],
 			$args

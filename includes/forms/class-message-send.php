@@ -69,11 +69,15 @@ class Message_Send extends Model_Form {
 				'action'  => hp\get_rest_url( '/messages' ),
 
 				'fields'  => [
-					'content'      => [
+					'text'         => [
 						'order' => 10,
 					],
 
 					'recipient_id' => [
+						'type' => 'hidden',
+					],
+
+					'listing_id'   => [
 						'type' => 'hidden',
 					],
 				],
