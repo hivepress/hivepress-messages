@@ -52,17 +52,31 @@ class Message extends Comment {
 					'sender_id'    => [
 						'type'      => 'number',
 						'min_value' => 0,
+						'required'  => true,
 					],
 
 					'recipient_id' => [
 						'type'      => 'number',
 						'min_value' => 0,
+						'required'  => true,
+					],
+
+					'listing_id'   => [
+						'type'      => 'number',
+						'min_value' => 0,
+					],
+
+					'content'      => [
+						'type'       => 'textarea',
+						'max_length' => 2048,
+						'required'   => true,
 					],
 				],
 
 				'aliases' => [
-					'user_id'       => 'sender_id',
-					'comment_karma' => 'recipient_id',
+					'user_id'         => 'sender_id',
+					'comment_karma'   => 'recipient_id',
+					'comment_post_ID' => 'listing_id',
 				],
 			],
 			$args
