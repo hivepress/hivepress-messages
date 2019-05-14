@@ -110,8 +110,12 @@ class Message extends Controller {
 		// Get recipient.
 		$recipient = get_userdata( $form->get_value( 'recipient_id' ) );
 
-		if ( false === $recipient || $recipient->ID === $sender->ID ) {
+		if ( false === $recipient ) {
 			return hp\rest_error( 400 );
+		}
+
+		if ( $recipient->ID === $sender->ID ) {
+			return hp\rest_error( 403, esc_html__( "You can't send messages to yourself", 'hivepress-messages' ) );
 		}
 
 		// Get listing.
