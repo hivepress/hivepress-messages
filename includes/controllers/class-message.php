@@ -59,11 +59,18 @@ class Message extends Controller {
 						],
 					],
 
-					'view_chats' => [
+					'view_chats'    => [
 						'title'    => esc_html__( 'My Messages', 'hivepress-messages' ),
 						'path'     => '/account/chats',
 						'redirect' => 'redirect_chats_page',
 						'action'   => 'render_chats_page',
+					],
+
+					'view_messages' => [
+						'title'    => esc_html__( 'My Messages', 'hivepress-messages' ),
+						'path'     => '/account/chats/(?P<recipient_id>\d+)',
+						'redirect' => 'redirect_messages_view_page',
+						'action'   => 'render_messages_view_page',
 					],
 				],
 			],
@@ -178,6 +185,30 @@ class Message extends Controller {
 		if ( ! is_user_logged_in() ) {
 			return add_query_arg( 'redirect', rawurlencode( hp\get_current_url() ), User::get_url( 'login_user' ) );
 		}
+
+		// Check messages.
+		$messages = array_merge(
+			get_comments(
+				[
+					'type'    => 'hp_message',
+					'user_id' => get_current_user_id(),
+					'number'  => 1,
+					'fields'  => 'ids',
+				]
+			),
+			get_comments(
+				[
+					'type'   => 'hp_message',
+					'karma'  => get_current_user_id(),
+					'number' => 1,
+					'fields' => 'ids',
+				]
+			)
+		);
+
+		if ( empty( $messages ) ) {
+			return true;
+		}
 	}
 
 	/**
@@ -187,6 +218,65 @@ class Message extends Controller {
 	 */
 	public function render_chats_page() {
 		$output = 'todo';
+
+		return $output;
+	}
+
+	/**
+	 * Redirects messages view page.
+	 *
+	 * @return mixed
+	 */
+	public function redirect_messages_view_page() {
+
+		// Check authentication.
+		if ( ! is_user_logged_in() ) {
+			return add_query_arg( 'redirect', rawurlencode( hp\get_current_url() ), User::get_url( 'login_user' ) );
+		}
+
+		// Check recipient.
+		$recipient = get_userdata( absint( get_query_var( 'hp_recipient_id' ) ) );
+
+		if ( false === $recipient || get_current_user_id() === $recipient->ID ) {
+			return true;
+		}
+
+		// Check messages.
+		$messages = array_merge(
+			get_comments(
+				[
+					'type'    => 'hp_message',
+					'user_id' => get_current_user_id(),
+					'karma'   => $recipient->ID,
+					'number'  => 1,
+					'fields'  => 'ids',
+				]
+			),
+			get_comments(
+				[
+					'type'    => 'hp_message',
+					'user_id' => $recipient->ID,
+					'karma'   => get_current_user_id(),
+					'number'  => 1,
+					'fields'  => 'ids',
+				]
+			)
+		);
+
+		if ( empty( $messages ) ) {
+			return true;
+		}
+	}
+
+	/**
+	 * Renders messages view page.
+	 *
+	 * @return string
+	 */
+	public function render_messages_view_page() {
+		$output  = ( new Blocks\Element( [ 'file_path' => 'header' ] ) )->render();
+		$output .= ( new Blocks\Template( [ 'template_name' => 'messages_view_page' ] ) )->render();
+		$output .= ( new Blocks\Element( [ 'file_path' => 'footer' ] ) )->render();
 
 		return $output;
 	}
