@@ -37,7 +37,30 @@ final class Message {
 	 * @return array
 	 */
 	public function add_menu_items( $menu ) {
-		if ( 'todo' ) {
+
+		// Check messages.
+		$messages = array_merge(
+			get_comments(
+				[
+					'type'    => 'hp_message',
+					'user_id' => get_current_user_id(),
+					'number'  => 1,
+					'fields'  => 'ids',
+				]
+			),
+			get_comments(
+				[
+					'type'   => 'hp_message',
+					'karma'  => get_current_user_id(),
+					'number' => 1,
+					'fields' => 'ids',
+				]
+			)
+		);
+
+		if ( ! empty( $messages ) ) {
+
+			// Add menu item.
 			$menu['items']['view_chats'] = [
 				'route' => 'message/view_chats',
 				'order' => 30,

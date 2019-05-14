@@ -30,7 +30,30 @@ return [
 						'class' => [ 'hp-message__header' ],
 					],
 
-					'blocks'     => [],
+					'blocks'     => [
+						'details' => [
+							'type'       => 'container',
+							'order'      => 20,
+
+							'attributes' => [
+								'class' => [ 'hp-message__details' ],
+							],
+
+							'blocks'     => [
+								'sender' => [
+									'type'      => 'element',
+									'file_path' => 'message/view/sender',
+									'order'     => 10,
+								],
+
+								'date'   => [
+									'type'      => 'element',
+									'file_path' => 'message/view/date',
+									'order'     => 20,
+								],
+							],
+						],
+					],
 				],
 
 				'content' => [

@@ -16,9 +16,14 @@ return [
 	'blocks' => [
 		'content' => [
 			'blocks' => [
-				'messages' => [
+				'messages'  => [
 					'type'  => 'messages',
 					'order' => 10,
+				],
+
+				'send_form' => [
+					'type'  => 'message_send_form',
+					'order' => 20,
 				],
 			],
 		],
