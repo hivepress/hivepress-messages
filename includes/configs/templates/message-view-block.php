@@ -31,6 +31,12 @@ return [
 					],
 
 					'blocks'     => [
+						'listing' => [
+							'type'      => 'element',
+							'file_path' => 'message/view/listing',
+							'order'     => 10,
+						],
+
 						'details' => [
 							'type'       => 'container',
 							'order'      => 20,
