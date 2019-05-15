@@ -217,7 +217,9 @@ class Message extends Controller {
 	 * @return string
 	 */
 	public function render_chats_page() {
-		$output = 'todo';
+		$output  = ( new Blocks\Element( [ 'file_path' => 'header' ] ) )->render();
+		$output .= ( new Blocks\Template( [ 'template_name' => 'messages_select_page' ] ) )->render();
+		$output .= ( new Blocks\Element( [ 'file_path' => 'footer' ] ) )->render();
 
 		return $output;
 	}

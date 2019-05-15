@@ -31,44 +31,95 @@ class Messages extends Block {
 		$recipient_id = absint( get_query_var( 'hp_recipient_id' ) );
 
 		// Get messages.
-		$messages = wp_list_sort(
-			array_merge(
-				get_comments(
-					[
-						'type'    => 'hp_message',
-						'user_id' => get_current_user_id(),
-						'karma'   => $recipient_id,
-					]
+		$messages = [];
+
+		if ( 0 === $recipient_id ) {
+			$all_messages = wp_list_sort(
+				array_merge(
+					get_comments(
+						[
+							'type'    => 'hp_message',
+							'user_id' => get_current_user_id(),
+						]
+					),
+					get_comments(
+						[
+							'type'  => 'hp_message',
+							'karma' => get_current_user_id(),
+						]
+					)
 				),
-				get_comments(
-					[
-						'type'    => 'hp_message',
-						'user_id' => $recipient_id,
-						'karma'   => get_current_user_id(),
-					]
-				)
-			),
-			'comment_date'
-		);
+				'comment_date',
+				'DESC'
+			);
+
+			foreach ( $all_messages as $message ) {
+
+				// Set sender.
+				if ( get_current_user_id() === absint( $message->user_id ) ) {
+					$message->user_id = $message->comment_karma;
+				}
+
+				// Add message.
+				if ( ! isset( $messages[ $message->user_id ] ) ) {
+					$messages[ $message->user_id ] = $message;
+				}
+			}
+		} else {
+			$messages = wp_list_sort(
+				array_merge(
+					get_comments(
+						[
+							'type'    => 'hp_message',
+							'user_id' => get_current_user_id(),
+							'karma'   => $recipient_id,
+						]
+					),
+					get_comments(
+						[
+							'type'    => 'hp_message',
+							'user_id' => $recipient_id,
+							'karma'   => get_current_user_id(),
+						]
+					)
+				),
+				'comment_date'
+			);
+		}
 
 		// Render messages.
 		if ( ! empty( $messages ) ) {
-			$output = '<div class="hp-todo">';
+			if ( 0 === $recipient_id ) {
+				$output = '<table class="hp-table">';
 
-			foreach ( $messages as $message ) {
-				$output .= '<div class="hp-todo__item">';
+				foreach ( $messages as $message ) {
+					$output .= ( new Message(
+						[
+							'template_name' => 'message_select_block',
+							'id'            => absint( $message->comment_ID ),
+						]
+					) )->render();
+				}
 
-				$output .= ( new Message(
-					[
-						'template_name' => 'message_view_block',
-						'id'            => absint( $message->comment_ID ),
-					]
-				) )->render();
+				$output .= '</table>';
+			} else {
+				$output = '<div class="hp-todo">';
+
+				foreach ( $messages as $message ) {
+					$output .= '<div class="hp-todo__item">';
+
+					$output .= ( new Message(
+						[
+							'template_name' => 'message_view_block',
+							'id'            => absint( $message->comment_ID ),
+						]
+					) )->render();
+
+					$output .= '</div>';
+				}
 
 				$output .= '</div>';
 			}
-
-			$output .= '</div>';
 		}
 
 		return $output;
