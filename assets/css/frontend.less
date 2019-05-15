@@ -1,0 +1,39 @@
+.hp {
+	/*--------------------------------------------------------------
+	Messages
+	--------------------------------------------------------------*/
+	&-message {
+		&__header,
+		&__listing {
+			&:not(:last-child) {
+				margin-bottom: 0.5rem;
+			}
+		}
+
+		&__details {
+			display: flex;
+			align-items: center;
+		}
+
+		&__date,
+		&__sender {
+			&:not(:last-child) {
+				margin-right: 0.5rem;
+			}
+		}
+
+		&__date {
+			font-size: 80%;
+		}
+
+		&__text {
+			p {
+				margin-bottom: 0.5rem;
+
+				&:last-child {
+					margin-bottom: 0;
+				}
+			}
+		}
+	}
+}

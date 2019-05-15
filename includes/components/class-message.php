@@ -28,6 +28,9 @@ final class Message {
 
 		// Add menu items.
 		add_filter( 'hivepress/v1/menus/account', [ $this, 'add_menu_items' ] );
+
+		// Delete messages.
+		add_action( 'delete_user', [ $this, 'delete_messages' ] );
 	}
 
 	/**
@@ -39,7 +42,7 @@ final class Message {
 	public function add_menu_items( $menu ) {
 
 		// Check messages.
-		$messages = array_merge(
+		$message_ids = array_merge(
 			get_comments(
 				[
 					'type'    => 'hp_message',
@@ -58,7 +61,7 @@ final class Message {
 			)
 		);
 
-		if ( ! empty( $messages ) ) {
+		if ( ! empty( $message_ids ) ) {
 
 			// Add menu item.
 			$menu['items']['view_chats'] = [
@@ -68,5 +71,36 @@ final class Message {
 		}
 
 		return $menu;
+	}
+
+	/**
+	 * Deletes messages.
+	 *
+	 * @param int $user_id User ID.
+	 */
+	public function delete_messages( $user_id ) {
+
+		// Get message IDs.
+		$message_ids = array_merge(
+			get_comments(
+				[
+					'type'    => 'hp_message',
+					'user_id' => get_current_user_id(),
+					'fields'  => 'ids',
+				]
+			),
+			get_comments(
+				[
+					'type'   => 'hp_message',
+					'karma'  => get_current_user_id(),
+					'fields' => 'ids',
+				]
+			)
+		);
+
+		// Delete messages.
+		foreach ( $message_ids as $message_id ) {
+			wp_delete_comment( $message_id, true );
+		}
 	}
 }

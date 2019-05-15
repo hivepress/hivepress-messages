@@ -27,9 +27,29 @@ class Messages extends Block {
 	public function render() {
 		$output = '';
 
+		// Get recipient ID.
+		$recipient_id = absint( get_query_var( 'hp_recipient_id' ) );
+
 		// Get messages.
-		// todo.
-		$messages = get_comments( [ 'type' => 'hp_message' ] );
+		$messages = wp_list_sort(
+			array_merge(
+				get_comments(
+					[
+						'type'    => 'hp_message',
+						'user_id' => get_current_user_id(),
+						'karma'   => $recipient_id,
+					]
+				),
+				get_comments(
+					[
+						'type'    => 'hp_message',
+						'user_id' => $recipient_id,
+						'karma'   => get_current_user_id(),
+					]
+				)
+			),
+			'comment_date'
+		);
 
 		// Render messages.
 		if ( ! empty( $messages ) ) {
