@@ -20,6 +20,13 @@ defined( 'ABSPATH' ) || exit;
 class Messages extends Block {
 
 	/**
+	 * Template context.
+	 *
+	 * @var string
+	 */
+	protected $template_context;
+
+	/**
 	 * Renders block HTML.
 	 *
 	 * @return string
@@ -27,13 +34,10 @@ class Messages extends Block {
 	public function render() {
 		$output = '';
 
-		// Get recipient ID.
-		$recipient_id = absint( get_query_var( 'hp_recipient_id' ) );
-
 		// Get messages.
 		$messages = [];
 
-		if ( 0 === $recipient_id ) {
+		if ( 'select' === $this->template_context ) {
 			$all_messages = wp_list_sort(
 				array_merge(
 					get_comments(
@@ -66,6 +70,10 @@ class Messages extends Block {
 				}
 			}
 		} else {
+
+			// Get recipient ID.
+			$recipient_id = absint( get_query_var( 'hp_recipient_id' ) );
+
 			$messages = wp_list_sort(
 				array_merge(
 					get_comments(
@@ -89,7 +97,7 @@ class Messages extends Block {
 
 		// Render messages.
 		if ( ! empty( $messages ) ) {
-			if ( 0 === $recipient_id ) {
+			if ( 'select' === $this->template_context ) {
 				$output = '<table class="hp-table">';
 
 				foreach ( $messages as $message ) {

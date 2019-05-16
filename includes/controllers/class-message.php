@@ -59,16 +59,16 @@ class Message extends Controller {
 						],
 					],
 
-					'view_chats'    => [
+					'select_messages' => [
 						'title'    => esc_html__( 'My Messages', 'hivepress-messages' ),
-						'path'     => '/account/chats',
-						'redirect' => 'redirect_chats_page',
-						'action'   => 'render_chats_page',
+						'path'     => '/account/messages',
+						'redirect' => 'redirect_messages_select_page',
+						'action'   => 'render_messages_select_page',
 					],
 
-					'view_messages' => [
+					'view_messages'   => [
 						'title'    => esc_html__( 'My Messages', 'hivepress-messages' ),
-						'path'     => '/account/chats/(?P<recipient_id>\d+)',
+						'path'     => '/account/messages/(?P<recipient_id>\d+)',
 						'redirect' => 'redirect_messages_view_page',
 						'action'   => 'render_messages_view_page',
 					],
@@ -158,7 +158,7 @@ class Message extends Controller {
 				'recipient' => $recipient->user_email,
 				'tokens'    => [
 					'user_name'    => $recipient->display_name,
-					'message_url'  => self::get_url( 'view_chat', [ 'recipient_id' => $recipient->ID ] ),
+					'message_url'  => self::get_url( 'view_messages', [ 'recipient_id' => $recipient->ID ] ),
 					'message_text' => $message->get_text(),
 				],
 			]
@@ -175,11 +175,11 @@ class Message extends Controller {
 	}
 
 	/**
-	 * Redirects chats page.
+	 * Redirects messages select page.
 	 *
 	 * @return mixed
 	 */
-	public function redirect_chats_page() {
+	public function redirect_messages_select_page() {
 
 		// Check authentication.
 		if ( ! is_user_logged_in() ) {
@@ -212,11 +212,11 @@ class Message extends Controller {
 	}
 
 	/**
-	 * Renders chats page.
+	 * Renders messages select page.
 	 *
 	 * @return string
 	 */
-	public function render_chats_page() {
+	public function render_messages_select_page() {
 		$output  = ( new Blocks\Element( [ 'file_path' => 'header' ] ) )->render();
 		$output .= ( new Blocks\Template( [ 'template_name' => 'messages_select_page' ] ) )->render();
 		$output .= ( new Blocks\Element( [ 'file_path' => 'footer' ] ) )->render();
