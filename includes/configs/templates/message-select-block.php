@@ -22,16 +22,22 @@ return [
 			],
 
 			'blocks'     => [
-				'sender' => [
+				'sender'  => [
 					'type'      => 'element',
 					'file_path' => 'message/select/sender',
 					'order'     => 10,
 				],
 
-				'date'   => [
+				'listing' => [
+					'type'      => 'element',
+					'file_path' => 'message/select/listing',
+					'order'     => 20,
+				],
+
+				'date'    => [
 					'type'      => 'element',
 					'file_path' => 'message/select/date',
-					'order'     => 20,
+					'order'     => 30,
 				],
 			],
 		],
