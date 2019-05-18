@@ -1,0 +1,71 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HivePress Messages\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-05-18 21:56+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.2.2; wp-5.2"
+
+#: includes/configs/settings.php:22 includes/emails/class-message-send.php:31
+msgid ""
+"Hi, %user_name%! You received a new message, click on the following link to "
+"view it: %message_url%"
+msgstr ""
+
+#. Author of the plugin
+msgid "HivePress"
+msgstr ""
+
+#. Name of the plugin
+msgid "HivePress Messages"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://hivepress.io/"
+msgstr ""
+
+#: includes/models/class-message.php:53
+msgid "Message"
+msgstr ""
+
+#: includes/forms/class-message-send.php:68
+msgid "Message has been sent"
+msgstr ""
+
+#: includes/configs/settings.php:19 includes/emails/class-message-send.php:30
+msgid "Message Received"
+msgstr ""
+
+#: includes/controllers/class-message.php:63
+#: includes/controllers/class-message.php:70
+msgid "My Messages"
+msgstr ""
+
+#. Description of the plugin
+msgid "Private messages extension for HivePress plugin."
+msgstr ""
+
+#: includes/forms/class-message-send.php:51
+#: includes/forms/class-message-send.php:86 templates/message/send-button.php:5
+#: templates/message/send-link.php:5
+msgid "Send Message"
+msgstr ""
+
+#: includes/configs/settings.php:20
+msgid ""
+"This email is sent to users when a new message is received, the following "
+"tokens are available: %user_name%, %message_url%, %message_text%."
+msgstr ""
+
+#: includes/controllers/class-message.php:125
+msgid "You can't send messages to yourself"
+msgstr ""
