@@ -23,7 +23,7 @@ return [
 										'message_send_modal' => [
 											'type'        => 'modal',
 											'model'       => 'listing',
-											'modal_title' => esc_html__( 'Send Message', 'hivepress' ),
+											'modal_title' => esc_html__( 'Send Message', 'hivepress-messages' ),
 
 											'blocks'      => [
 												'message_form' => [

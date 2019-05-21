@@ -10,7 +10,6 @@ namespace HivePress\Controllers;
 use HivePress\Helpers as hp;
 use HivePress\Models;
 use HivePress\Forms;
-use HivePress\Menus;
 use HivePress\Blocks;
 use HivePress\Emails;
 
@@ -68,7 +67,7 @@ class Message extends Controller {
 
 					'view_messages'   => [
 						'title'    => esc_html__( 'My Messages', 'hivepress-messages' ),
-						'path'     => '/account/messages/(?P<recipient_id>\d+)',
+						'path'     => '/account/messages/(?P<user_id>\d+)',
 						'redirect' => 'redirect_messages_view_page',
 						'action'   => 'render_messages_view_page',
 					],
@@ -158,7 +157,7 @@ class Message extends Controller {
 				'recipient' => $recipient->user_email,
 				'tokens'    => [
 					'user_name'    => $recipient->display_name,
-					'message_url'  => self::get_url( 'view_messages', [ 'recipient_id' => $recipient->ID ] ),
+					'message_url'  => self::get_url( 'view_messages', [ 'user_id' => $sender->ID ] ),
 					'message_text' => $message->get_text(),
 				],
 			]
@@ -236,10 +235,10 @@ class Message extends Controller {
 			return add_query_arg( 'redirect', rawurlencode( hp\get_current_url() ), User::get_url( 'login_user' ) );
 		}
 
-		// Check recipient.
-		$recipient = get_userdata( absint( get_query_var( 'hp_recipient_id' ) ) );
+		// Check user.
+		$user = get_userdata( absint( get_query_var( 'hp_user_id' ) ) );
 
-		if ( false === $recipient || get_current_user_id() === $recipient->ID ) {
+		if ( false === $user || get_current_user_id() === $user->ID ) {
 			return true;
 		}
 
@@ -249,7 +248,7 @@ class Message extends Controller {
 				[
 					'type'    => 'hp_message',
 					'user_id' => get_current_user_id(),
-					'karma'   => $recipient->ID,
+					'karma'   => $user->ID,
 					'number'  => 1,
 					'fields'  => 'ids',
 				]
@@ -257,7 +256,7 @@ class Message extends Controller {
 			get_comments(
 				[
 					'type'    => 'hp_message',
-					'user_id' => $recipient->ID,
+					'user_id' => $user->ID,
 					'karma'   => get_current_user_id(),
 					'number'  => 1,
 					'fields'  => 'ids',

@@ -110,7 +110,7 @@ class Message extends Comment {
 	 * Gets date.
 	 *
 	 * @param string $format Date format.
-	 * @return mixed
+	 * @return string
 	 */
 	final public function get_date( $format = null ) {
 		if ( is_null( $format ) ) {

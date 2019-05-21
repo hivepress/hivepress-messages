@@ -20,11 +20,11 @@ defined( 'ABSPATH' ) || exit;
 class Messages extends Block {
 
 	/**
-	 * Template context.
+	 * Template name.
 	 *
 	 * @var string
 	 */
-	protected $template_context;
+	protected $template_name;
 
 	/**
 	 * Renders block HTML.
@@ -37,7 +37,7 @@ class Messages extends Block {
 		// Get messages.
 		$messages = [];
 
-		if ( 'select' === $this->template_context ) {
+		if ( 'message_select_block' === $this->template_name ) {
 			$all_messages = wp_list_sort(
 				array_merge(
 					get_comments(
@@ -59,21 +59,24 @@ class Messages extends Block {
 
 			foreach ( $all_messages as $message ) {
 
-				// Set sender.
-				if ( get_current_user_id() === absint( $message->user_id ) ) {
-					$message->user_id = $message->comment_karma;
+				// Get user ID.
+				$user_id = absint( $message->user_id );
+
+				if ( get_current_user_id() === $user_id ) {
+					$user_id = absint( $message->comment_karma );
 				}
 
 				// Add message.
-				if ( ! isset( $messages[ $message->user_id ] ) ) {
-					$messages[ $message->user_id ] = $message;
+				if ( ! isset( $messages[ $user_id ] ) ) {
+					$messages[ $user_id ] = $message;
 				}
 			}
 		} else {
 
 			// Get recipient ID.
-			$recipient_id = absint( get_query_var( 'hp_recipient_id' ) );
+			$recipient_id = absint( get_query_var( 'hp_user_id' ) );
 
+			// Get messages.
 			$messages = wp_list_sort(
 				array_merge(
 					get_comments(
@@ -97,13 +100,13 @@ class Messages extends Block {
 
 		// Render messages.
 		if ( ! empty( $messages ) ) {
-			if ( 'select' === $this->template_context ) {
+			if ( 'message_select_block' === $this->template_name ) {
 				$output = '<table class="hp-table">';
 
 				foreach ( $messages as $message ) {
 					$output .= ( new Message(
 						[
-							'template_name' => 'message_select_block',
+							'template_name' => $this->template_name,
 							'id'            => absint( $message->comment_ID ),
 						]
 					) )->render();
@@ -111,14 +114,14 @@ class Messages extends Block {
 
 				$output .= '</table>';
 			} else {
-				$output = '<div class="hp-todo">';
+				$output = '<div class="hp-grid">';
 
 				foreach ( $messages as $message ) {
-					$output .= '<div class="hp-todo__item">';
+					$output .= '<div class="hp-grid__item">';
 
 					$output .= ( new Message(
 						[
-							'template_name' => 'message_view_block',
+							'template_name' => $this->template_name,
 							'id'            => absint( $message->comment_ID ),
 						]
 					) )->render();

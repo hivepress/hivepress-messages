@@ -46,7 +46,7 @@ class Message_Send_Form extends Form {
 				$this->values['listing_id'] = get_the_ID();
 			}
 		} else {
-			$this->values['recipient_id'] = get_query_var( 'hp_recipient_id' );
+			$this->values['recipient_id'] = get_query_var( 'hp_user_id' );
 		}
 
 		parent::bootstrap();
