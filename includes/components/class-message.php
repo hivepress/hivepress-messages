@@ -24,11 +24,30 @@ final class Message {
 	 */
 	public function __construct() {
 
+		// Set page title.
+		add_filter( 'hivepress/v1/controllers/message/routes/view_messages', [ $this, 'set_page_title' ] );
+
 		// Add menu items.
 		add_filter( 'hivepress/v1/menus/account', [ $this, 'add_menu_items' ] );
 
 		// Delete messages.
 		add_action( 'delete_user', [ $this, 'delete_messages' ] );
+	}
+
+	/**
+	 * Sets page title.
+	 *
+	 * @param array $route Route arguments.
+	 * @return array
+	 */
+	public function set_page_title( $route ) {
+		$user = get_userdata( get_query_var( 'hp_user_id' ) );
+
+		if ( false !== $user ) {
+			$route['title'] = sprintf( esc_html__( 'Messages from %s', 'hivepress-messages' ), $user->display_name );
+		}
+
+		return $route;
 	}
 
 	/**
