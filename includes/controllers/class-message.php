@@ -216,11 +216,7 @@ class Message extends Controller {
 	 * @return string
 	 */
 	public function render_messages_select_page() {
-		$output  = ( new Blocks\Element( [ 'file_path' => 'header' ] ) )->render();
-		$output .= ( new Blocks\Template( [ 'template_name' => 'messages_select_page' ] ) )->render();
-		$output .= ( new Blocks\Element( [ 'file_path' => 'footer' ] ) )->render();
-
-		return $output;
+		return ( new Blocks\Template( [ 'template_name' => 'messages_select_page' ] ) )->render();
 	}
 
 	/**
@@ -275,10 +271,6 @@ class Message extends Controller {
 	 * @return string
 	 */
 	public function render_messages_view_page() {
-		$output  = ( new Blocks\Element( [ 'file_path' => 'header' ] ) )->render();
-		$output .= ( new Blocks\Template( [ 'template_name' => 'messages_view_page' ] ) )->render();
-		$output .= ( new Blocks\Element( [ 'file_path' => 'footer' ] ) )->render();
-
-		return $output;
+		return ( new Blocks\Template( [ 'template_name' => 'messages_view_page' ] ) )->render();
 	}
 }
