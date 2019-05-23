@@ -17,9 +17,9 @@ return [
 		'content' => [
 			'blocks' => [
 				'messages' => [
-					'type'          => 'messages',
-					'template_name' => 'message_select_block',
-					'order'         => 10,
+					'type'             => 'messages',
+					'template_context' => 'select',
+					'order'            => 10,
 				],
 			],
 		],

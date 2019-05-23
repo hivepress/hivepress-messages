@@ -17,9 +17,8 @@ return [
 		'content' => [
 			'blocks' => [
 				'messages'  => [
-					'type'          => 'messages',
-					'template_name' => 'message_view_block',
-					'order'         => 10,
+					'type'  => 'messages',
+					'order' => 10,
 				],
 
 				'send_form' => [
