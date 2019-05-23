@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 
 return [
 	'blocks' => [
-		'container' => [
+		'page_content' => [
 			'blocks' => [
 				'columns' => [
 					'blocks' => [
@@ -22,7 +22,6 @@ return [
 									'blocks' => [
 										'message_send_modal' => [
 											'type'        => 'modal',
-											'model'       => 'listing',
 											'modal_title' => esc_html__( 'Send Message', 'hivepress-messages' ),
 
 											'blocks'      => [
