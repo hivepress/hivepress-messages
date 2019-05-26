@@ -48,6 +48,13 @@ class Message_Send extends Model_Form {
 	protected static $model;
 
 	/**
+	 * Form action.
+	 *
+	 * @var string
+	 */
+	protected static $action;
+
+	/**
 	 * Form method.
 	 *
 	 * @var string
@@ -86,6 +93,7 @@ class Message_Send extends Model_Form {
 				'title'   => esc_html__( 'Send Message', 'hivepress-messages' ),
 				'message' => esc_html__( 'Message has been sent', 'hivepress-messages' ),
 				'model'   => 'message',
+				'action'  => hp\get_rest_url( '/messages' ),
 
 				'fields'  => [
 					'text'         => [
@@ -109,21 +117,5 @@ class Message_Send extends Model_Form {
 		);
 
 		parent::init( $args );
-	}
-
-	/**
-	 * Class constructor.
-	 *
-	 * @param array $args Form arguments.
-	 */
-	public function __construct( $args = [] ) {
-		$args = hp\merge_arrays(
-			[
-				'action' => hp\get_rest_url( '/messages' ),
-			],
-			$args
-		);
-
-		parent::__construct( $args );
 	}
 }
