@@ -34,11 +34,39 @@ class Message_Send extends Model_Form {
 	protected static $title;
 
 	/**
+	 * Form message.
+	 *
+	 * @var string
+	 */
+	protected static $message;
+
+	/**
 	 * Model name.
 	 *
 	 * @var string
 	 */
 	protected static $model;
+
+	/**
+	 * Form captcha.
+	 *
+	 * @var bool
+	 */
+	protected static $captcha = false;
+
+	/**
+	 * Form fields.
+	 *
+	 * @var array
+	 */
+	protected static $fields = [];
+
+	/**
+	 * Form button.
+	 *
+	 * @var object
+	 */
+	protected static $button;
 
 	/**
 	 * Class initializer.
@@ -48,25 +76,9 @@ class Message_Send extends Model_Form {
 	public static function init( $args = [] ) {
 		$args = hp\merge_arrays(
 			[
-				'title' => esc_html__( 'Send Message', 'hivepress-messages' ),
-				'model' => 'message',
-			],
-			$args
-		);
-
-		parent::init( $args );
-	}
-
-	/**
-	 * Class constructor.
-	 *
-	 * @param array $args Form arguments.
-	 */
-	public function __construct( $args = [] ) {
-		$args = hp\merge_arrays(
-			[
+				'title'   => esc_html__( 'Send Message', 'hivepress-messages' ),
 				'message' => esc_html__( 'Message has been sent', 'hivepress-messages' ),
-				'action'  => hp\get_rest_url( '/messages' ),
+				'model'   => 'message',
 
 				'fields'  => [
 					'text'         => [
@@ -85,6 +97,22 @@ class Message_Send extends Model_Form {
 				'button'  => [
 					'label' => esc_html__( 'Send Message', 'hivepress-messages' ),
 				],
+			],
+			$args
+		);
+
+		parent::init( $args );
+	}
+
+	/**
+	 * Class constructor.
+	 *
+	 * @param array $args Form arguments.
+	 */
+	public function __construct( $args = [] ) {
+		$args = hp\merge_arrays(
+			[
+				'action' => hp\get_rest_url( '/messages' ),
 			],
 			$args
 		);
