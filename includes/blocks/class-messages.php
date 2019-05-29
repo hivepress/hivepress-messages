@@ -21,6 +21,13 @@ defined( 'ABSPATH' ) || exit;
 class Messages extends Block {
 
 	/**
+	 * Block type.
+	 *
+	 * @var string
+	 */
+	protected static $type;
+
+	/**
 	 * Template context.
 	 *
 	 * @var string
@@ -133,7 +140,10 @@ class Messages extends Block {
 					$output .= ( new Template(
 						[
 							'template_name' => 'message_' . $this->template_context . '_block',
-							'message'       => $message,
+
+							'context'       => [
+								'message' => $message,
+							],
 						]
 					) )->render();
 

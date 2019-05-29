@@ -20,6 +20,13 @@ defined( 'ABSPATH' ) || exit;
 class Message_Send_Form extends Form {
 
 	/**
+	 * Block type.
+	 *
+	 * @var string
+	 */
+	protected static $type;
+
+	/**
 	 * Class constructor.
 	 *
 	 * @param array $args Block arguments.
@@ -39,6 +46,8 @@ class Message_Send_Form extends Form {
 	 * Bootstraps block properties.
 	 */
 	protected function bootstrap() {
+
+		// Set values.
 		if ( in_array( get_post_type(), [ 'hp_vendor', 'hp_listing' ], true ) ) {
 			$this->values['recipient_id'] = get_the_author_meta( 'ID' );
 
