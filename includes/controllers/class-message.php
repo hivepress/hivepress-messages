@@ -216,7 +216,7 @@ class Message extends Controller {
 	 * @return string
 	 */
 	public function render_messages_select_page() {
-		return ( new Blocks\Template( [ 'template_name' => 'messages_select_page' ] ) )->render();
+		return ( new Blocks\Template( [ 'template' => 'messages_select_page' ] ) )->render();
 	}
 
 	/**
@@ -271,6 +271,6 @@ class Message extends Controller {
 	 * @return string
 	 */
 	public function render_messages_view_page() {
-		return ( new Blocks\Template( [ 'template_name' => 'messages_view_page' ] ) )->render();
+		return ( new Blocks\Template( [ 'template' => 'messages_view_page' ] ) )->render();
 	}
 }

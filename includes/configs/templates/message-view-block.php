@@ -33,7 +33,7 @@ return [
 					'blocks'     => [
 						'listing' => [
 							'type'      => 'element',
-							'file_path' => 'message/view/listing',
+							'filepath' => 'message/view/listing',
 							'order'     => 10,
 						],
 
@@ -48,13 +48,13 @@ return [
 							'blocks'     => [
 								'sender' => [
 									'type'      => 'element',
-									'file_path' => 'message/view/sender',
+									'filepath' => 'message/view/sender',
 									'order'     => 10,
 								],
 
 								'date'   => [
 									'type'      => 'element',
-									'file_path' => 'message/view/date',
+									'filepath' => 'message/view/date',
 									'order'     => 20,
 								],
 							],
@@ -73,7 +73,7 @@ return [
 					'blocks'     => [
 						'text' => [
 							'type'      => 'element',
-							'file_path' => 'message/view/text',
+							'filepath' => 'message/view/text',
 							'order'     => 10,
 						],
 					],

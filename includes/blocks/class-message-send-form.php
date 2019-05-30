@@ -34,7 +34,7 @@ class Message_Send_Form extends Form {
 	public function __construct( $args = [] ) {
 		$args = hp\merge_arrays(
 			[
-				'form_name' => 'message_send',
+				'form' => 'message_send',
 			],
 			$args
 		);

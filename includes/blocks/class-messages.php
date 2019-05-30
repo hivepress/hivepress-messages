@@ -28,11 +28,11 @@ class Messages extends Block {
 	protected static $type;
 
 	/**
-	 * Template context.
+	 * Template type.
 	 *
 	 * @var string
 	 */
-	protected $template_context = 'view';
+	protected $template = 'view';
 
 	/**
 	 * Renders block HTML.
@@ -45,7 +45,7 @@ class Messages extends Block {
 		// Get messages.
 		$messages = [];
 
-		if ( 'select' === $this->template_context ) {
+		if ( 'select' === $this->template ) {
 			$all_messages = wp_list_sort(
 				array_merge(
 					get_comments(
@@ -108,7 +108,7 @@ class Messages extends Block {
 
 		// Render messages.
 		if ( ! empty( $messages ) ) {
-			if ( 'select' === $this->template_context ) {
+			if ( 'select' === $this->template ) {
 				$output .= '<table class="hp-table">';
 			} else {
 				$output .= '<div class="hp-grid">';
@@ -120,7 +120,7 @@ class Messages extends Block {
 				$message = Models\Message::get( $message_args->comment_ID );
 
 				if ( ! is_null( $message ) ) {
-					if ( 'select' === $this->template_context ) {
+					if ( 'select' === $this->template ) {
 
 						// Set sender.
 						if ( $message->get_sender_id() === get_current_user_id() ) {
@@ -139,21 +139,21 @@ class Messages extends Block {
 					// Render message.
 					$output .= ( new Template(
 						[
-							'template_name' => 'message_' . $this->template_context . '_block',
+							'template' => 'message_' . $this->template . '_block',
 
-							'context'       => [
+							'context'  => [
 								'message' => $message,
 							],
 						]
 					) )->render();
 
-					if ( 'select' !== $this->template_context ) {
+					if ( 'select' !== $this->template ) {
 						$output .= '</div>';
 					}
 				}
 			}
 
-			if ( 'select' === $this->template_context ) {
+			if ( 'select' === $this->template ) {
 				$output .= '</table>';
 			} else {
 				$output .= '</div>';

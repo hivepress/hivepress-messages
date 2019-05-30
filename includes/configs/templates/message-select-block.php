@@ -24,19 +24,19 @@ return [
 			'blocks'     => [
 				'sender'  => [
 					'type'      => 'element',
-					'file_path' => 'message/select/sender',
+					'filepath' => 'message/select/sender',
 					'order'     => 10,
 				],
 
 				'listing' => [
 					'type'      => 'element',
-					'file_path' => 'message/select/listing',
+					'filepath' => 'message/select/listing',
 					'order'     => 20,
 				],
 
 				'date'    => [
 					'type'      => 'element',
-					'file_path' => 'message/select/date',
+					'filepath' => 'message/select/date',
 					'order'     => 30,
 				],
 			],

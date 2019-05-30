@@ -22,7 +22,7 @@ return [
 									'blocks' => [
 										'message_send_modal' => [
 											'type'        => 'modal',
-											'modal_title' => esc_html__( 'Send Message', 'hivepress-messages' ),
+											'caption' => esc_html__( 'Send Message', 'hivepress-messages' ),
 
 											'blocks'      => [
 												'message_form' => [
@@ -38,7 +38,7 @@ return [
 
 										'message_button' => [
 											'type'      => 'element',
-											'file_path' => 'message/send-button',
+											'filepath' => 'message/send-button',
 											'order'     => 10,
 										],
 									],
