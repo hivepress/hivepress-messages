@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 
 return [
 	'blocks' => [
-		'container' => [
+		'message_container' => [
 			'type'       => 'container',
 			'order'      => 10,
 
@@ -21,7 +21,7 @@ return [
 			],
 
 			'blocks'     => [
-				'header'  => [
+				'message_header'  => [
 					'type'       => 'container',
 					'tag'        => 'header',
 					'order'      => 10,
@@ -31,13 +31,13 @@ return [
 					],
 
 					'blocks'     => [
-						'listing' => [
-							'type'      => 'element',
+						'message_listing' => [
+							'type'     => 'element',
 							'filepath' => 'message/view/listing',
-							'order'     => 10,
+							'order'    => 10,
 						],
 
-						'details' => [
+						'message_details' => [
 							'type'       => 'container',
 							'order'      => 20,
 
@@ -46,23 +46,23 @@ return [
 							],
 
 							'blocks'     => [
-								'sender' => [
-									'type'      => 'element',
+								'message_sender' => [
+									'type'     => 'element',
 									'filepath' => 'message/view/sender',
-									'order'     => 10,
+									'order'    => 10,
 								],
 
-								'date'   => [
-									'type'      => 'element',
+								'message_date'   => [
+									'type'     => 'element',
 									'filepath' => 'message/view/date',
-									'order'     => 20,
+									'order'    => 20,
 								],
 							],
 						],
 					],
 				],
 
-				'content' => [
+				'message_content' => [
 					'type'       => 'container',
 					'order'      => 20,
 
@@ -71,10 +71,10 @@ return [
 					],
 
 					'blocks'     => [
-						'text' => [
-							'type'      => 'element',
+						'message_text' => [
+							'type'     => 'element',
 							'filepath' => 'message/view/text',
-							'order'     => 10,
+							'order'    => 10,
 						],
 					],
 				],

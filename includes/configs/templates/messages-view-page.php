@@ -14,14 +14,14 @@ return [
 	'parent' => 'account_page',
 
 	'blocks' => [
-		'content' => [
+		'page_content' => [
 			'blocks' => [
-				'messages'  => [
+				'messages'          => [
 					'type'  => 'messages',
 					'order' => 10,
 				],
 
-				'send_form' => [
+				'message_send_form' => [
 					'type'  => 'message_send_form',
 					'order' => 20,
 				],

@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 
 return [
 	'blocks' => [
-		'container' => [
+		'message_container' => [
 			'type'       => 'container',
 			'tag'        => 'tr',
 			'order'      => 10,
@@ -22,22 +22,22 @@ return [
 			],
 
 			'blocks'     => [
-				'sender'  => [
-					'type'      => 'element',
+				'message_sender'  => [
+					'type'     => 'element',
 					'filepath' => 'message/select/sender',
-					'order'     => 10,
+					'order'    => 10,
 				],
 
-				'listing' => [
-					'type'      => 'element',
+				'message_listing' => [
+					'type'     => 'element',
 					'filepath' => 'message/select/listing',
-					'order'     => 20,
+					'order'    => 20,
 				],
 
-				'date'    => [
-					'type'      => 'element',
+				'message_date'    => [
+					'type'     => 'element',
 					'filepath' => 'message/select/date',
-					'order'     => 30,
+					'order'    => 30,
 				],
 			],
 		],

@@ -12,19 +12,19 @@ defined( 'ABSPATH' ) || exit;
 
 return [
 	'blocks' => [
-		'container' => [
+		'listing_container' => [
 			'blocks' => [
-				'footer' => [
+				'listing_footer' => [
 					'blocks' => [
-						'actions_primary' => [
+						'listing_actions_primary' => [
 							'blocks' => [
 								'message_send_modal' => [
-									'type'        => 'modal',
-									'model'       => 'listing',
+									'type'    => 'modal',
+									'model'   => 'listing',
 									'caption' => esc_html__( 'Send Message', 'hivepress-messages' ),
 
-									'blocks'      => [
-										'message_form' => [
+									'blocks'  => [
+										'message_send_form' => [
 											'type'       => 'message_send_form',
 											'order'      => 10,
 
@@ -35,10 +35,10 @@ return [
 									],
 								],
 
-								'message_link'       => [
-									'type'      => 'element',
+								'message_send_link'  => [
+									'type'     => 'element',
 									'filepath' => 'message/send-link',
-									'order'     => 10,
+									'order'    => 10,
 								],
 							],
 						],
