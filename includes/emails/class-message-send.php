@@ -49,7 +49,7 @@ class Message_Send extends Email {
 		$args = hp\merge_arrays(
 			[
 				'subject' => esc_html__( 'Message Received', 'hivepress-messages' ),
-				'body'    => hp\sanitize_html( __( 'Hi, %user_name%! You received a new message, click on the following link to view it: %message_url%', 'hivepress-messages' ) ),
+				'body'    => hp\sanitize_html( __( "Hi, %user_name%! You've received a new message, click on the following link to view it: %message_url%", 'hivepress-messages' ) ),
 			],
 			$args
 		);

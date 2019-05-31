@@ -3,26 +3,26 @@
 	Messages
 	--------------------------------------------------------------*/
 	&-message {
-		&__header,
-		&__listing {
+		&--view-block &__header,
+		&--view-block &__listing {
 			&:not(:last-child) {
 				margin-bottom: 0.5rem;
 			}
 		}
 
-		&__details {
+		&--view-block &__details {
 			display: flex;
 			align-items: center;
 		}
 
-		&__date,
+		&--view-block &__date,
 		&__sender {
 			&:not(:last-child) {
 				margin-right: 0.5rem;
 			}
 		}
 
-		&__date {
+		&--view-block &__date {
 			font-size: 80%;
 		}
 

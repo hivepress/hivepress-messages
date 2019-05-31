@@ -19,7 +19,7 @@ return [
 						'label'       => esc_html__( 'Message Received', 'hivepress-messages' ),
 						'description' => esc_html__( 'This email is sent to users when a new message is received, the following tokens are available: %user_name%, %message_url%, %message_text%.', 'hivepress-messages' ),
 						'type'        => 'textarea',
-						'default'     => hp\sanitize_html( __( 'Hi, %user_name%! You received a new message, click on the following link to view it: %message_url%', 'hivepress-messages' ) ),
+						'default'     => hp\sanitize_html( __( "Hi, %user_name%! You've received a new message, click on the following link to view it: %message_url%", 'hivepress-messages' ) ),
 						'required'    => true,
 						'order'       => 30,
 					],
