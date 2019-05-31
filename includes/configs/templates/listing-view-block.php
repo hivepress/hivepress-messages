@@ -37,7 +37,7 @@ return [
 
 								'message_send_link'  => [
 									'type'     => 'element',
-									'filepath' => 'message/send-link',
+									'filepath' => 'message/send/send-link',
 									'order'    => 10,
 								],
 							],

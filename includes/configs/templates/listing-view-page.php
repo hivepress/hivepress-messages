@@ -38,7 +38,7 @@ return [
 
 										'message_send_button' => [
 											'type'     => 'element',
-											'filepath' => 'message/send-button',
+											'filepath' => 'message/send/send-button',
 											'order'    => 10,
 										],
 									],
