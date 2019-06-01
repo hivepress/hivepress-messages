@@ -2,7 +2,7 @@
 /**
  * PHPUnit bootstrap file
  *
- * @package Hivepress_Messages
+ * @package HivePress
  */
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );

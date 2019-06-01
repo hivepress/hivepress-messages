@@ -2,34 +2,27 @@
 	/*--------------------------------------------------------------
 	Messages
 	--------------------------------------------------------------*/
-	&-messages {
-		&:not(:last-child) {
-			margin-bottom: 2rem;
-		}
-	}
-
 	&-message {
-		&:not(:last-child) {
-			margin-bottom: 1.5rem;
-		}
-
-		&__header,
-		&__subject {
-			display: flex;
-			align-items: center;
-			margin-bottom: 0.5rem;
-
-			i {
-				margin-right: 0.5rem;
-				opacity: 0.5;
+		&--view-block &__header,
+		&--view-block &__listing {
+			&:not(:last-child) {
+				margin-bottom: 0.5rem;
 			}
 		}
 
-		&__sender {
-			margin-right: 0.5rem;
+		&--view-block &__details {
+			display: flex;
+			align-items: center;
 		}
 
-		&__date {
+		&--view-block &__date,
+		&__sender {
+			&:not(:last-child) {
+				margin-right: 0.5rem;
+			}
+		}
+
+		&--view-block &__date {
 			font-size: 80%;
 		}
 
