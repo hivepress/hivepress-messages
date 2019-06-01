@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HivePress Messages\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-18 21:56+0000\n"
+"POT-Creation-Date: 2019-06-01 17:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -15,49 +15,13 @@ msgstr ""
 "X-Generator: Loco https://localise.biz/\n"
 "X-Loco-Version: 2.2.2; wp-5.2"
 
-#: includes/configs/settings.php:22 includes/emails/class-message-send.php:31
-msgid ""
-"Hi, %user_name%! You received a new message, click on the following link to "
-"view it: %message_url%"
+#: includes/components/class-message.php:81
+#, php-format
+msgid "Messages from %s"
 msgstr ""
 
-#. Author of the plugin
-msgid "HivePress"
-msgstr ""
-
-#. Name of the plugin
-msgid "HivePress Messages"
-msgstr ""
-
-#. Author URI of the plugin
-msgid "https://hivepress.io/"
-msgstr ""
-
-#: includes/models/class-message.php:53
-msgid "Message"
-msgstr ""
-
-#: includes/forms/class-message-send.php:68
-msgid "Message has been sent"
-msgstr ""
-
-#: includes/configs/settings.php:19 includes/emails/class-message-send.php:30
+#: includes/configs/settings.php:19 includes/emails/class-message-send.php:51
 msgid "Message Received"
-msgstr ""
-
-#: includes/controllers/class-message.php:63
-#: includes/controllers/class-message.php:70
-msgid "My Messages"
-msgstr ""
-
-#. Description of the plugin
-msgid "Private messages extension for HivePress plugin."
-msgstr ""
-
-#: includes/forms/class-message-send.php:51
-#: includes/forms/class-message-send.php:86 templates/message/send-button.php:5
-#: templates/message/send-link.php:5
-msgid "Send Message"
 msgstr ""
 
 #: includes/configs/settings.php:20
@@ -66,6 +30,51 @@ msgid ""
 "tokens are available: %user_name%, %message_url%, %message_text%."
 msgstr ""
 
-#: includes/controllers/class-message.php:125
+#: includes/configs/settings.php:22 includes/emails/class-message-send.php:52
+msgid ""
+"Hi, %user_name%! You've received a new message, click on the following link "
+"to view it: %message_url%"
+msgstr ""
+
+#: includes/controllers/class-message.php:62
+#: includes/controllers/class-message.php:69
+msgid "My Messages"
+msgstr ""
+
+#: includes/controllers/class-message.php:124
 msgid "You can't send messages to yourself"
+msgstr ""
+
+#: includes/forms/class-message-send.php:93
+#: includes/forms/class-message-send.php:113
+#: includes/configs/templates/listing-view-block.php:24
+#: includes/configs/templates/listing-view-page.php:25
+#: includes/configs/templates/vendor-view-page.php:25
+#: templates/message/send/send-button.php:5
+#: templates/message/send/send-link.php:5
+msgid "Send Message"
+msgstr ""
+
+#: includes/forms/class-message-send.php:94
+msgid "Message has been sent"
+msgstr ""
+
+#: includes/models/class-message.php:53
+msgid "Message"
+msgstr ""
+
+#. Name of the plugin
+msgid "HivePress Messages"
+msgstr ""
+
+#. Description of the plugin
+msgid "Private messages extension for HivePress plugin."
+msgstr ""
+
+#. Author of the plugin
+msgid "HivePress"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://hivepress.io/"
 msgstr ""
