@@ -49,14 +49,14 @@ final class Message {
 			get_comments(
 				[
 					'type'    => 'hp_message',
-					'user_id' => get_current_user_id(),
+					'user_id' => $user_id,
 					'fields'  => 'ids',
 				]
 			),
 			get_comments(
 				[
 					'type'   => 'hp_message',
-					'karma'  => get_current_user_id(),
+					'karma'  => $user_id,
 					'fields' => 'ids',
 				]
 			)

@@ -91,7 +91,7 @@ class Message_Send extends Model_Form {
 		$args = hp\merge_arrays(
 			[
 				'title'   => esc_html__( 'Send Message', 'hivepress-messages' ),
-				'message' => esc_html__( 'Message has been sent', 'hivepress-messages' ),
+				'message' => esc_html__( 'Your message has been sent', 'hivepress-messages' ),
 				'model'   => 'message',
 				'action'  => hp\get_rest_url( '/messages' ),
 
