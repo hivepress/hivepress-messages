@@ -58,11 +58,11 @@ class Message extends Controller {
 						],
 					],
 
-					'select_messages' => [
+					'thread_messages' => [
 						'title'    => esc_html__( 'My Messages', 'hivepress-messages' ),
 						'path'     => '/account/messages',
-						'redirect' => 'redirect_messages_select_page',
-						'action'   => 'render_messages_select_page',
+						'redirect' => 'redirect_messages_thread_page',
+						'action'   => 'render_messages_thread_page',
 					],
 
 					'view_messages'   => [
@@ -174,11 +174,11 @@ class Message extends Controller {
 	}
 
 	/**
-	 * Redirects messages select page.
+	 * Redirects messages thread page.
 	 *
 	 * @return mixed
 	 */
-	public function redirect_messages_select_page() {
+	public function redirect_messages_thread_page() {
 
 		// Check authentication.
 		if ( ! is_user_logged_in() ) {
@@ -211,12 +211,12 @@ class Message extends Controller {
 	}
 
 	/**
-	 * Renders messages select page.
+	 * Renders messages thread page.
 	 *
 	 * @return string
 	 */
-	public function render_messages_select_page() {
-		return ( new Blocks\Template( [ 'template' => 'messages_select_page' ] ) )->render();
+	public function render_messages_thread_page() {
+		return ( new Blocks\Template( [ 'template' => 'messages_thread_page' ] ) )->render();
 	}
 
 	/**

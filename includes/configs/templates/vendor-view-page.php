@@ -38,7 +38,7 @@ return [
 
 										'message_send_button' => [
 											'type'     => 'element',
-											'filepath' => 'message/send/send-button',
+											'filepath' => 'vendor/view/page/message-send-button',
 											'order'    => 10,
 										],
 									],

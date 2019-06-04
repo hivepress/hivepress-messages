@@ -115,8 +115,8 @@ final class Message {
 		if ( ! empty( $message_ids ) ) {
 
 			// Add menu item.
-			$menu['items']['select_messages'] = [
-				'route' => 'message/select_messages',
+			$menu['items']['thread_messages'] = [
+				'route' => 'message/thread_messages',
 				'order' => 30,
 			];
 		}
