@@ -27,12 +27,12 @@ final class Message {
 		// Delete messages.
 		add_action( 'delete_user', [ $this, 'delete_messages' ] );
 
-		// todo
-		add_filter( 'hivepress/v1/templates/listing_view_block', [ $this, 'todo1' ] );
-		add_filter( 'hivepress/v1/templates/listing_view_page', [ $this, 'todo2' ] );
-		add_filter( 'hivepress/v1/templates/vendor_view_page', [ $this, 'todo3' ] );
-
 		if ( ! is_admin() ) {
+
+			// Alter templates.
+			add_filter( 'hivepress/v1/templates/listing_view_block', [ $this, 'alter_listing_view_block' ] );
+			add_filter( 'hivepress/v1/templates/listing_view_page', [ $this, 'alter_listing_view_page' ] );
+			add_filter( 'hivepress/v1/templates/vendor_view_page', [ $this, 'alter_vendor_view_page' ] );
 
 			// Set page title.
 			add_filter( 'hivepress/v1/controllers/message/routes/view_messages', [ $this, 'set_page_title' ] );
@@ -42,8 +42,44 @@ final class Message {
 		}
 	}
 
-	// todo
-	public function todo1( $template ) {
+	/**
+	 * Deletes messages.
+	 *
+	 * @param int $user_id User ID.
+	 */
+	public function delete_messages( $user_id ) {
+
+		// Get message IDs.
+		$message_ids = array_merge(
+			get_comments(
+				[
+					'type'    => 'hp_message',
+					'user_id' => $user_id,
+					'fields'  => 'ids',
+				]
+			),
+			get_comments(
+				[
+					'type'   => 'hp_message',
+					'karma'  => $user_id,
+					'fields' => 'ids',
+				]
+			)
+		);
+
+		// Delete messages.
+		foreach ( $message_ids as $message_id ) {
+			wp_delete_comment( $message_id, true );
+		}
+	}
+
+	/**
+	 * Alters listing view block.
+	 *
+	 * @param array $template Template arguments.
+	 * @return array
+	 */
+	public function alter_listing_view_block( $template ) {
 		return hp\merge_trees(
 			$template,
 			[
@@ -80,8 +116,13 @@ final class Message {
 		);
 	}
 
-	// todo
-	public function todo2( $template ) {
+	/**
+	 * Alters listing view page.
+	 *
+	 * @param array $template Template arguments.
+	 * @return array
+	 */
+	public function alter_listing_view_page( $template ) {
 		return hp\merge_trees(
 			$template,
 			[
@@ -117,8 +158,13 @@ final class Message {
 		);
 	}
 
-	// todo
-	public function todo3( $template ) {
+	/**
+	 * Alters vendor view page.
+	 *
+	 * @param array $template Template arguments.
+	 * @return array
+	 */
+	public function alter_vendor_view_page( $template ) {
 		return hp\merge_trees(
 			$template,
 			[
@@ -152,37 +198,6 @@ final class Message {
 			],
 			'blocks'
 		);
-	}
-
-	/**
-	 * Deletes messages.
-	 *
-	 * @param int $user_id User ID.
-	 */
-	public function delete_messages( $user_id ) {
-
-		// Get message IDs.
-		$message_ids = array_merge(
-			get_comments(
-				[
-					'type'    => 'hp_message',
-					'user_id' => $user_id,
-					'fields'  => 'ids',
-				]
-			),
-			get_comments(
-				[
-					'type'   => 'hp_message',
-					'karma'  => $user_id,
-					'fields' => 'ids',
-				]
-			)
-		);
-
-		// Delete messages.
-		foreach ( $message_ids as $message_id ) {
-			wp_delete_comment( $message_id, true );
-		}
 	}
 
 	/**
