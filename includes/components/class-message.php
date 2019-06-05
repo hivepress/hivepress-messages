@@ -27,6 +27,11 @@ final class Message {
 		// Delete messages.
 		add_action( 'delete_user', [ $this, 'delete_messages' ] );
 
+		// todo
+		add_filter( 'hivepress/v1/templates/listing_view_block', [ $this, 'todo1' ] );
+		add_filter( 'hivepress/v1/templates/listing_view_page', [ $this, 'todo2' ] );
+		add_filter( 'hivepress/v1/templates/vendor_view_page', [ $this, 'todo3' ] );
+
 		if ( ! is_admin() ) {
 
 			// Set page title.
@@ -35,6 +40,118 @@ final class Message {
 			// Add menu items.
 			add_filter( 'hivepress/v1/menus/account', [ $this, 'add_menu_items' ] );
 		}
+	}
+
+	// todo
+	public function todo1( $template ) {
+		return hp\merge_trees(
+			$template,
+			[
+				'blocks' => [
+					'listing_actions_primary' => [
+						'blocks' => [
+							'message_send_modal' => [
+								'type'    => 'modal',
+								'model'   => 'listing',
+								'caption' => esc_html__( 'Reply to Listing', 'hivepress-messages' ),
+
+								'blocks'  => [
+									'message_send_form' => [
+										'type'       => 'message_send_form',
+										'order'      => 10,
+
+										'attributes' => [
+											'class' => [ 'hp-form--narrow' ],
+										],
+									],
+								],
+							],
+
+							'message_send_link'  => [
+								'type'     => 'element',
+								'filepath' => 'listing/view/page/message-send-link',
+								'order'    => 10,
+							],
+						],
+					],
+				],
+			],
+			'blocks'
+		);
+	}
+
+	// todo
+	public function todo2( $template ) {
+		return hp\merge_trees(
+			$template,
+			[
+				'blocks' => [
+					'listing_actions_primary' => [
+						'blocks' => [
+							'message_send_modal'  => [
+								'type'    => 'modal',
+								'caption' => esc_html__( 'Reply to Listing', 'hivepress-messages' ),
+
+								'blocks'  => [
+									'message_send_form' => [
+										'type'       => 'message_send_form',
+										'order'      => 10,
+
+										'attributes' => [
+											'class' => [ 'hp-form--narrow' ],
+										],
+									],
+								],
+							],
+
+							'message_send_button' => [
+								'type'     => 'element',
+								'filepath' => 'listing/view/page/message-send-button',
+								'order'    => 10,
+							],
+						],
+					],
+				],
+			],
+			'blocks'
+		);
+	}
+
+	// todo
+	public function todo3( $template ) {
+		return hp\merge_trees(
+			$template,
+			[
+				'blocks' => [
+					'vendor_actions_primary' => [
+						'blocks' => [
+							'message_send_modal'  => [
+								'type'    => 'modal',
+								'caption' => esc_html__( 'Send Message', 'hivepress-messages' ),
+
+								'blocks'  => [
+									'message_send_form' => [
+										'type'       => 'message_send_form',
+										'order'      => 10,
+
+										'attributes' => [
+											'class' => [ 'hp-form--narrow' ],
+										],
+									],
+								],
+							],
+
+							'message_send_button' => [
+								'type'     => 'element',
+								'filepath' => 'vendor/view/page/message-send-button',
+								'order'    => 10,
+							],
+						],
+					],
+				],
+			],
+			'blocks'
+		);
 	}
 
 	/**
