@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HivePress Messages\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-01 17:53+0000\n"
+"POT-Creation-Date: 2019-06-06 18:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -15,7 +15,21 @@ msgstr ""
 "X-Generator: Loco https://localise.biz/\n"
 "X-Loco-Version: 2.2.2; wp-5.2"
 
-#: includes/components/class-message.php:81
+#: includes/components/class-message.php:92
+#: includes/components/class-message.php:134
+#: templates/listing/view/block/message-send-link.php:5
+#: templates/listing/view/page/message-send-link.php:5
+msgid "Reply to Listing"
+msgstr ""
+
+#: includes/components/class-message.php:176
+#: includes/forms/class-message-send.php:93
+#: includes/forms/class-message-send.php:113
+#: templates/vendor/view/page/message-send-link.php:5
+msgid "Send Message"
+msgstr ""
+
+#: includes/components/class-message.php:213
 #, php-format
 msgid "Messages from %s"
 msgstr ""
@@ -45,18 +59,8 @@ msgstr ""
 msgid "You can't send messages to yourself"
 msgstr ""
 
-#: includes/forms/class-message-send.php:93
-#: includes/forms/class-message-send.php:113
-#: includes/configs/templates/listing-view-block.php:24
-#: includes/configs/templates/listing-view-page.php:25
-#: includes/configs/templates/vendor-view-page.php:25
-#: templates/message/send/send-button.php:5
-#: templates/message/send/send-link.php:5
-msgid "Send Message"
-msgstr ""
-
 #: includes/forms/class-message-send.php:94
-msgid "Message has been sent"
+msgid "Your message has been sent"
 msgstr ""
 
 #: includes/models/class-message.php:53
