@@ -27,7 +27,11 @@ final class Message {
 		// Delete messages.
 		add_action( 'delete_user', [ $this, 'delete_messages' ] );
 
-		if ( ! is_admin() ) {
+		if ( is_admin() ) {
+
+			// Hide messages.
+			add_filter( 'comments_clauses', [ $this, 'hide_messages' ] );
+		} else {
 
 			// Alter templates.
 			add_filter( 'hivepress/v1/templates/listing_view_block', [ $this, 'alter_listing_view_block' ] );
@@ -71,6 +75,22 @@ final class Message {
 		foreach ( $message_ids as $message_id ) {
 			wp_delete_comment( $message_id, true );
 		}
+	}
+
+	/**
+	 * Hides messages.
+	 *
+	 * @param array $query Query arguments.
+	 * @return array
+	 */
+	public function hide_messages( $query ) {
+		global $pagenow;
+
+		if ( in_array( $pagenow, [ 'index.php', 'edit-comments.php' ], true ) ) {
+			$query['where'] .= ' AND comment_type != "hp_message"';
+		}
+
+		return $query;
 	}
 
 	/**
