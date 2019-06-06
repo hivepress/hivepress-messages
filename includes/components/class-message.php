@@ -27,7 +27,16 @@ final class Message {
 		// Delete messages.
 		add_action( 'delete_user', [ $this, 'delete_messages' ] );
 
-		if ( ! is_admin() ) {
+		if ( is_admin() ) {
+
+			// Hide messages.
+			add_filter( 'comments_clauses', [ $this, 'hide_messages' ] );
+		} else {
+
+			// Alter templates.
+			add_filter( 'hivepress/v1/templates/listing_view_block', [ $this, 'alter_listing_view_block' ] );
+			add_filter( 'hivepress/v1/templates/listing_view_page', [ $this, 'alter_listing_view_page' ] );
+			add_filter( 'hivepress/v1/templates/vendor_view_page', [ $this, 'alter_vendor_view_page' ] );
 
 			// Set page title.
 			add_filter( 'hivepress/v1/controllers/message/routes/view_messages', [ $this, 'set_page_title' ] );
@@ -49,14 +58,14 @@ final class Message {
 			get_comments(
 				[
 					'type'    => 'hp_message',
-					'user_id' => get_current_user_id(),
+					'user_id' => $user_id,
 					'fields'  => 'ids',
 				]
 			),
 			get_comments(
 				[
 					'type'   => 'hp_message',
-					'karma'  => get_current_user_id(),
+					'karma'  => $user_id,
 					'fields' => 'ids',
 				]
 			)
@@ -66,6 +75,149 @@ final class Message {
 		foreach ( $message_ids as $message_id ) {
 			wp_delete_comment( $message_id, true );
 		}
+	}
+
+	/**
+	 * Hides messages.
+	 *
+	 * @param array $query Query arguments.
+	 * @return array
+	 */
+	public function hide_messages( $query ) {
+		global $pagenow;
+
+		if ( in_array( $pagenow, [ 'index.php', 'edit-comments.php' ], true ) ) {
+			$query['where'] .= ' AND comment_type != "hp_message"';
+		}
+
+		return $query;
+	}
+
+	/**
+	 * Alters listing view block.
+	 *
+	 * @param array $template Template arguments.
+	 * @return array
+	 */
+	public function alter_listing_view_block( $template ) {
+		return hp\merge_trees(
+			$template,
+			[
+				'blocks' => [
+					'listing_actions_primary' => [
+						'blocks' => [
+							'message_send_modal' => [
+								'type'    => 'modal',
+								'model'   => 'listing',
+								'caption' => esc_html__( 'Reply to Listing', 'hivepress-messages' ),
+
+								'blocks'  => [
+									'message_send_form' => [
+										'type'       => 'message_send_form',
+										'order'      => 10,
+
+										'attributes' => [
+											'class' => [ 'hp-form--narrow' ],
+										],
+									],
+								],
+							],
+
+							'message_send_link'  => [
+								'type'     => 'element',
+								'filepath' => 'listing/view/block/message-send-link',
+								'order'    => 10,
+							],
+						],
+					],
+				],
+			],
+			'blocks'
+		);
+	}
+
+	/**
+	 * Alters listing view page.
+	 *
+	 * @param array $template Template arguments.
+	 * @return array
+	 */
+	public function alter_listing_view_page( $template ) {
+		return hp\merge_trees(
+			$template,
+			[
+				'blocks' => [
+					'listing_actions_primary' => [
+						'blocks' => [
+							'message_send_modal'  => [
+								'type'    => 'modal',
+								'caption' => esc_html__( 'Reply to Listing', 'hivepress-messages' ),
+
+								'blocks'  => [
+									'message_send_form' => [
+										'type'       => 'message_send_form',
+										'order'      => 10,
+
+										'attributes' => [
+											'class' => [ 'hp-form--narrow' ],
+										],
+									],
+								],
+							],
+
+							'message_send_button' => [
+								'type'     => 'element',
+								'filepath' => 'listing/view/page/message-send-link',
+								'order'    => 10,
+							],
+						],
+					],
+				],
+			],
+			'blocks'
+		);
+	}
+
+	/**
+	 * Alters vendor view page.
+	 *
+	 * @param array $template Template arguments.
+	 * @return array
+	 */
+	public function alter_vendor_view_page( $template ) {
+		return hp\merge_trees(
+			$template,
+			[
+				'blocks' => [
+					'vendor_actions_primary' => [
+						'blocks' => [
+							'message_send_modal'  => [
+								'type'    => 'modal',
+								'caption' => esc_html__( 'Send Message', 'hivepress-messages' ),
+
+								'blocks'  => [
+									'message_send_form' => [
+										'type'       => 'message_send_form',
+										'order'      => 10,
+
+										'attributes' => [
+											'class' => [ 'hp-form--narrow' ],
+										],
+									],
+								],
+							],
+
+							'message_send_button' => [
+								'type'     => 'element',
+								'filepath' => 'vendor/view/page/message-send-link',
+								'order'    => 10,
+							],
+						],
+					],
+				],
+			],
+			'blocks'
+		);
 	}
 
 	/**
@@ -115,8 +267,8 @@ final class Message {
 		if ( ! empty( $message_ids ) ) {
 
 			// Add menu item.
-			$menu['items']['select_messages'] = [
-				'route' => 'message/select_messages',
+			$menu['items']['thread_messages'] = [
+				'route' => 'message/thread_messages',
 				'order' => 30,
 			];
 		}

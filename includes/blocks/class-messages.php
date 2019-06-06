@@ -45,7 +45,7 @@ class Messages extends Block {
 		// Get messages.
 		$messages = [];
 
-		if ( 'select' === $this->template ) {
+		if ( 'thread' === $this->template ) {
 			$all_messages = wp_list_sort(
 				array_merge(
 					get_comments(
@@ -108,7 +108,7 @@ class Messages extends Block {
 
 		// Render messages.
 		if ( ! empty( $messages ) ) {
-			if ( 'select' === $this->template ) {
+			if ( 'thread' === $this->template ) {
 				$output .= '<table class="hp-table">';
 			} else {
 				$output .= '<div class="hp-grid">';
@@ -120,7 +120,7 @@ class Messages extends Block {
 				$message = Models\Message::get( $message_args->comment_ID );
 
 				if ( ! is_null( $message ) ) {
-					if ( 'select' === $this->template ) {
+					if ( 'thread' === $this->template ) {
 
 						// Set sender.
 						if ( $message->get_sender_id() === get_current_user_id() ) {
@@ -147,13 +147,13 @@ class Messages extends Block {
 						]
 					) )->render();
 
-					if ( 'select' !== $this->template ) {
+					if ( 'thread' !== $this->template ) {
 						$output .= '</div>';
 					}
 				}
 			}
 
-			if ( 'select' === $this->template ) {
+			if ( 'thread' === $this->template ) {
 				$output .= '</table>';
 			} else {
 				$output .= '</div>';
