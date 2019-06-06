@@ -63,7 +63,7 @@ class Message_View_Block extends Template {
 								'blocks'     => [
 									'message_listing' => [
 										'type'     => 'element',
-										'filepath' => 'message/view/listing',
+										'filepath' => 'message/view/message-listing',
 										'order'    => 10,
 									],
 
@@ -78,13 +78,13 @@ class Message_View_Block extends Template {
 										'blocks'     => [
 											'message_sender' => [
 												'type'     => 'element',
-												'filepath' => 'message/view/sender',
+												'filepath' => 'message/view/message-sender',
 												'order'    => 10,
 											],
 
 											'message_date' => [
 												'type'     => 'element',
-												'filepath' => 'message/view/date',
+												'filepath' => 'message/view/message-date',
 												'order'    => 20,
 											],
 										],
@@ -103,7 +103,7 @@ class Message_View_Block extends Template {
 								'blocks'     => [
 									'message_text' => [
 										'type'     => 'element',
-										'filepath' => 'message/view/text',
+										'filepath' => 'message/view/message-text',
 										'order'    => 10,
 									],
 								],

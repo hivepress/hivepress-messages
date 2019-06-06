@@ -105,7 +105,7 @@ final class Message {
 
 							'message_send_link'  => [
 								'type'     => 'element',
-								'filepath' => 'listing/view/page/message-send-link',
+								'filepath' => 'listing/view/block/message-send-link',
 								'order'    => 10,
 							],
 						],
@@ -147,7 +147,7 @@ final class Message {
 
 							'message_send_button' => [
 								'type'     => 'element',
-								'filepath' => 'listing/view/page/message-send-button',
+								'filepath' => 'listing/view/page/message-send-link',
 								'order'    => 10,
 							],
 						],
@@ -189,7 +189,7 @@ final class Message {
 
 							'message_send_button' => [
 								'type'     => 'element',
-								'filepath' => 'vendor/view/page/message-send-button',
+								'filepath' => 'vendor/view/page/message-send-link',
 								'order'    => 10,
 							],
 						],

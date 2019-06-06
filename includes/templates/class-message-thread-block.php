@@ -54,19 +54,19 @@ class Message_Thread_Block extends Template {
 						'blocks'     => [
 							'message_sender'  => [
 								'type'     => 'element',
-								'filepath' => 'message/thread/sender',
+								'filepath' => 'message/thread/message-sender',
 								'order'    => 10,
 							],
 
 							'message_listing' => [
 								'type'     => 'element',
-								'filepath' => 'message/thread/listing',
+								'filepath' => 'message/thread/message-listing',
 								'order'    => 20,
 							],
 
 							'message_date'    => [
 								'type'     => 'element',
-								'filepath' => 'message/thread/date',
+								'filepath' => 'message/thread/message-date',
 								'order'    => 30,
 							],
 						],
