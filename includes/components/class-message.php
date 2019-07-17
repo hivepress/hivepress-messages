@@ -36,6 +36,7 @@ final class Message {
 			// Alter templates.
 			add_filter( 'hivepress/v1/templates/listing_view_block', [ $this, 'alter_listing_view_block' ] );
 			add_filter( 'hivepress/v1/templates/listing_view_page', [ $this, 'alter_listing_view_page' ] );
+			add_filter( 'hivepress/v1/templates/vendor_view_block', [ $this, 'alter_vendor_view_block' ] );
 			add_filter( 'hivepress/v1/templates/vendor_view_page', [ $this, 'alter_vendor_view_page' ] );
 
 			// Set page title.
@@ -149,7 +150,7 @@ final class Message {
 				'blocks' => [
 					'listing_actions_primary' => [
 						'blocks' => [
-							'message_send_modal'  => [
+							'message_send_modal' => [
 								'type'    => 'modal',
 								'caption' => esc_html__( 'Reply to Listing', 'hivepress-messages' ),
 
@@ -165,9 +166,51 @@ final class Message {
 								],
 							],
 
-							'message_send_button' => [
+							'message_send_link'  => [
 								'type'     => 'element',
 								'filepath' => 'listing/view/page/message-send-link',
+								'order'    => 10,
+							],
+						],
+					],
+				],
+			],
+			'blocks'
+		);
+	}
+
+	/**
+	 * Alters vendor view block.
+	 *
+	 * @param array $template Template arguments.
+	 * @return array
+	 */
+	public function alter_vendor_view_block( $template ) {
+		return hp\merge_trees(
+			$template,
+			[
+				'blocks' => [
+					'vendor_actions_primary' => [
+						'blocks' => [
+							'message_send_modal' => [
+								'type'    => 'modal',
+								'caption' => esc_html__( 'Send Message', 'hivepress-messages' ),
+
+								'blocks'  => [
+									'message_send_form' => [
+										'type'       => 'message_send_form',
+										'order'      => 10,
+
+										'attributes' => [
+											'class' => [ 'hp-form--narrow' ],
+										],
+									],
+								],
+							],
+
+							'message_send_link'  => [
+								'type'     => 'element',
+								'filepath' => 'vendor/view/block/message-send-link',
 								'order'    => 10,
 							],
 						],
@@ -191,7 +234,7 @@ final class Message {
 				'blocks' => [
 					'vendor_actions_primary' => [
 						'blocks' => [
-							'message_send_modal'  => [
+							'message_send_modal' => [
 								'type'    => 'modal',
 								'caption' => esc_html__( 'Send Message', 'hivepress-messages' ),
 
@@ -207,7 +250,7 @@ final class Message {
 								],
 							],
 
-							'message_send_button' => [
+							'message_send_link'  => [
 								'type'     => 'element',
 								'filepath' => 'vendor/view/page/message-send-link',
 								'order'    => 10,
