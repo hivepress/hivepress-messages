@@ -109,7 +109,7 @@ class Messages extends Block {
 		// Render messages.
 		if ( ! empty( $messages ) ) {
 			if ( 'thread' === $this->template ) {
-				$output .= '<table class="hp-table table is-fullwidth">';
+				$output .= '<table class="hp-table">';
 			} else {
 				$output .= '<div class="hp-grid">';
 			}
