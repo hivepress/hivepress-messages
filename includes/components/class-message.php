@@ -152,6 +152,7 @@ final class Message {
 						'blocks' => [
 							'message_send_modal' => [
 								'type'    => 'modal',
+								'model'   => 'listing',
 								'caption' => esc_html__( 'Reply to Listing', 'hivepress-messages' ),
 
 								'blocks'  => [
