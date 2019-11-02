@@ -59,14 +59,14 @@ class Message extends Controller {
 					],
 
 					'thread_messages' => [
-						'title'    => esc_html__( 'My Messages', 'hivepress-messages' ),
+						'title'    => esc_html__( 'Messages', 'hivepress-messages' ),
 						'path'     => '/account/messages',
 						'redirect' => 'redirect_messages_thread_page',
 						'action'   => 'render_messages_thread_page',
 					],
 
 					'view_messages'   => [
-						'title'    => esc_html__( 'My Messages', 'hivepress-messages' ),
+						'title'    => esc_html__( 'Messages', 'hivepress-messages' ),
 						'path'     => '/account/messages/(?P<user_id>\d+)',
 						'redirect' => 'redirect_messages_view_page',
 						'action'   => 'render_messages_view_page',
@@ -121,7 +121,7 @@ class Message extends Controller {
 		}
 
 		if ( $recipient->ID === $sender->ID ) {
-			return hp\rest_error( 403, esc_html__( "You can't send messages to yourself", 'hivepress-messages' ) );
+			return hp\rest_error( 403, esc_html__( "You can't send messages to yourself.", 'hivepress-messages' ) );
 		}
 
 		// Get listing.
