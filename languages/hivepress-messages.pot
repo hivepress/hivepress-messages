@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HivePress Messages\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-06 18:10+0000\n"
+"POT-Creation-Date: 2019-11-20 11:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -15,21 +15,16 @@ msgstr ""
 "X-Generator: Loco https://localise.biz/\n"
 "X-Loco-Version: 2.2.2; wp-5.2"
 
-#: includes/components/class-message.php:92
-#: includes/components/class-message.php:134
-#: templates/listing/view/block/message-send-link.php:5
-#: templates/listing/view/page/message-send-link.php:5
-msgid "Reply to Listing"
-msgstr ""
-
-#: includes/components/class-message.php:176
+#: includes/components/class-message.php:178
+#: includes/components/class-message.php:220
 #: includes/forms/class-message-send.php:93
 #: includes/forms/class-message-send.php:113
+#: templates/vendor/view/block/message-send-link.php:5
 #: templates/vendor/view/page/message-send-link.php:5
 msgid "Send Message"
 msgstr ""
 
-#: includes/components/class-message.php:213
+#: includes/components/class-message.php:257
 #, php-format
 msgid "Messages from %s"
 msgstr ""
@@ -52,15 +47,15 @@ msgstr ""
 
 #: includes/controllers/class-message.php:62
 #: includes/controllers/class-message.php:69
-msgid "My Messages"
+msgid "Messages"
 msgstr ""
 
 #: includes/controllers/class-message.php:124
-msgid "You can't send messages to yourself"
+msgid "You can't send messages to yourself."
 msgstr ""
 
 #: includes/forms/class-message-send.php:94
-msgid "Your message has been sent"
+msgid "Your message has been sent."
 msgstr ""
 
 #: includes/models/class-message.php:53
@@ -72,7 +67,7 @@ msgid "HivePress Messages"
 msgstr ""
 
 #. Description of the plugin
-msgid "Private messages extension for HivePress plugin."
+msgid "Allow users to send private messages."
 msgstr ""
 
 #. Author of the plugin

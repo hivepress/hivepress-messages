@@ -90,7 +90,7 @@ final class Message {
 							'message_send_modal' => [
 								'type'    => 'modal',
 								'model'   => 'listing',
-								'caption' => esc_html__( 'Reply to Listing', 'hivepress-messages' ),
+								'caption' => hivepress()->translator->get_string( 'reply_to_listing' ),
 
 								'blocks'  => [
 									'message_send_form' => [
@@ -133,7 +133,7 @@ final class Message {
 							'message_send_modal' => [
 								'type'    => 'modal',
 								'model'   => 'listing',
-								'caption' => esc_html__( 'Reply to Listing', 'hivepress-messages' ),
+								'caption' => hivepress()->translator->get_string( 'reply_to_listing' ),
 
 								'blocks'  => [
 									'message_send_form' => [
