@@ -74,19 +74,19 @@ class Message extends Comment {
 
 					'sender_id'    => [
 						'type'      => 'number',
-						'min_value' => 0,
+						'min_value' => 1,
 						'required'  => true,
 					],
 
 					'recipient_id' => [
 						'type'      => 'number',
-						'min_value' => 0,
+						'min_value' => 1,
 						'required'  => true,
 					],
 
 					'listing_id'   => [
 						'type'      => 'number',
-						'min_value' => 0,
+						'min_value' => 1,
 					],
 				],
 
