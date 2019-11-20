@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: HivePress Messages
- * Description: Private messages extension for HivePress plugin.
- * Version: 1.1.2
+ * Description: Allow users to send private messages.
+ * Version: 1.1.3
  * Author: HivePress
  * Author URI: https://hivepress.io/
  * Text Domain: hivepress-messages
