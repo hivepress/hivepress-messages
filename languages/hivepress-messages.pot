@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HivePress Messages\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-20 11:59+0000\n"
+"POT-Creation-Date: 2019-11-21 11:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -43,6 +43,10 @@ msgstr ""
 msgid ""
 "Hi, %user_name%! You've received a new message, click on the following link "
 "to view it: %message_url%"
+msgstr ""
+
+#: includes/configs/strings.php:14
+msgid "Reply to Listing"
 msgstr ""
 
 #: includes/controllers/class-message.php:62
