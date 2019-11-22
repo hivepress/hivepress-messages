@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: HivePress Messages\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-11-21 11:34+0000\n"
-"PO-Revision-Date: 2019-11-22 11:38+0000\n"
+"PO-Revision-Date: 2019-11-22 21:13+0000\n"
 "Last-Translator: admin <admin@admin.com>\n"
 "Language-Team: Русский\n"
 "Language: ru_RU\n"
@@ -38,7 +38,7 @@ msgid ""
 "This email is sent to users when a new message is received, the following "
 "tokens are available: %user_name%, %message_url%, %message_text%."
 msgstr ""
-"Этот email отправляется пользователям, когда они получают новое сообщение. "
+"Это письмо отправляется пользователям, когда они получают новое сообщение. "
 "Следующие токены доступны: %user_name%, %message_url%, %message_text%."
 
 #: includes/configs/settings.php:22 includes/emails/class-message-send.php:52
@@ -60,7 +60,7 @@ msgstr "Сообщения"
 
 #: includes/controllers/class-message.php:124
 msgid "You can't send messages to yourself."
-msgstr "Вы не можете отправлять сообщения самому себе."
+msgstr "Вы не можете отправлять сообщения себе."
 
 #: includes/forms/class-message-send.php:94
 msgid "Your message has been sent."
