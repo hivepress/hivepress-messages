@@ -25,7 +25,7 @@ final class Message {
 	public function __construct() {
 
 		// Delete messages.
-		add_action( 'delete_user', [ $this, 'delete_messages' ] );
+		add_action( 'hivepress/v1/models/user/delete', [ $this, 'delete_messages' ] );
 
 		if ( ! is_admin() ) {
 
