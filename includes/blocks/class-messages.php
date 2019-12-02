@@ -21,13 +21,6 @@ defined( 'ABSPATH' ) || exit;
 class Messages extends Block {
 
 	/**
-	 * Block type.
-	 *
-	 * @var string
-	 */
-	protected static $type;
-
-	/**
 	 * Template type.
 	 *
 	 * @var string
@@ -117,7 +110,7 @@ class Messages extends Block {
 			foreach ( $messages as $message_args ) {
 
 				// Get message.
-				$message = Models\Message::get( $message_args->comment_ID );
+				$message = Models\Message::get_by_id( $message_args->comment_ID );
 
 				if ( ! is_null( $message ) ) {
 					if ( 'thread' === $this->template ) {

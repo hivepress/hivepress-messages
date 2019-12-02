@@ -24,13 +24,6 @@ defined( 'ABSPATH' ) || exit;
 class Message extends Controller {
 
 	/**
-	 * Controller name.
-	 *
-	 * @var string
-	 */
-	protected static $name;
-
-	/**
 	 * Controller routes.
 	 *
 	 * @var array
@@ -126,7 +119,7 @@ class Message extends Controller {
 
 		// Get listing.
 		if ( $form->get_value( 'listing_id' ) ) {
-			$listing = Models\Listing::get( $form->get_value( 'listing_id' ) );
+			$listing = Models\Listing::get_by_id( $form->get_value( 'listing_id' ) );
 
 			if ( is_null( $listing ) || $listing->get_status() !== 'publish' ) {
 				return hp\rest_error( 400 );

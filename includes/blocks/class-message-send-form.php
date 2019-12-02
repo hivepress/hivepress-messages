@@ -20,13 +20,6 @@ defined( 'ABSPATH' ) || exit;
 class Message_Send_Form extends Form {
 
 	/**
-	 * Block type.
-	 *
-	 * @var string
-	 */
-	protected static $type;
-
-	/**
 	 * Class constructor.
 	 *
 	 * @param array $args Block arguments.

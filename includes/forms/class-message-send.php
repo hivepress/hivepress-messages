@@ -20,13 +20,6 @@ defined( 'ABSPATH' ) || exit;
 class Message_Send extends Model_Form {
 
 	/**
-	 * Form name.
-	 *
-	 * @var string
-	 */
-	protected static $name;
-
-	/**
 	 * Form title.
 	 *
 	 * @var string

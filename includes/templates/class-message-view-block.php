@@ -20,13 +20,6 @@ defined( 'ABSPATH' ) || exit;
 class Message_View_Block extends Template {
 
 	/**
-	 * Template name.
-	 *
-	 * @var string
-	 */
-	protected static $name;
-
-	/**
 	 * Template blocks.
 	 *
 	 * @var array

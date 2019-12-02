@@ -20,13 +20,6 @@ defined( 'ABSPATH' ) || exit;
 class Message_Send extends Email {
 
 	/**
-	 * Email name.
-	 *
-	 * @var string
-	 */
-	protected static $name;
-
-	/**
 	 * Email subject.
 	 *
 	 * @var string

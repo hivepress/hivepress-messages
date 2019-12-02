@@ -20,13 +20,6 @@ defined( 'ABSPATH' ) || exit;
 class Messages_View_Page extends Account_Page {
 
 	/**
-	 * Template name.
-	 *
-	 * @var string
-	 */
-	protected static $name;
-
-	/**
 	 * Template blocks.
 	 *
 	 * @var array
