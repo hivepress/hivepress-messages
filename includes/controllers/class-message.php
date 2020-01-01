@@ -24,29 +24,22 @@ defined( 'ABSPATH' ) || exit;
 class Message extends Controller {
 
 	/**
-	 * Controller routes.
-	 *
-	 * @var array
-	 */
-	protected static $routes = [];
-
-	/**
-	 * Class initializer.
+	 * Class constructor.
 	 *
 	 * @param array $args Controller arguments.
 	 */
-	public static function init( $args = [] ) {
+	public function __construct( $args = [] ) {
 		$args = hp\merge_arrays(
 			[
 				'routes' => [
 					[
-						'path'      => '/messages',
-						'rest'      => true,
+						'path'   => '/messages',
+						'rest'   => true,
 
-						'endpoints' => [
+						'routes' => [
 							[
-								'methods' => 'POST',
-								'action'  => 'send_message',
+								'method' => 'POST',
+								'action' => [ $this, 'send_message' ],
 							],
 						],
 					],
@@ -54,22 +47,22 @@ class Message extends Controller {
 					'thread_messages' => [
 						'title'    => esc_html__( 'Messages', 'hivepress-messages' ),
 						'path'     => '/account/messages',
-						'redirect' => 'redirect_messages_thread_page',
-						'action'   => 'render_messages_thread_page',
+						'redirect' => [ $this, 'redirect_messages_thread_page' ],
+						'action'   => [ $this, 'render_messages_thread_page' ],
 					],
 
 					'view_messages'   => [
 						'title'    => esc_html__( 'Messages', 'hivepress-messages' ),
 						'path'     => '/account/messages/(?P<user_id>\d+)',
-						'redirect' => 'redirect_messages_view_page',
-						'action'   => 'render_messages_view_page',
+						'redirect' => [ $this, 'redirect_messages_view_page' ],
+						'action'   => [ $this, 'render_messages_view_page' ],
 					],
 				],
 			],
 			$args
 		);
 
-		parent::init( $args );
+		parent::__construct( $args );
 	}
 
 	/**

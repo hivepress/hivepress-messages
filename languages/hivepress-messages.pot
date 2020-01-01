@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HivePress Messages\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-21 11:34+0000\n"
+"POT-Creation-Date: 2019-11-25 16:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -34,9 +34,7 @@ msgid "Message Received"
 msgstr ""
 
 #: includes/configs/settings.php:20
-msgid ""
-"This email is sent to users when a new message is received, the following "
-"tokens are available: %user_name%, %message_url%, %message_text%."
+msgid "This email is sent to users when a new message is received."
 msgstr ""
 
 #: includes/configs/settings.php:22 includes/emails/class-message-send.php:52

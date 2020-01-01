@@ -90,7 +90,7 @@ class Message_Send extends Model_Form {
 
 				'fields'  => [
 					'text'         => [
-						'order' => 10,
+						'_order' => 10,
 					],
 
 					'recipient_id' => [

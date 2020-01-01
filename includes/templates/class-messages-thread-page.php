@@ -40,7 +40,7 @@ class Messages_Thread_Page extends Account_Page {
 							'messages' => [
 								'type'     => 'messages',
 								'template' => 'thread',
-								'order'    => 10,
+								'_order'   => 10,
 							],
 						],
 					],

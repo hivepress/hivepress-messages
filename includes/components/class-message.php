@@ -39,7 +39,7 @@ final class Message {
 			add_filter( 'hivepress/v1/controllers/message/routes/view_messages', [ $this, 'set_page_title' ] );
 
 			// Add menu items.
-			add_filter( 'hivepress/v1/menus/account', [ $this, 'add_menu_items' ] );
+			add_filter( 'hivepress/v1/menus/user_account', [ $this, 'add_menu_items' ] );
 		}
 	}
 
@@ -88,14 +88,14 @@ final class Message {
 					'listing_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'    => 'modal',
-								'model'   => 'listing',
-								'caption' => hivepress()->translator->get_string( 'reply_to_listing' ),
+								'type'   => 'modal',
+								'model'  => 'listing',
+								'title'  => hivepress()->translator->get_string( 'reply_to_listing' ),
 
-								'blocks'  => [
+								'blocks' => [
 									'message_send_form' => [
 										'type'       => 'message_send_form',
-										'order'      => 10,
+										'_order'     => 10,
 
 										'attributes' => [
 											'class' => [ 'hp-form--narrow' ],
@@ -105,9 +105,9 @@ final class Message {
 							],
 
 							'message_send_link'  => [
-								'type'     => 'element',
-								'filepath' => 'listing/view/block/message-send-link',
-								'order'    => 10,
+								'type'   => 'part',
+								'path'   => 'listing/view/block/message-send-link',
+								'_order' => 10,
 							],
 						],
 					],
@@ -131,14 +131,14 @@ final class Message {
 					'listing_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'    => 'modal',
-								'model'   => 'listing',
-								'caption' => hivepress()->translator->get_string( 'reply_to_listing' ),
+								'type'   => 'modal',
+								'model'  => 'listing',
+								'title'  => hivepress()->translator->get_string( 'reply_to_listing' ),
 
-								'blocks'  => [
+								'blocks' => [
 									'message_send_form' => [
 										'type'       => 'message_send_form',
-										'order'      => 10,
+										'_order'     => 10,
 
 										'attributes' => [
 											'class' => [ 'hp-form--narrow' ],
@@ -148,9 +148,9 @@ final class Message {
 							],
 
 							'message_send_link'  => [
-								'type'     => 'element',
-								'filepath' => 'listing/view/page/message-send-link',
-								'order'    => 10,
+								'type'   => 'part',
+								'path'   => 'listing/view/page/message-send-link',
+								'_order' => 10,
 							],
 						],
 					],
@@ -174,13 +174,13 @@ final class Message {
 					'vendor_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'    => 'modal',
-								'caption' => esc_html__( 'Send Message', 'hivepress-messages' ),
+								'type'   => 'modal',
+								'title'  => esc_html__( 'Send Message', 'hivepress-messages' ),
 
-								'blocks'  => [
+								'blocks' => [
 									'message_send_form' => [
 										'type'       => 'message_send_form',
-										'order'      => 10,
+										'_order'     => 10,
 
 										'attributes' => [
 											'class' => [ 'hp-form--narrow' ],
@@ -190,9 +190,9 @@ final class Message {
 							],
 
 							'message_send_link'  => [
-								'type'     => 'element',
-								'filepath' => 'vendor/view/block/message-send-link',
-								'order'    => 10,
+								'type'   => 'part',
+								'path'   => 'vendor/view/block/message-send-link',
+								'_order' => 10,
 							],
 						],
 					],
@@ -216,13 +216,13 @@ final class Message {
 					'vendor_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'    => 'modal',
-								'caption' => esc_html__( 'Send Message', 'hivepress-messages' ),
+								'type'   => 'modal',
+								'title'  => esc_html__( 'Send Message', 'hivepress-messages' ),
 
-								'blocks'  => [
+								'blocks' => [
 									'message_send_form' => [
 										'type'       => 'message_send_form',
-										'order'      => 10,
+										'_order'     => 10,
 
 										'attributes' => [
 											'class' => [ 'hp-form--narrow' ],
@@ -232,9 +232,9 @@ final class Message {
 							],
 
 							'message_send_link'  => [
-								'type'     => 'element',
-								'filepath' => 'vendor/view/page/message-send-link',
-								'order'    => 10,
+								'type'   => 'part',
+								'path'   => 'vendor/view/page/message-send-link',
+								'_order' => 10,
 							],
 						],
 					],
@@ -292,8 +292,8 @@ final class Message {
 
 			// Add menu item.
 			$menu['items']['thread_messages'] = [
-				'route' => 'message/thread_messages',
-				'order' => 30,
+				'route'  => 'message/thread_messages',
+				'_order' => 30,
 			];
 		}
 
