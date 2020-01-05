@@ -66,8 +66,7 @@ class Message_Thread_Block extends Template {
 					],
 				],
 			],
-			$args,
-			'blocks'
+			$args
 		);
 
 		parent::init( $args );

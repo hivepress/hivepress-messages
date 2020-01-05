@@ -46,8 +46,7 @@ class Messages_Thread_Page extends Account_Page {
 					],
 				],
 			],
-			$args,
-			'blocks'
+			$args
 		);
 
 		parent::init( $args );

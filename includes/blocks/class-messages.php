@@ -110,7 +110,7 @@ class Messages extends Block {
 			foreach ( $messages as $message_args ) {
 
 				// Get message.
-				$message = Models\Message::get_by_id( $message_args->comment_ID );
+				$message = Models\Message::query()->get_by_id( $message_args->comment_ID );
 
 				if ( ! is_null( $message ) ) {
 					if ( 'thread' === $this->template ) {

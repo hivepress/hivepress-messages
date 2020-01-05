@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 return [
 	'messages_frontend' => [
 		'handle'  => 'hp-messages-frontend',
-		'src'     => HP_MESSAGES_URL . '/assets/css/frontend.min.css',
-		'version' => HP_MESSAGES_VERSION,
+		'src'     => hivepress()->get_url( 'messages' ) . '/assets/css/frontend.min.css',
+		'version' => hivepress()->get_version( 'messages' ),
 	],
 ];

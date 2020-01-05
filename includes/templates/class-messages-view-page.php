@@ -50,8 +50,7 @@ class Messages_View_Page extends Account_Page {
 					],
 				],
 			],
-			$args,
-			'blocks'
+			$args
 		);
 
 		parent::init( $args );

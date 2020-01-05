@@ -112,8 +112,7 @@ final class Message {
 						],
 					],
 				],
-			],
-			'blocks'
+			]
 		);
 	}
 
@@ -155,8 +154,7 @@ final class Message {
 						],
 					],
 				],
-			],
-			'blocks'
+			]
 		);
 	}
 
@@ -197,8 +195,7 @@ final class Message {
 						],
 					],
 				],
-			],
-			'blocks'
+			]
 		);
 	}
 
@@ -239,8 +236,7 @@ final class Message {
 						],
 					],
 				],
-			],
-			'blocks'
+			]
 		);
 	}
 
