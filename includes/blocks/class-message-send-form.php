@@ -38,7 +38,7 @@ class Message_Send_Form extends Form {
 	/**
 	 * Bootstraps block properties.
 	 */
-	protected function bootstrap() {
+	protected function boot() {
 
 		// Set values.
 		if ( in_array( get_post_type(), [ 'hp_vendor', 'hp_listing' ], true ) ) {
@@ -51,6 +51,6 @@ class Message_Send_Form extends Form {
 			$this->values['recipient_id'] = get_query_var( 'hp_user_id' );
 		}
 
-		parent::bootstrap();
+		parent::boot();
 	}
 }
