@@ -8,6 +8,7 @@
 namespace HivePress\Components;
 
 use HivePress\Helpers as hp;
+use HivePress\Models;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
@@ -17,30 +18,31 @@ defined( 'ABSPATH' ) || exit;
  *
  * @class Message
  */
-final class Message {
+final class Message extends Component {
 
 	/**
 	 * Class constructor.
+	 *
+	 * @param array $args Component arguments.
 	 */
-	public function __construct() {
+	public function __construct( $args = [] ) {
 
 		// Delete messages.
 		add_action( 'hivepress/v1/models/user/delete', [ $this, 'delete_messages' ] );
 
 		if ( ! is_admin() ) {
 
+			// Alter account menu.
+			add_filter( 'hivepress/v1/menus/user_account', [ $this, 'alter_account_menu' ] );
+
 			// Alter templates.
 			add_filter( 'hivepress/v1/templates/listing_view_block', [ $this, 'alter_listing_view_block' ] );
 			add_filter( 'hivepress/v1/templates/listing_view_page', [ $this, 'alter_listing_view_page' ] );
 			add_filter( 'hivepress/v1/templates/vendor_view_block', [ $this, 'alter_vendor_view_block' ] );
 			add_filter( 'hivepress/v1/templates/vendor_view_page', [ $this, 'alter_vendor_view_page' ] );
-
-			// Set page title.
-			add_filter( 'hivepress/v1/controllers/message/routes/view_messages', [ $this, 'set_page_title' ] );
-
-			// Add menu items.
-			add_filter( 'hivepress/v1/menus/user_account', [ $this, 'add_menu_items' ] );
 		}
+
+		parent::__construct( $args );
 	}
 
 	/**
@@ -49,29 +51,42 @@ final class Message {
 	 * @param int $user_id User ID.
 	 */
 	public function delete_messages( $user_id ) {
+		Models\Message::query()->filter(
+			[
+				'sender' => $user_id,
+			]
+		)->delete();
 
-		// Get message IDs.
-		$message_ids = array_merge(
-			get_comments(
-				[
-					'type'    => 'hp_message',
-					'user_id' => $user_id,
-					'fields'  => 'ids',
-				]
-			),
-			get_comments(
-				[
-					'type'   => 'hp_message',
-					'karma'  => $user_id,
-					'fields' => 'ids',
-				]
-			)
-		);
+		Models\Message::query()->filter(
+			[
+				'recipient' => $user_id,
+			]
+		)->delete();
+	}
 
-		// Delete messages.
-		foreach ( $message_ids as $message_id ) {
-			wp_delete_comment( $message_id, true );
+	/**
+	 * Alters account menu.
+	 *
+	 * @param array $menu Menu arguments.
+	 * @return array
+	 */
+	public function alter_account_menu( $menu ) {
+		if ( Models\Message::query()->filter(
+			[
+				'sender' => get_current_user_id(),
+			]
+		)->get_first_id() || Models\Message::query()->filter(
+			[
+				'recipient' => get_current_user_id(),
+			]
+		)->get_first_id() ) {
+			$menu['items']['messages_thread'] = [
+				'route'  => 'messages_thread_page',
+				'_order' => 30,
+			];
 		}
+
+		return $menu;
 	}
 
 	/**
@@ -173,6 +188,7 @@ final class Message {
 						'blocks' => [
 							'message_send_modal' => [
 								'type'   => 'modal',
+								'model'  => 'vendor',
 								'title'  => esc_html__( 'Send Message', 'hivepress-messages' ),
 
 								'blocks' => [
@@ -214,6 +230,7 @@ final class Message {
 						'blocks' => [
 							'message_send_modal' => [
 								'type'   => 'modal',
+								'model'  => 'vendor',
 								'title'  => esc_html__( 'Send Message', 'hivepress-messages' ),
 
 								'blocks' => [
@@ -238,61 +255,5 @@ final class Message {
 				],
 			]
 		);
-	}
-
-	/**
-	 * Sets page title.
-	 *
-	 * @param array $route Route arguments.
-	 * @return array
-	 */
-	public function set_page_title( $route ) {
-		$user = get_userdata( get_query_var( 'hp_user_id' ) );
-
-		if ( false !== $user ) {
-			$route['title'] = sprintf( esc_html__( 'Messages from %s', 'hivepress-messages' ), $user->display_name );
-		}
-
-		return $route;
-	}
-
-	/**
-	 * Adds menu items.
-	 *
-	 * @param array $menu Menu arguments.
-	 * @return array
-	 */
-	public function add_menu_items( $menu ) {
-
-		// Check messages.
-		$message_ids = array_merge(
-			get_comments(
-				[
-					'type'    => 'hp_message',
-					'user_id' => get_current_user_id(),
-					'number'  => 1,
-					'fields'  => 'ids',
-				]
-			),
-			get_comments(
-				[
-					'type'   => 'hp_message',
-					'karma'  => get_current_user_id(),
-					'number' => 1,
-					'fields' => 'ids',
-				]
-			)
-		);
-
-		if ( ! empty( $message_ids ) ) {
-
-			// Add menu item.
-			$menu['items']['thread_messages'] = [
-				'route'  => 'message/thread_messages',
-				'_order' => 30,
-			];
-		}
-
-		return $menu;
 	}
 }

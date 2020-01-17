@@ -17,30 +17,23 @@ defined( 'ABSPATH' ) || exit;
  *
  * @class Messages_Thread_Page
  */
-class Messages_Thread_Page extends Account_Page {
+class Messages_Thread_Page extends User_Account_Page {
 
 	/**
-	 * Template blocks.
-	 *
-	 * @var array
-	 */
-	protected static $blocks = [];
-
-	/**
-	 * Class initializer.
+	 * Class constructor.
 	 *
 	 * @param array $args Template arguments.
 	 */
-	public static function init( $args = [] ) {
+	public function __construct( $args = [] ) {
 		$args = hp\merge_trees(
 			[
 				'blocks' => [
 					'page_content' => [
 						'blocks' => [
 							'messages' => [
-								'type'     => 'messages',
-								'template' => 'thread',
-								'_order'   => 10,
+								'type'   => 'messages',
+								'mode'   => 'thread',
+								'_order' => 10,
 							],
 						],
 					],
@@ -49,6 +42,6 @@ class Messages_Thread_Page extends Account_Page {
 			$args
 		);
 
-		parent::init( $args );
+		parent::__construct( $args );
 	}
 }

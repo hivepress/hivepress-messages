@@ -17,21 +17,14 @@ defined( 'ABSPATH' ) || exit;
  *
  * @class Messages_View_Page
  */
-class Messages_View_Page extends Account_Page {
+class Messages_View_Page extends User_Account_Page {
 
 	/**
-	 * Template blocks.
-	 *
-	 * @var array
-	 */
-	protected static $blocks = [];
-
-	/**
-	 * Class initializer.
+	 * Class constructor.
 	 *
 	 * @param array $args Template arguments.
 	 */
-	public static function init( $args = [] ) {
+	public function __construct( $args = [] ) {
 		$args = hp\merge_trees(
 			[
 				'blocks' => [
@@ -53,6 +46,6 @@ class Messages_View_Page extends Account_Page {
 			$args
 		);
 
-		parent::init( $args );
+		parent::__construct( $args );
 	}
 }

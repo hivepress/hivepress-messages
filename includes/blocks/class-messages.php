@@ -21,11 +21,11 @@ defined( 'ABSPATH' ) || exit;
 class Messages extends Block {
 
 	/**
-	 * Template type.
+	 * Template mode.
 	 *
 	 * @var string
 	 */
-	protected $template = 'view';
+	protected $mode = 'view';
 
 	/**
 	 * Renders block HTML.
@@ -36,103 +36,35 @@ class Messages extends Block {
 		$output = '';
 
 		// Get messages.
-		$messages = [];
+		$messages = $this->get_context( 'messages' );
 
-		if ( 'thread' === $this->template ) {
-			$all_messages = wp_list_sort(
-				array_merge(
-					get_comments(
-						[
-							'type'    => 'hp_message',
-							'user_id' => get_current_user_id(),
-						]
-					),
-					get_comments(
-						[
-							'type'  => 'hp_message',
-							'karma' => get_current_user_id(),
-						]
-					)
-				),
-				'comment_date',
-				'DESC'
-			);
-
-			foreach ( $all_messages as $message ) {
-
-				// Get user ID.
-				$user_id = absint( $message->user_id );
-
-				if ( get_current_user_id() === $user_id ) {
-					$user_id = absint( $message->comment_karma );
-				}
-
-				if ( ! isset( $messages[ $user_id ] ) ) {
-
-					// Add message.
-					$messages[ $user_id ] = $message;
-				} elseif ( empty( $messages[ $user_id ]->comment_post_ID ) && ! empty( $message->comment_post_ID ) ) {
-
-					// Set listing ID.
-					$messages[ $user_id ]->comment_post_ID = $message->comment_post_ID;
-				}
-			}
-		} else {
-			$messages = wp_list_sort(
-				array_merge(
-					get_comments(
-						[
-							'type'    => 'hp_message',
-							'user_id' => get_current_user_id(),
-							'karma'   => absint( get_query_var( 'hp_user_id' ) ),
-						]
-					),
-					get_comments(
-						[
-							'type'    => 'hp_message',
-							'user_id' => absint( get_query_var( 'hp_user_id' ) ),
-							'karma'   => get_current_user_id(),
-						]
-					)
-				),
-				'comment_date'
-			);
-		}
-
-		// Render messages.
-		if ( ! empty( $messages ) ) {
-			if ( 'thread' === $this->template ) {
+		if ( $messages ) {
+			if ( 'thread' === $this->mode ) {
 				$output .= '<table class="hp-table">';
 			} else {
 				$output .= '<div class="hp-grid">';
 			}
 
-			foreach ( $messages as $message_args ) {
-
-				// Get message.
-				$message = Models\Message::query()->get_by_id( $message_args->comment_ID );
-
-				if ( ! is_null( $message ) ) {
-					if ( 'thread' === $this->template ) {
+			foreach ( $messages as $message ) {
+				if ( hp\is_class_instance( $message, '\HivePress\Models\Message' ) ) {
+					if ( 'thread' !== $this->mode ) {
+						$output .= '<div class="hp-grid__item">';
+					} elseif ( $message->get_sender__id() === get_current_user_id() ) {
 
 						// Set sender.
-						if ( $message->get_sender_id() === get_current_user_id() ) {
-							$message->set_sender_id( $message->get_recipient_id() );
-							$message->set_sender_name( get_userdata( $message->get_recipient_id() )->display_name );
-						}
-
-						// Set listing ID.
-						if ( ! empty( $message_args->comment_post_ID ) ) {
-							$message->set_listing_id( $message_args->comment_post_ID );
-						}
-					} else {
-						$output .= '<div class="hp-grid__item">';
+						$message->fill(
+							[
+								'sender'               => get_current_user_id(),
+								'sender__display_name' => hivepress()->request->get_user()->get_display_name(),
+								'sender__email'        => hivepress()->request->get_user()->get_email(),
+							]
+						);
 					}
 
 					// Render message.
 					$output .= ( new Template(
 						[
-							'template' => 'message_' . $this->template . '_block',
+							'template' => 'message_' . $this->mode . '_block',
 
 							'context'  => [
 								'message' => $message,
@@ -140,13 +72,13 @@ class Messages extends Block {
 						]
 					) )->render();
 
-					if ( 'thread' !== $this->template ) {
+					if ( 'thread' !== $this->mode ) {
 						$output .= '</div>';
 					}
 				}
 			}
 
-			if ( 'thread' === $this->template ) {
+			if ( 'thread' === $this->mode ) {
 				$output .= '</table>';
 			} else {
 				$output .= '</div>';

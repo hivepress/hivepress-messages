@@ -20,18 +20,11 @@ defined( 'ABSPATH' ) || exit;
 class Message_Thread_Block extends Template {
 
 	/**
-	 * Template blocks.
-	 *
-	 * @var array
-	 */
-	protected static $blocks = [];
-
-	/**
-	 * Class initializer.
+	 * Class constructor.
 	 *
 	 * @param array $args Template arguments.
 	 */
-	public static function init( $args = [] ) {
+	public function __construct( $args = [] ) {
 		$args = hp\merge_trees(
 			[
 				'blocks' => [
@@ -45,21 +38,21 @@ class Message_Thread_Block extends Template {
 						],
 
 						'blocks'     => [
-							'message_sender'  => [
+							'message_sender'    => [
 								'type'   => 'part',
 								'path'   => 'message/thread/message-sender',
 								'_order' => 10,
 							],
 
-							'message_listing' => [
+							'message_listing'   => [
 								'type'   => 'part',
 								'path'   => 'message/thread/message-listing',
 								'_order' => 20,
 							],
 
-							'message_date'    => [
+							'message_sent_date' => [
 								'type'   => 'part',
-								'path'   => 'message/thread/message-date',
+								'path'   => 'message/thread/message-sent-date',
 								'_order' => 30,
 							],
 						],
@@ -69,6 +62,6 @@ class Message_Thread_Block extends Template {
 			$args
 		);
 
-		parent::init( $args );
+		parent::__construct( $args );
 	}
 }

@@ -20,18 +20,11 @@ defined( 'ABSPATH' ) || exit;
 class Message_View_Block extends Template {
 
 	/**
-	 * Template blocks.
-	 *
-	 * @var array
-	 */
-	protected static $blocks = [];
-
-	/**
-	 * Class initializer.
+	 * Class constructor.
 	 *
 	 * @param array $args Template arguments.
 	 */
-	public static function init( $args = [] ) {
+	public function __construct( $args = [] ) {
 		$args = hp\merge_trees(
 			[
 				'blocks' => [
@@ -75,9 +68,9 @@ class Message_View_Block extends Template {
 												'_order' => 10,
 											],
 
-											'message_date' => [
+											'message_sent_date' => [
 												'type'   => 'part',
-												'path'   => 'message/view/message-date',
+												'path'   => 'message/view/message-sent-date',
 												'_order' => 20,
 											],
 										],
@@ -108,6 +101,6 @@ class Message_View_Block extends Template {
 			$args
 		);
 
-		parent::init( $args );
+		parent::__construct( $args );
 	}
 }
