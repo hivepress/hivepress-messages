@@ -214,9 +214,26 @@ final class Message extends Controller {
 			[
 				'id__in' => hivepress()->request->get_context( 'message_ids', [] ),
 			]
-		)->order( [ 'sent_date' => 'asc' ] )
+		)->order( [ 'sent_date' => 'desc' ] )
 		->get()
 		->serialize();
+
+		foreach ( $messages as $index => $message ) {
+			if ( $message->get_sender__id() === get_current_user_id() ) {
+
+				// Get recipient.
+				$recipient = $message->get_recipient();
+
+				// Set sender.
+				$messages[ $index ]->fill(
+					[
+						'sender'               => $recipient->get_id(),
+						'sender__display_name' => $recipient->get_display_name(),
+						'sender__email'        => $recipient->get_email(),
+					]
+				);
+			}
+		}
 
 		// Render template.
 		return ( new Blocks\Template(

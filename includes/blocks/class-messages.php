@@ -49,16 +49,6 @@ class Messages extends Block {
 				if ( hp\is_class_instance( $message, '\HivePress\Models\Message' ) ) {
 					if ( 'thread' !== $this->mode ) {
 						$output .= '<div class="hp-grid__item">';
-					} elseif ( $message->get_sender__id() === get_current_user_id() ) {
-
-						// Set sender.
-						$message->fill(
-							[
-								'sender'               => get_current_user_id(),
-								'sender__display_name' => hivepress()->request->get_user()->get_display_name(),
-								'sender__email'        => hivepress()->request->get_user()->get_email(),
-							]
-						);
 					}
 
 					// Render message.
