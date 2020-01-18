@@ -134,6 +134,15 @@ final class Message extends Controller {
 			)
 		);
 
+		// Get expiration period.
+		$expiration_period = absint( get_option( 'hp_message_expiration_period' ) );
+
+		if ( $expiration_period ) {
+
+			// Set expiration time.
+			$message->set_expired_time( time() + $expiration_period * DAY_IN_SECONDS );
+		}
+
 		if ( ! $message->save() ) {
 			return hp\rest_error( 400, $message->_get_errors() );
 		}

@@ -11,9 +11,30 @@ use HivePress\Helpers as hp;
 defined( 'ABSPATH' ) || exit;
 
 return [
-	'users' => [
+	'messages' => [
+		'title'    => esc_html__( 'Messages', 'hivepress-messages' ),
+		'_order'   => 60,
+
 		'sections' => [
-			'emails' => [
+			'expiration' => [
+				'title'  => hivepress()->translator->get_string( 'expiration' ),
+				'_order' => 10,
+
+				'fields' => [
+					'message_expiration_period' => [
+						'label'       => esc_html__( 'Expiration Period', 'hivepress-messages' ),
+						'description' => esc_html__( 'Set the number of days after which a message is deleted.', 'hivepress-messages' ),
+						'type'        => 'number',
+						'min_value'   => 1,
+						'_order'      => 10,
+					],
+				],
+			],
+
+			'emails'     => [
+				'title'  => hivepress()->translator->get_string( 'emails' ),
+				'_order' => 1000,
+
 				'fields' => [
 					'email_message_send' => [
 						'label'       => esc_html__( 'Message Received', 'hivepress-messages' ),
@@ -23,7 +44,7 @@ return [
 						'max_length'  => 2048,
 						'html'        => true,
 						'_autoload'   => false,
-						'_order'      => 30,
+						'_order'      => 10,
 					],
 				],
 			],

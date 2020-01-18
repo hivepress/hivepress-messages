@@ -27,6 +27,9 @@ final class Message extends Component {
 	 */
 	public function __construct( $args = [] ) {
 
+		// Expire messages.
+		add_action( 'hivepress/v1/events/hourly', [ $this, 'expire_messages' ] );
+
 		// Delete messages.
 		add_action( 'hivepress/v1/models/user/delete', [ $this, 'delete_messages' ] );
 
@@ -43,6 +46,17 @@ final class Message extends Component {
 		}
 
 		parent::__construct( $args );
+	}
+
+	/**
+	 * Expires messages.
+	 */
+	public function expire_messages() {
+		Models\Message::query()->filter(
+			[
+				'expired_time__lte' => time(),
+			]
+		)->delete();
 	}
 
 	/**
