@@ -135,7 +135,7 @@ final class Message extends Controller {
 		);
 
 		if ( ! $message->save() ) {
-			return hp\rest_error( 400 );
+			return hp\rest_error( 400, $message->_get_errors() );
 		}
 
 		// Send email.
