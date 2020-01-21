@@ -36,6 +36,7 @@ msgstr "Сообщение получено"
 #: includes/configs/settings.php:20
 msgid "This email is sent to users when a new message is received."
 msgstr ""
+"Это письмо отправляется пользователям, когда они получают новое сообщение."
 
 #: includes/configs/settings.php:22 includes/emails/class-message-send.php:52
 msgid ""
