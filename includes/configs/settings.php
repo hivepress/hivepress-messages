@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 return [
 	'messages' => [
 		'title'    => esc_html__( 'Messages', 'hivepress-messages' ),
-		'_order'   => 60,
+		'_order'   => 110,
 
 		'sections' => [
 			'expiration' => [
