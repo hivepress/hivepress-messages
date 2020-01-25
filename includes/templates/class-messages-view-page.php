@@ -17,50 +17,35 @@ defined( 'ABSPATH' ) || exit;
  *
  * @class Messages_View_Page
  */
-class Messages_View_Page extends Account_Page {
+class Messages_View_Page extends User_Account_Page {
 
 	/**
-	 * Template name.
-	 *
-	 * @var string
-	 */
-	protected static $name;
-
-	/**
-	 * Template blocks.
-	 *
-	 * @var array
-	 */
-	protected static $blocks = [];
-
-	/**
-	 * Class initializer.
+	 * Class constructor.
 	 *
 	 * @param array $args Template arguments.
 	 */
-	public static function init( $args = [] ) {
+	public function __construct( $args = [] ) {
 		$args = hp\merge_trees(
 			[
 				'blocks' => [
 					'page_content' => [
 						'blocks' => [
 							'messages'          => [
-								'type'  => 'messages',
-								'order' => 10,
+								'type'   => 'messages',
+								'_order' => 10,
 							],
 
 							'message_send_form' => [
-								'type'  => 'message_send_form',
-								'order' => 20,
+								'type'   => 'message_send_form',
+								'_order' => 20,
 							],
 						],
 					],
 				],
 			],
-			$args,
-			'blocks'
+			$args
 		);
 
-		parent::init( $args );
+		parent::__construct( $args );
 	}
 }

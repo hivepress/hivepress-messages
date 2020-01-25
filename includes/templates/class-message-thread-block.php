@@ -20,63 +20,48 @@ defined( 'ABSPATH' ) || exit;
 class Message_Thread_Block extends Template {
 
 	/**
-	 * Template name.
-	 *
-	 * @var string
-	 */
-	protected static $name;
-
-	/**
-	 * Template blocks.
-	 *
-	 * @var array
-	 */
-	protected static $blocks = [];
-
-	/**
-	 * Class initializer.
+	 * Class constructor.
 	 *
 	 * @param array $args Template arguments.
 	 */
-	public static function init( $args = [] ) {
+	public function __construct( $args = [] ) {
 		$args = hp\merge_trees(
 			[
 				'blocks' => [
 					'message_container' => [
 						'type'       => 'container',
 						'tag'        => 'tr',
-						'order'      => 10,
+						'_order'     => 10,
 
 						'attributes' => [
 							'class' => [ 'hp-message', 'hp-message--thread-block' ],
 						],
 
 						'blocks'     => [
-							'message_sender'  => [
-								'type'     => 'element',
-								'filepath' => 'message/thread/message-sender',
-								'order'    => 10,
+							'message_sender'    => [
+								'type'   => 'part',
+								'path'   => 'message/thread/message-sender',
+								'_order' => 10,
 							],
 
-							'message_listing' => [
-								'type'     => 'element',
-								'filepath' => 'message/thread/message-listing',
-								'order'    => 20,
+							'message_listing'   => [
+								'type'   => 'part',
+								'path'   => 'message/thread/message-listing',
+								'_order' => 20,
 							],
 
-							'message_date'    => [
-								'type'     => 'element',
-								'filepath' => 'message/thread/message-date',
-								'order'    => 30,
+							'message_sent_date' => [
+								'type'   => 'part',
+								'path'   => 'message/thread/message-sent-date',
+								'_order' => 30,
 							],
 						],
 					],
 				],
 			],
-			$args,
-			'blocks'
+			$args
 		);
 
-		parent::init( $args );
+		parent::__construct( $args );
 	}
 }

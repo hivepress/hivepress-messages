@@ -20,31 +20,17 @@ defined( 'ABSPATH' ) || exit;
 class Message_View_Block extends Template {
 
 	/**
-	 * Template name.
-	 *
-	 * @var string
-	 */
-	protected static $name;
-
-	/**
-	 * Template blocks.
-	 *
-	 * @var array
-	 */
-	protected static $blocks = [];
-
-	/**
-	 * Class initializer.
+	 * Class constructor.
 	 *
 	 * @param array $args Template arguments.
 	 */
-	public static function init( $args = [] ) {
+	public function __construct( $args = [] ) {
 		$args = hp\merge_trees(
 			[
 				'blocks' => [
 					'message_container' => [
 						'type'       => 'container',
-						'order'      => 10,
+						'_order'     => 10,
 
 						'attributes' => [
 							'class' => [ 'hp-message', 'hp-message--view-block' ],
@@ -54,7 +40,7 @@ class Message_View_Block extends Template {
 							'message_header'  => [
 								'type'       => 'container',
 								'tag'        => 'header',
-								'order'      => 10,
+								'_order'     => 10,
 
 								'attributes' => [
 									'class' => [ 'hp-message__header' ],
@@ -62,14 +48,14 @@ class Message_View_Block extends Template {
 
 								'blocks'     => [
 									'message_listing' => [
-										'type'     => 'element',
-										'filepath' => 'message/view/message-listing',
-										'order'    => 10,
+										'type'   => 'part',
+										'path'   => 'message/view/message-listing',
+										'_order' => 10,
 									],
 
 									'message_details' => [
 										'type'       => 'container',
-										'order'      => 20,
+										'_order'     => 20,
 
 										'attributes' => [
 											'class' => [ 'hp-message__details' ],
@@ -77,15 +63,15 @@ class Message_View_Block extends Template {
 
 										'blocks'     => [
 											'message_sender' => [
-												'type'     => 'element',
-												'filepath' => 'message/view/message-sender',
-												'order'    => 10,
+												'type'   => 'part',
+												'path'   => 'message/view/message-sender',
+												'_order' => 10,
 											],
 
-											'message_date' => [
-												'type'     => 'element',
-												'filepath' => 'message/view/message-date',
-												'order'    => 20,
+											'message_sent_date' => [
+												'type'   => 'part',
+												'path'   => 'message/view/message-sent-date',
+												'_order' => 20,
 											],
 										],
 									],
@@ -94,7 +80,7 @@ class Message_View_Block extends Template {
 
 							'message_content' => [
 								'type'       => 'container',
-								'order'      => 20,
+								'_order'     => 20,
 
 								'attributes' => [
 									'class' => [ 'hp-message__content' ],
@@ -102,9 +88,9 @@ class Message_View_Block extends Template {
 
 								'blocks'     => [
 									'message_text' => [
-										'type'     => 'element',
-										'filepath' => 'message/view/message-text',
-										'order'    => 10,
+										'type'   => 'part',
+										'path'   => 'message/view/message-text',
+										'_order' => 10,
 									],
 								],
 							],
@@ -112,10 +98,9 @@ class Message_View_Block extends Template {
 					],
 				],
 			],
-			$args,
-			'blocks'
+			$args
 		);
 
-		parent::init( $args );
+		parent::__construct( $args );
 	}
 }

@@ -20,13 +20,6 @@ defined( 'ABSPATH' ) || exit;
 class Message_Send_Form extends Form {
 
 	/**
-	 * Block type.
-	 *
-	 * @var string
-	 */
-	protected static $type;
-
-	/**
 	 * Class constructor.
 	 *
 	 * @param array $args Block arguments.
@@ -45,19 +38,32 @@ class Message_Send_Form extends Form {
 	/**
 	 * Bootstraps block properties.
 	 */
-	protected function bootstrap() {
+	protected function boot() {
 
-		// Set values.
-		if ( in_array( get_post_type(), [ 'hp_vendor', 'hp_listing' ], true ) ) {
-			$this->values['recipient_id'] = get_the_author_meta( 'ID' );
+		// Set recipient.
+		$this->values['recipient'] = hivepress()->request->get_param( 'user_id' );
 
-			if ( get_post_type() === 'hp_listing' ) {
-				$this->values['listing_id'] = get_the_ID();
-			}
+		// Get listing.
+		$listing = $this->get_context( 'listing' );
+
+		if ( hp\is_class_instance( $listing, '\HivePress\Models\Listing' ) ) {
+			$this->values = array_merge(
+				$this->values,
+				[
+					'recipient' => $listing->get_user__id(),
+					'listing'   => $listing->get_id(),
+				]
+			);
 		} else {
-			$this->values['recipient_id'] = get_query_var( 'hp_user_id' );
+
+			// Get vendor.
+			$vendor = $this->get_context( 'vendor' );
+
+			if ( hp\is_class_instance( $vendor, '\HivePress\Models\Vendor' ) ) {
+				$this->values['recipient'] = $vendor->get_user__id();
+			}
 		}
 
-		parent::bootstrap();
+		parent::boot();
 	}
 }

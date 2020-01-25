@@ -1,19 +1,19 @@
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: HivePress Messages\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-21 20:30+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: \n"
-"Language: \n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"PO-Revision-Date: 2020-01-21 20:31+0000\n"
+"Last-Translator: admin <admin@admin.com>\n"
+"Language-Team: Russian\n"
+"Language: ru_RU\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10 >= 2 && "
+"n%10<=4 &&(n%100<10||n%100 >= 20)? 1 : 2);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Version: 2.2.2; wp-5.2"
+"X-Loco-Version: 2.3.1; wp-5.3.2"
 
 #: includes/components/class-message.php:206
 #: includes/components/class-message.php:248
@@ -22,67 +22,70 @@ msgstr ""
 #: templates/vendor/view/block/message-send-link.php:5
 #: templates/vendor/view/page/message-send-link.php:5
 msgid "Send Message"
-msgstr ""
+msgstr "Отправить сообщение"
 
 #: includes/configs/settings.php:15 includes/controllers/class-message.php:48
 msgid "Messages"
-msgstr ""
+msgstr "Сообщения"
 
 #: includes/configs/settings.php:25
 msgid "Expiration Period"
-msgstr ""
+msgstr "Срок хранения"
 
 #: includes/configs/settings.php:26
 msgid "Set the number of days after which a message is deleted."
-msgstr ""
+msgstr "Введите количество дней, после которого сообщение будет удалено."
 
 #: includes/configs/settings.php:40 includes/emails/class-message-send.php:30
 msgid "Message Received"
-msgstr ""
+msgstr "Сообщение получено"
 
 #: includes/configs/settings.php:41
 msgid "This email is sent to users when a new message is received."
 msgstr ""
+"Это письмо отправляется пользователям, когда они получают новое сообщение."
 
 #: includes/configs/settings.php:43
 msgid ""
 "Hi, %user_name%! You've received a new message, click on the following link "
 "to view it: %message_url%"
 msgstr ""
+"Привет, %user_name%! Вы получили новое сообщение, кликните на эту ссылку "
+"чтобы прочитать его: %message_url%"
 
 #: includes/configs/strings.php:14
 msgid "Reply to Listing"
-msgstr ""
+msgstr "Отправить сообщение"
 
 #: includes/controllers/class-message.php:113
 msgid "You can't send messages to yourself."
-msgstr ""
+msgstr "Вы не можете отправлять сообщения себе."
 
 #: includes/controllers/class-message.php:274
 #, php-format
 msgid "Messages from %s"
-msgstr ""
+msgstr "Сообщения от %s"
 
 #: includes/forms/class-message-send.php:48
 msgid "Your message has been sent."
-msgstr ""
+msgstr "Ваше сообщение отправлено."
 
 #: includes/models/class-message.php:32
 msgid "Message"
-msgstr ""
+msgstr "Сообщение"
 
 #. Name of the plugin
 msgid "HivePress Messages"
-msgstr ""
+msgstr "HivePress Сообщения"
 
 #. Description of the plugin
 msgid "Allow users to send private messages."
-msgstr ""
+msgstr "Дайте пользователям возможность отправлять личные сообщения."
 
 #. Author of the plugin
 msgid "HivePress"
-msgstr ""
+msgstr "HivePress"
 
 #. Author URI of the plugin
 msgid "https://hivepress.io/"
-msgstr ""
+msgstr "https://hivepress.io/"

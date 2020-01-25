@@ -20,92 +20,45 @@ defined( 'ABSPATH' ) || exit;
 class Message_Send extends Model_Form {
 
 	/**
-	 * Form name.
-	 *
-	 * @var string
-	 */
-	protected static $name;
-
-	/**
-	 * Form title.
-	 *
-	 * @var string
-	 */
-	protected static $title;
-
-	/**
-	 * Form message.
-	 *
-	 * @var string
-	 */
-	protected static $message;
-
-	/**
-	 * Model name.
-	 *
-	 * @var string
-	 */
-	protected static $model;
-
-	/**
-	 * Form action.
-	 *
-	 * @var string
-	 */
-	protected static $action;
-
-	/**
-	 * Form method.
-	 *
-	 * @var string
-	 */
-	protected static $method = 'POST';
-
-	/**
-	 * Form captcha.
-	 *
-	 * @var bool
-	 */
-	protected static $captcha = false;
-
-	/**
-	 * Form fields.
-	 *
-	 * @var array
-	 */
-	protected static $fields = [];
-
-	/**
-	 * Form button.
-	 *
-	 * @var object
-	 */
-	protected static $button;
-
-	/**
 	 * Class initializer.
+	 *
+	 * @param array $meta Form meta.
+	 */
+	public static function init( $meta = [] ) {
+		$meta = hp\merge_arrays(
+			[
+				'label'   => esc_html__( 'Send Message', 'hivepress-messages' ),
+				'captcha' => false,
+				'model'   => 'message',
+			],
+			$meta
+		);
+
+		parent::init( $meta );
+	}
+
+	/**
+	 * Class constructor.
 	 *
 	 * @param array $args Form arguments.
 	 */
-	public static function init( $args = [] ) {
+	public function __construct( $args = [] ) {
 		$args = hp\merge_arrays(
 			[
-				'title'   => esc_html__( 'Send Message', 'hivepress-messages' ),
-				'message' => esc_html__( 'Your message has been sent', 'hivepress-messages' ),
-				'model'   => 'message',
-				'action'  => hp\get_rest_url( '/messages' ),
+				'message' => esc_html__( 'Your message has been sent.', 'hivepress-messages' ),
+				'action'  => hivepress()->router->get_url( 'message_send_action' ),
 
 				'fields'  => [
-					'text'         => [
-						'order' => 10,
+					'text'      => [
+						'_order' => 10,
 					],
 
-					'recipient_id' => [
-						'type' => 'hidden',
+					'recipient' => [
+						'display_type' => 'hidden',
 					],
 
-					'listing_id'   => [
-						'type' => 'hidden',
+					'listing'   => [
+						'display_type' => 'hidden',
 					],
 				],
 
@@ -116,6 +69,6 @@ class Message_Send extends Model_Form {
 			$args
 		);
 
-		parent::init( $args );
+		parent::__construct( $args );
 	}
 }

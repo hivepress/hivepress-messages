@@ -8,6 +8,7 @@
 namespace HivePress\Components;
 
 use HivePress\Helpers as hp;
+use HivePress\Models;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
@@ -17,34 +18,45 @@ defined( 'ABSPATH' ) || exit;
  *
  * @class Message
  */
-final class Message {
+final class Message extends Component {
 
 	/**
 	 * Class constructor.
+	 *
+	 * @param array $args Component arguments.
 	 */
-	public function __construct() {
+	public function __construct( $args = [] ) {
+
+		// Expire messages.
+		add_action( 'hivepress/v1/events/hourly', [ $this, 'expire_messages' ] );
 
 		// Delete messages.
-		add_action( 'delete_user', [ $this, 'delete_messages' ] );
+		add_action( 'hivepress/v1/models/user/delete', [ $this, 'delete_messages' ] );
 
-		if ( is_admin() ) {
+		if ( ! is_admin() ) {
 
-			// Hide messages.
-			add_filter( 'comments_clauses', [ $this, 'hide_messages' ] );
-		} else {
+			// Alter account menu.
+			add_filter( 'hivepress/v1/menus/user_account', [ $this, 'alter_account_menu' ] );
 
 			// Alter templates.
 			add_filter( 'hivepress/v1/templates/listing_view_block', [ $this, 'alter_listing_view_block' ] );
 			add_filter( 'hivepress/v1/templates/listing_view_page', [ $this, 'alter_listing_view_page' ] );
 			add_filter( 'hivepress/v1/templates/vendor_view_block', [ $this, 'alter_vendor_view_block' ] );
 			add_filter( 'hivepress/v1/templates/vendor_view_page', [ $this, 'alter_vendor_view_page' ] );
-
-			// Set page title.
-			add_filter( 'hivepress/v1/controllers/message/routes/view_messages', [ $this, 'set_page_title' ] );
-
-			// Add menu items.
-			add_filter( 'hivepress/v1/menus/account', [ $this, 'add_menu_items' ] );
 		}
+
+		parent::__construct( $args );
+	}
+
+	/**
+	 * Expires messages.
+	 */
+	public function expire_messages() {
+		Models\Message::query()->filter(
+			[
+				'expired_time__lte' => time(),
+			]
+		)->delete();
 	}
 
 	/**
@@ -53,45 +65,42 @@ final class Message {
 	 * @param int $user_id User ID.
 	 */
 	public function delete_messages( $user_id ) {
+		Models\Message::query()->filter(
+			[
+				'sender' => $user_id,
+			]
+		)->delete();
 
-		// Get message IDs.
-		$message_ids = array_merge(
-			get_comments(
-				[
-					'type'    => 'hp_message',
-					'user_id' => $user_id,
-					'fields'  => 'ids',
-				]
-			),
-			get_comments(
-				[
-					'type'   => 'hp_message',
-					'karma'  => $user_id,
-					'fields' => 'ids',
-				]
-			)
-		);
-
-		// Delete messages.
-		foreach ( $message_ids as $message_id ) {
-			wp_delete_comment( $message_id, true );
-		}
+		Models\Message::query()->filter(
+			[
+				'recipient' => $user_id,
+			]
+		)->delete();
 	}
 
 	/**
-	 * Hides messages.
+	 * Alters account menu.
 	 *
-	 * @param array $query Query arguments.
+	 * @param array $menu Menu arguments.
 	 * @return array
 	 */
-	public function hide_messages( $query ) {
-		global $pagenow;
-
-		if ( in_array( $pagenow, [ 'index.php', 'edit-comments.php' ], true ) ) {
-			$query['where'] .= ' AND comment_type != "hp_message"';
+	public function alter_account_menu( $menu ) {
+		if ( Models\Message::query()->filter(
+			[
+				'sender' => get_current_user_id(),
+			]
+		)->get_first_id() || Models\Message::query()->filter(
+			[
+				'recipient' => get_current_user_id(),
+			]
+		)->get_first_id() ) {
+			$menu['items']['messages_thread'] = [
+				'route'  => 'messages_thread_page',
+				'_order' => 30,
+			];
 		}
 
-		return $query;
+		return $menu;
 	}
 
 	/**
@@ -108,14 +117,14 @@ final class Message {
 					'listing_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'    => 'modal',
-								'model'   => 'listing',
-								'caption' => esc_html__( 'Reply to Listing', 'hivepress-messages' ),
+								'type'   => 'modal',
+								'model'  => 'listing',
+								'title'  => hivepress()->translator->get_string( 'reply_to_listing' ),
 
-								'blocks'  => [
+								'blocks' => [
 									'message_send_form' => [
 										'type'       => 'message_send_form',
-										'order'      => 10,
+										'_order'     => 10,
 
 										'attributes' => [
 											'class' => [ 'hp-form--narrow' ],
@@ -125,15 +134,14 @@ final class Message {
 							],
 
 							'message_send_link'  => [
-								'type'     => 'element',
-								'filepath' => 'listing/view/block/message-send-link',
-								'order'    => 10,
+								'type'   => 'part',
+								'path'   => 'listing/view/block/message-send-link',
+								'_order' => 10,
 							],
 						],
 					],
 				],
-			],
-			'blocks'
+			]
 		);
 	}
 
@@ -151,14 +159,14 @@ final class Message {
 					'listing_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'    => 'modal',
-								'model'   => 'listing',
-								'caption' => esc_html__( 'Reply to Listing', 'hivepress-messages' ),
+								'type'   => 'modal',
+								'model'  => 'listing',
+								'title'  => hivepress()->translator->get_string( 'reply_to_listing' ),
 
-								'blocks'  => [
+								'blocks' => [
 									'message_send_form' => [
 										'type'       => 'message_send_form',
-										'order'      => 10,
+										'_order'     => 10,
 
 										'attributes' => [
 											'class' => [ 'hp-form--narrow' ],
@@ -168,15 +176,14 @@ final class Message {
 							],
 
 							'message_send_link'  => [
-								'type'     => 'element',
-								'filepath' => 'listing/view/page/message-send-link',
-								'order'    => 10,
+								'type'   => 'part',
+								'path'   => 'listing/view/page/message-send-link',
+								'_order' => 10,
 							],
 						],
 					],
 				],
-			],
-			'blocks'
+			]
 		);
 	}
 
@@ -194,13 +201,14 @@ final class Message {
 					'vendor_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'    => 'modal',
-								'caption' => esc_html__( 'Send Message', 'hivepress-messages' ),
+								'type'   => 'modal',
+								'model'  => 'vendor',
+								'title'  => esc_html__( 'Send Message', 'hivepress-messages' ),
 
-								'blocks'  => [
+								'blocks' => [
 									'message_send_form' => [
 										'type'       => 'message_send_form',
-										'order'      => 10,
+										'_order'     => 10,
 
 										'attributes' => [
 											'class' => [ 'hp-form--narrow' ],
@@ -210,15 +218,14 @@ final class Message {
 							],
 
 							'message_send_link'  => [
-								'type'     => 'element',
-								'filepath' => 'vendor/view/block/message-send-link',
-								'order'    => 10,
+								'type'   => 'part',
+								'path'   => 'vendor/view/block/message-send-link',
+								'_order' => 10,
 							],
 						],
 					],
 				],
-			],
-			'blocks'
+			]
 		);
 	}
 
@@ -236,13 +243,14 @@ final class Message {
 					'vendor_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'    => 'modal',
-								'caption' => esc_html__( 'Send Message', 'hivepress-messages' ),
+								'type'   => 'modal',
+								'model'  => 'vendor',
+								'title'  => esc_html__( 'Send Message', 'hivepress-messages' ),
 
-								'blocks'  => [
+								'blocks' => [
 									'message_send_form' => [
 										'type'       => 'message_send_form',
-										'order'      => 10,
+										'_order'     => 10,
 
 										'attributes' => [
 											'class' => [ 'hp-form--narrow' ],
@@ -252,71 +260,14 @@ final class Message {
 							],
 
 							'message_send_link'  => [
-								'type'     => 'element',
-								'filepath' => 'vendor/view/page/message-send-link',
-								'order'    => 10,
+								'type'   => 'part',
+								'path'   => 'vendor/view/page/message-send-link',
+								'_order' => 10,
 							],
 						],
 					],
 				],
-			],
-			'blocks'
+			]
 		);
-	}
-
-	/**
-	 * Sets page title.
-	 *
-	 * @param array $route Route arguments.
-	 * @return array
-	 */
-	public function set_page_title( $route ) {
-		$user = get_userdata( get_query_var( 'hp_user_id' ) );
-
-		if ( false !== $user ) {
-			$route['title'] = sprintf( esc_html__( 'Messages from %s', 'hivepress-messages' ), $user->display_name );
-		}
-
-		return $route;
-	}
-
-	/**
-	 * Adds menu items.
-	 *
-	 * @param array $menu Menu arguments.
-	 * @return array
-	 */
-	public function add_menu_items( $menu ) {
-
-		// Check messages.
-		$message_ids = array_merge(
-			get_comments(
-				[
-					'type'    => 'hp_message',
-					'user_id' => get_current_user_id(),
-					'number'  => 1,
-					'fields'  => 'ids',
-				]
-			),
-			get_comments(
-				[
-					'type'   => 'hp_message',
-					'karma'  => get_current_user_id(),
-					'number' => 1,
-					'fields' => 'ids',
-				]
-			)
-		);
-
-		if ( ! empty( $message_ids ) ) {
-
-			// Add menu item.
-			$menu['items']['thread_messages'] = [
-				'route' => 'message/thread_messages',
-				'order' => 30,
-			];
-		}
-
-		return $menu;
 	}
 }

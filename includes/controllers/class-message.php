@@ -21,62 +21,50 @@ defined( 'ABSPATH' ) || exit;
  *
  * @class Message
  */
-class Message extends Controller {
+final class Message extends Controller {
 
 	/**
-	 * Controller name.
-	 *
-	 * @var string
-	 */
-	protected static $name;
-
-	/**
-	 * Controller routes.
-	 *
-	 * @var array
-	 */
-	protected static $routes = [];
-
-	/**
-	 * Class initializer.
+	 * Class constructor.
 	 *
 	 * @param array $args Controller arguments.
 	 */
-	public static function init( $args = [] ) {
+	public function __construct( $args = [] ) {
 		$args = hp\merge_arrays(
 			[
 				'routes' => [
-					[
-						'path'      => '/messages',
-						'rest'      => true,
-
-						'endpoints' => [
-							[
-								'methods' => 'POST',
-								'action'  => 'send_message',
-							],
-						],
+					'messages_resource'    => [
+						'path' => '/messages',
+						'rest' => true,
 					],
 
-					'thread_messages' => [
-						'title'    => esc_html__( 'My Messages', 'hivepress-messages' ),
-						'path'     => '/account/messages',
-						'redirect' => 'redirect_messages_thread_page',
-						'action'   => 'render_messages_thread_page',
+					'message_send_action'  => [
+						'base'   => 'messages_resource',
+						'method' => 'POST',
+						'action' => [ $this, 'send_message' ],
+						'rest'   => true,
 					],
 
-					'view_messages'   => [
-						'title'    => esc_html__( 'My Messages', 'hivepress-messages' ),
-						'path'     => '/account/messages/(?P<user_id>\d+)',
-						'redirect' => 'redirect_messages_view_page',
-						'action'   => 'render_messages_view_page',
+					'messages_thread_page' => [
+						'title'    => esc_html__( 'Messages', 'hivepress-messages' ),
+						'base'     => 'user_account_page',
+						'path'     => '/messages',
+						'redirect' => [ $this, 'redirect_messages_thread_page' ],
+						'action'   => [ $this, 'render_messages_thread_page' ],
+					],
+
+					'messages_view_page'   => [
+						'base'     => 'messages_thread_page',
+						'path'     => '/(?P<user_id>\d+)',
+						'title'    => [ $this, 'get_messages_view_title' ],
+						'redirect' => [ $this, 'redirect_messages_view_page' ],
+						'action'   => [ $this, 'render_messages_view_page' ],
 					],
 				],
 			],
 			$args
 		);
 
-		parent::init( $args );
+		parent::__construct( $args );
 	}
 
 	/**
@@ -93,83 +81,91 @@ class Message extends Controller {
 		}
 
 		// Validate form.
-		$form = new Forms\Message_Send();
-
-		$form->set_values( $request->get_params() );
+		$form = ( new Forms\Message_Send() )->set_values( $request->get_params() );
 
 		if ( ! $form->validate() ) {
 			return hp\rest_error( 400, $form->get_errors() );
 		}
 
 		// Get sender.
-		$sender_id = $request->get_param( 'sender_id' ) ? $request->get_param( 'sender_id' ) : get_current_user_id();
-		$sender    = get_userdata( $sender_id );
+		$sender_id = $request->get_param( 'sender' ) ? $request->get_param( 'sender' ) : get_current_user_id();
 
-		if ( false === $sender ) {
+		$sender = Models\User::query()->get_by_id( $sender_id );
+
+		if ( empty( $sender ) ) {
 			return hp\rest_error( 400 );
 		}
 
-		if ( get_current_user_id() !== $sender->ID && ! current_user_can( 'edit_users' ) ) {
+		// Check permissions.
+		if ( ! current_user_can( 'edit_users' ) && get_current_user_id() !== $sender->get_id() ) {
 			return hp\rest_error( 403 );
 		}
 
 		// Get recipient.
-		$recipient = get_userdata( $form->get_value( 'recipient_id' ) );
+		$recipient = Models\User::query()->get_by_id( $form->get_value( 'recipient' ) );
 
-		if ( false === $recipient ) {
+		if ( empty( $recipient ) ) {
 			return hp\rest_error( 400 );
 		}
 
-		if ( $recipient->ID === $sender->ID ) {
-			return hp\rest_error( 403, esc_html__( "You can't send messages to yourself", 'hivepress-messages' ) );
+		// Check recipient.
+		if ( $recipient->get_id() === $sender->get_id() ) {
+			return hp\rest_error( 403, esc_html__( 'You can\'t send messages to yourself.', 'hivepress-messages' ) );
 		}
 
 		// Get listing.
-		if ( $form->get_value( 'listing_id' ) ) {
-			$listing = Models\Listing::get( $form->get_value( 'listing_id' ) );
+		if ( $form->get_value( 'listing' ) ) {
+			$listing = Models\Listing::query()->get_by_id( $form->get_value( 'listing' ) );
 
-			if ( is_null( $listing ) || $listing->get_status() !== 'publish' ) {
+			if ( empty( $listing ) || $listing->get_status() !== 'publish' ) {
 				return hp\rest_error( 400 );
 			}
 		}
 
 		// Add message.
-		$message = new Models\Message();
-
-		$message->fill(
+		$message = ( new Models\Message() )->fill(
 			array_merge(
 				$form->get_values(),
 				[
-					'sender_id'    => $sender->ID,
-					'sender_name'  => $sender->display_name,
-					'sender_email' => $sender->user_email,
+					'sender'               => $sender->get_id(),
+					'sender__display_name' => $sender->get_display_name(),
+					'sender__email'        => $sender->get_email(),
+					'recipient'            => $recipient->get_id(),
 				]
 			)
 		);
 
+		// Get expiration period.
+		$expiration_period = absint( get_option( 'hp_message_expiration_period' ) );
+
+		if ( $expiration_period ) {
+
+			// Set expiration time.
+			$message->set_expired_time( time() + $expiration_period * DAY_IN_SECONDS );
+		}
+
 		if ( ! $message->save() ) {
-			return hp\rest_error( 400 );
+			return hp\rest_error( 400, $message->_get_errors() );
 		}
 
 		// Send email.
 		( new Emails\Message_Send(
 			[
-				'recipient' => $recipient->user_email,
+				'recipient' => $recipient->get_email(),
+
 				'tokens'    => [
-					'user_name'    => $recipient->display_name,
-					'message_url'  => self::get_url( 'view_messages', [ 'user_id' => $sender->ID ] ),
+					'user_name'    => $recipient->get_display_name(),
+					'message_url'  => hivepress()->router->get_url( 'messages_view_page', [ 'user_id' => $sender->get_id() ] ),
 					'message_text' => $message->get_text(),
 				],
 			]
 		) )->send();
 
-		return new \WP_Rest_Response(
+		return hp\rest_response(
+			201,
 			[
-				'data' => [
-					'id' => $message->get_id(),
-				],
-			],
-			200
+				'id' => $message->get_id(),
+			]
 		);
 	}
 
@@ -179,35 +175,43 @@ class Message extends Controller {
 	 * @return mixed
 	 */
 	public function redirect_messages_thread_page() {
+		global $wpdb;
 
 		// Check authentication.
 		if ( ! is_user_logged_in() ) {
-			return add_query_arg( 'redirect', rawurlencode( hp\get_current_url() ), User::get_url( 'login_user' ) );
+			return hivepress()->router->get_url(
+				'user_login_page',
+				[
+					'redirect' => hivepress()->router->get_current_url(),
+				]
+			);
 		}
 
-		// Check messages.
-		$messages = array_merge(
-			get_comments(
-				[
-					'type'    => 'hp_message',
-					'user_id' => get_current_user_id(),
-					'number'  => 1,
-					'fields'  => 'ids',
-				]
+		// Get message IDs.
+		$message_ids = array_column(
+			$wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT comment_ID FROM {$wpdb->comments}
+					WHERE comment_type = %s AND ( user_id = %d OR comment_karma = %d )
+					GROUP BY user_id, comment_karma;",
+					'hp_message',
+					get_current_user_id(),
+					get_current_user_id()
+				),
+				ARRAY_A
 			),
-			get_comments(
-				[
-					'type'   => 'hp_message',
-					'karma'  => get_current_user_id(),
-					'number' => 1,
-					'fields' => 'ids',
-				]
-			)
+			'comment_ID'
 		);
 
-		if ( empty( $messages ) ) {
-			return true;
+		// Check messages.
+		if ( empty( $message_ids ) ) {
+			return hivepress()->router->get_url( 'user_account_page' );
 		}
+
+		// Set request context.
+		hivepress()->request->set_context( 'message_ids', $message_ids );
+
+		return false;
 	}
 
 	/**
@@ -216,7 +220,68 @@ class Message extends Controller {
 	 * @return string
 	 */
 	public function render_messages_thread_page() {
-		return ( new Blocks\Template( [ 'template' => 'messages_thread_page' ] ) )->render();
+
+		// Get messages.
+		$messages = [];
+
+		$all_messages = Models\Message::query()->filter(
+			[
+				'id__in' => hivepress()->request->get_context( 'message_ids', [] ),
+			]
+		)->order( [ 'sent_date' => 'desc' ] )
+		->get()
+		->serialize();
+
+		foreach ( $all_messages as $message ) {
+			if ( $message->get_sender__id() === get_current_user_id() ) {
+
+				// Get recipient.
+				$recipient = $message->get_recipient();
+
+				// Set sender.
+				$message->fill(
+					[
+						'sender'               => $recipient->get_id(),
+						'sender__display_name' => $recipient->get_display_name(),
+						'sender__email'        => $recipient->get_email(),
+					]
+				);
+			}
+
+			// Add message.
+			if ( ! isset( $messages[ $message->get_sender__id() ] ) ) {
+				$messages[ $message->get_sender__id() ] = $message;
+			}
+		}
+
+		// Render template.
+		return ( new Blocks\Template(
+			[
+				'template' => 'messages_thread_page',
+
+				'context'  => [
+					'messages' => $messages,
+				],
+			]
+		) )->render();
+	}
+
+	/**
+	 * Gets messages view title.
+	 *
+	 * @return string
+	 */
+	public function get_messages_view_title() {
+
+		// Get user.
+		$user = Models\User::query()->get_by_id( hivepress()->request->get_param( 'user_id' ) );
+
+		// Set request context.
+		hivepress()->request->set_context( 'message_user', $user );
+
+		if ( $user ) {
+			return sprintf( esc_html__( 'Messages from %s', 'hivepress-messages' ), $user->get_display_name() );
+		}
 	}
 
 	/**
@@ -225,44 +290,50 @@ class Message extends Controller {
 	 * @return mixed
 	 */
 	public function redirect_messages_view_page() {
+		global $wpdb;
 
 		// Check authentication.
 		if ( ! is_user_logged_in() ) {
-			return add_query_arg( 'redirect', rawurlencode( hp\get_current_url() ), User::get_url( 'login_user' ) );
+			return hivepress()->router->get_url(
+				'user_login_page',
+				[
+					'redirect' => hivepress()->router->get_current_url(),
+				]
+			);
 		}
 
 		// Check user.
-		$user = get_userdata( absint( get_query_var( 'hp_user_id' ) ) );
+		$user = hivepress()->request->get_context( 'message_user' );
 
-		if ( false === $user || get_current_user_id() === $user->ID ) {
-			return true;
+		if ( empty( $user ) || get_current_user_id() === $user->get_id() ) {
+			return hivepress()->router->get_url( 'messages_thread_page' );
 		}
 
-		// Check messages.
-		$messages = array_merge(
-			get_comments(
-				[
-					'type'    => 'hp_message',
-					'user_id' => get_current_user_id(),
-					'karma'   => $user->ID,
-					'number'  => 1,
-					'fields'  => 'ids',
-				]
+		// Get message IDs.
+		$message_ids = array_column(
+			$wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT comment_ID FROM {$wpdb->comments} WHERE comment_type = %s AND ( ( user_id = %d AND comment_karma = %d ) OR ( user_id = %d AND comment_karma = %d ) );",
+					'hp_message',
+					get_current_user_id(),
+					$user->get_id(),
+					$user->get_id(),
+					get_current_user_id()
+				),
+				ARRAY_A
 			),
-			get_comments(
-				[
-					'type'    => 'hp_message',
-					'user_id' => $user->ID,
-					'karma'   => get_current_user_id(),
-					'number'  => 1,
-					'fields'  => 'ids',
-				]
-			)
+			'comment_ID'
 		);
 
-		if ( empty( $messages ) ) {
-			return true;
+		// Check messages.
+		if ( empty( $message_ids ) ) {
+			return hivepress()->router->get_url( 'messages_thread_page' );
 		}
+
+		// Set request context.
+		hivepress()->request->set_context( 'message_ids', $message_ids );
+
+		return false;
 	}
 
 	/**
@@ -271,6 +342,25 @@ class Message extends Controller {
 	 * @return string
 	 */
 	public function render_messages_view_page() {
-		return ( new Blocks\Template( [ 'template' => 'messages_view_page' ] ) )->render();
+
+		// Get messages.
+		$messages = Models\Message::query()->filter(
+			[
+				'id__in' => hivepress()->request->get_context( 'message_ids', [] ),
+			]
+		)->order( [ 'sent_date' => 'asc' ] )
+		->get()
+		->serialize();
+
+		// Render template.
+		return ( new Blocks\Template(
+			[
+				'template' => 'messages_view_page',
+
+				'context'  => [
+					'messages' => $messages,
+				],
+			]
+		) )->render();
 	}
 }
