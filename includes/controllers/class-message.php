@@ -191,7 +191,9 @@ final class Message extends Controller {
 		$message_ids = array_column(
 			$wpdb->get_results(
 				$wpdb->prepare(
-					"SELECT comment_ID FROM {$wpdb->comments} WHERE comment_type = %s AND ( user_id = %d OR comment_karma = %d ) GROUP BY user_id, comment_karma;",
+					"SELECT comment_ID FROM {$wpdb->comments}
+					WHERE comment_type = %s AND ( user_id = %d OR comment_karma = %d )
+					GROUP BY user_id, comment_karma;",
 					'hp_message',
 					get_current_user_id(),
 					get_current_user_id()
@@ -220,7 +222,9 @@ final class Message extends Controller {
 	public function render_messages_thread_page() {
 
 		// Get messages.
-		$messages = Models\Message::query()->filter(
+		$messages = [];
+
+		$all_messages = Models\Message::query()->filter(
 			[
 				'id__in' => hivepress()->request->get_context( 'message_ids', [] ),
 			]
@@ -228,20 +232,25 @@ final class Message extends Controller {
 		->get()
 		->serialize();
 
-		foreach ( $messages as $index => $message ) {
+		foreach ( $all_messages as $message ) {
 			if ( $message->get_sender__id() === get_current_user_id() ) {
 
 				// Get recipient.
 				$recipient = $message->get_recipient();
 
 				// Set sender.
-				$messages[ $index ]->fill(
+				$message->fill(
 					[
 						'sender'               => $recipient->get_id(),
 						'sender__display_name' => $recipient->get_display_name(),
 						'sender__email'        => $recipient->get_email(),
 					]
 				);
+			}
+
+			// Add message.
+			if ( ! isset( $messages[ $message->get_sender__id() ] ) ) {
+				$messages[ $message->get_sender__id() ] = $message;
 			}
 		}
 
