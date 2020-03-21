@@ -27,7 +27,7 @@ class Message_Send extends Email {
 	public function __construct( $args = [] ) {
 		$args = hp\merge_arrays(
 			[
-				'subject' => esc_html__( 'Message Received', 'hivepress-messages' ),
+				'subject' => hp\sanitize_html( __( 'Message Received', 'hivepress-messages' ) ),
 			],
 			$args
 		);
