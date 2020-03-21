@@ -2,10 +2,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HivePress Messages\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-21 20:30+0000\n"
-"PO-Revision-Date: 2020-03-09 19:00+0000\n"
-"Last-Translator: admin <admin@hivepress.local>\n"
-"Language-Team: Українська\n"
+"POT-Creation-Date: 2020-03-21 23:28+0000\n"
+"PO-Revision-Date: 2020-03-21 23:40+0000\n"
+"Last-Translator: admin <admin@admin.com>\n"
+"Language-Team: Ukrainian\n"
 "Language: uk\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10 >= 2 && "
 "n%10<=4 &&(n%100<10||n%100 >= 20)? 1 : 2);\n"
@@ -23,57 +23,74 @@ msgstr ""
 #: templates/vendor/view/page/message-send-link.php:5
 msgid "Send Message"
 msgstr ""
-"Надіслати повідомлення\n"
+"Надіслати повідомлення"
 
 #: includes/configs/settings.php:15 includes/controllers/class-message.php:48
 msgid "Messages"
 msgstr ""
-"Повідомлення\n"
-
-#: includes/configs/settings.php:25
-msgid "Expiration Period"
-msgstr ""
-"Термін зберігання\n"
+"Повідомлення"
 
 #: includes/configs/settings.php:26
+msgid "Store messages in the database"
+msgstr "Зберігати повідомлення в базі даних"
+
+#: includes/configs/settings.php:27
+msgid ""
+"Check this option to store messages in the database, rather than sending "
+"them via email."
+msgstr ""
+"Відмітьте цю опцію, щоб зберігати повідомлення в базі даних, замість того "
+"щоб відправляти їх ел. поштою."
+
+#: includes/configs/settings.php:35
 msgid "Set the number of days after which a message is deleted."
 msgstr ""
-"Введіть кількість днів, після яких повідомлення буде видалено.\n"
+"Введіть кількість днів, після яких повідомлення буде видалено."
 
-#: includes/configs/settings.php:40 includes/emails/class-message-send.php:30
+#: includes/configs/settings.php:49 includes/emails/class-message-send.php:30
 msgid "Message Received"
 msgstr ""
-"Повідомлення отримано\n"
+"Повідомлення отримано"
 
-#: includes/configs/settings.php:41
+#: includes/configs/settings.php:50
 msgid "This email is sent to users when a new message is received."
 msgstr ""
 "Цей лист відправляється користувачам, коли вони отримують нове повідомлення."
-"\n"
+""
 
-#: includes/configs/settings.php:43
+#: includes/configs/settings.php:52
 msgid ""
 "Hi, %user_name%! You've received a new message, click on the following link "
 "to view it: %message_url%"
 msgstr ""
 "Привіт, %user_name%! Ви отримали нове повідомлення, клікніть на це посилання "
-"щоб прочитати його: %message_url%\n"
+"щоб прочитати його: %message_url%"
 
 #: includes/configs/strings.php:14
 msgid "Reply to Listing"
 msgstr ""
-"Відповісти на оголошення\n"
+"Відповісти на оголошення"
 
 #: includes/controllers/class-message.php:113
 msgid "You can't send messages to yourself."
 msgstr ""
-"Ви не можете відправляти повідомлення собі.\n"
+"Ви не можете відправляти повідомлення собі."
 
-#: includes/controllers/class-message.php:274
+#: includes/controllers/class-message.php:149
+#, php-format
+msgid "New reply to \"%s\""
+msgstr "Нова відповідь на \"%s\""
+
+#: includes/controllers/class-message.php:151
+#, php-format
+msgid "New message from %s"
+msgstr "Нове повідомлення від %s"
+
+#: includes/controllers/class-message.php:321
 #, php-format
 msgid "Messages from %s"
 msgstr ""
-"Повідомлення від %s\n"
+"Повідомлення від %s"
 
 #: includes/forms/class-message-send.php:48
 msgid "Your message has been sent."
@@ -82,24 +99,24 @@ msgstr "Ваше повідомлення надіслано."
 #: includes/models/class-message.php:32
 msgid "Message"
 msgstr ""
-"Повідомлення\n"
+"Повідомлення"
 
 #. Name of the plugin
 msgid "HivePress Messages"
 msgstr ""
-"HivePress Повідомлення\n"
+"HivePress Повідомлення"
 
 #. Description of the plugin
 msgid "Allow users to send private messages."
 msgstr ""
-"Дайте користувачам можливість відправляти особисті повідомлення.\n"
+"Дайте користувачам можливість відправляти особисті повідомлення."
 
 #. Author of the plugin
 msgid "HivePress"
 msgstr ""
-"HivePress\n"
+"HivePress"
 
 #. Author URI of the plugin
 msgid "https://hivepress.io/"
 msgstr ""
-"https://hivepress.io/\n"
+"https://hivepress.io/"
