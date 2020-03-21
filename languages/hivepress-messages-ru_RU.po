@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: HivePress Messages\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-21 20:30+0000\n"
-"PO-Revision-Date: 2020-01-21 20:31+0000\n"
-"Last-Translator: admin <admin@admin.com>\n"
+"PO-Revision-Date: 2020-03-09 18:59+0000\n"
+"Last-Translator: sfdgsdfg <admin@admin.com>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10 >= 2 && "
@@ -55,7 +55,7 @@ msgstr ""
 
 #: includes/configs/strings.php:14
 msgid "Reply to Listing"
-msgstr "Отправить сообщение"
+msgstr "Ответить на объявление"
 
 #: includes/controllers/class-message.php:113
 msgid "You can't send messages to yourself."
