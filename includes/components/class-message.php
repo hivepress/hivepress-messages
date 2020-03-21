@@ -85,7 +85,7 @@ final class Message extends Component {
 	 * @return array
 	 */
 	public function alter_account_menu( $menu ) {
-		if ( Models\Message::query()->filter(
+		if ( get_option( 'hp_message_enable_storage' ) && ( Models\Message::query()->filter(
 			[
 				'sender' => get_current_user_id(),
 			]
@@ -93,7 +93,7 @@ final class Message extends Component {
 			[
 				'recipient' => get_current_user_id(),
 			]
-		)->get_first_id() ) {
+		)->get_first_id() ) ) {
 			$menu['items']['messages_thread'] = [
 				'route'  => 'messages_thread_page',
 				'_order' => 30,
