@@ -87,9 +87,10 @@ final class Message extends Controller {
 			return hp\rest_error( 400, $form->get_errors() );
 		}
 
-		// Get sender.
+		// Get sender ID.
 		$sender_id = $request->get_param( 'sender' ) ? $request->get_param( 'sender' ) : get_current_user_id();
 
+		// Get sender.
 		$sender = Models\User::query()->get_by_id( $sender_id );
 
 		if ( empty( $sender ) ) {
@@ -135,31 +136,54 @@ final class Message extends Controller {
 			)
 		);
 
-		// Get expiration period.
-		$expiration_period = absint( get_option( 'hp_message_expiration_period' ) );
+		// Set email arguments.
+		$email_args = [
+			'recipient' => $recipient->get_email(),
 
-		if ( $expiration_period ) {
+			'tokens'    => [
+				'user_name'    => $recipient->get_display_name(),
+				'message_text' => $message->get_text(),
+			],
+		];
 
-			// Set expiration time.
-			$message->set_expired_time( time() + $expiration_period * DAY_IN_SECONDS );
+		if ( $message->get_listing__id() ) {
+			$email_args['subject'] = sprintf( hp\sanitize_html( __( 'New reply to "%s"', 'hivepress-messages' ) ), $message->get_listing__title() );
+		} else {
+			$email_args['subject'] = sprintf( hp\sanitize_html( __( 'New message from %s', 'hivepress-messages' ) ), $sender->get_display_name() );
 		}
 
-		if ( ! $message->save() ) {
-			return hp\rest_error( 400, $message->_get_errors() );
+		if ( get_option( 'hp_message_enable_storage' ) ) {
+			if ( ! $message->save() ) {
+				return hp\rest_error( 400, $message->_get_errors() );
+			}
+
+			// Send email.
+			( new Emails\Message_Send(
+				hp\merge_arrays(
+					$email_args,
+					[
+						'tokens' => [
+							'message_url' => hivepress()->router->get_url( 'messages_view_page', [ 'user_id' => $sender->get_id() ] ),
+						],
+					]
+				)
+			) )->send();
+		} else {
+
+			// Send email.
+			( new Emails\Message_Send(
+				hp\merge_arrays(
+					$email_args,
+					[
+						'body'    => '%message_text%',
+
+						'headers' => [
+							'reply-to' => $sender->get_display_name() . ' <' . $sender->get_email() . '>',
+						],
+					]
+				)
+			) )->send();
 		}
-
-		// Send email.
-		( new Emails\Message_Send(
-			[
-				'recipient' => $recipient->get_email(),
-
-				'tokens'    => [
-					'user_name'    => $recipient->get_display_name(),
-					'message_url'  => hivepress()->router->get_url( 'messages_view_page', [ 'user_id' => $sender->get_id() ] ),
-					'message_text' => $message->get_text(),
-				],
-			]
-		) )->send();
 
 		return hp\rest_response(
 			201,
@@ -175,7 +199,11 @@ final class Message extends Controller {
 	 * @return mixed
 	 */
 	public function redirect_messages_thread_page() {
-		global $wpdb;
+
+		// Check permissions.
+		if ( ! get_option( 'hp_message_enable_storage' ) ) {
+			return true;
+		}
 
 		// Check authentication.
 		if ( ! is_user_logged_in() ) {
@@ -187,29 +215,10 @@ final class Message extends Controller {
 			);
 		}
 
-		// Get message IDs.
-		$message_ids = array_column(
-			$wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT comment_ID FROM {$wpdb->comments}
-					WHERE comment_type = %s AND ( user_id = %d OR comment_karma = %d )
-					GROUP BY user_id, comment_karma;",
-					'hp_message',
-					get_current_user_id(),
-					get_current_user_id()
-				),
-				ARRAY_A
-			),
-			'comment_ID'
-		);
-
-		// Check messages.
-		if ( empty( $message_ids ) ) {
+		// Check threads.
+		if ( ! hivepress()->request->get_context( 'message_thread_ids' ) ) {
 			return hivepress()->router->get_url( 'user_account_page' );
 		}
-
-		// Set request context.
-		hivepress()->request->set_context( 'message_ids', $message_ids );
 
 		return false;
 	}
@@ -221,18 +230,22 @@ final class Message extends Controller {
 	 */
 	public function render_messages_thread_page() {
 
-		// Get messages.
-		$messages = [];
+		// Get thread IDs.
+		$thread_ids = hivepress()->request->get_context( 'message_thread_ids', [] );
 
-		$all_messages = Models\Message::query()->filter(
+		// Get threads.
+		$threads = [];
+
+		$messages = Models\Message::query()->filter(
 			[
-				'id__in' => hivepress()->request->get_context( 'message_ids', [] ),
+				'id__in' => $thread_ids,
 			]
-		)->order( [ 'sent_date' => 'desc' ] )
+		)->order( 'id__in' )
+		->limit( count( $thread_ids ) )
 		->get()
 		->serialize();
 
-		foreach ( $all_messages as $message ) {
+		foreach ( $messages as $message ) {
 			if ( $message->get_sender__id() === get_current_user_id() ) {
 
 				// Get recipient.
@@ -248,9 +261,9 @@ final class Message extends Controller {
 				);
 			}
 
-			// Add message.
-			if ( ! isset( $messages[ $message->get_sender__id() ] ) ) {
-				$messages[ $message->get_sender__id() ] = $message;
+			// Add thread.
+			if ( ! isset( $threads[ $message->get_sender__id() ] ) ) {
+				$threads[ $message->get_sender__id() ] = $message;
 			}
 		}
 
@@ -260,7 +273,7 @@ final class Message extends Controller {
 				'template' => 'messages_thread_page',
 
 				'context'  => [
-					'messages' => $messages,
+					'messages' => $threads,
 				],
 			]
 		) )->render();
@@ -292,6 +305,11 @@ final class Message extends Controller {
 	public function redirect_messages_view_page() {
 		global $wpdb;
 
+		// Check permissions.
+		if ( ! get_option( 'hp_message_enable_storage' ) ) {
+			return true;
+		}
+
 		// Check authentication.
 		if ( ! is_user_logged_in() ) {
 			return hivepress()->router->get_url(
@@ -309,21 +327,49 @@ final class Message extends Controller {
 			return hivepress()->router->get_url( 'messages_thread_page' );
 		}
 
-		// Get message IDs.
-		$message_ids = array_column(
-			$wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT comment_ID FROM {$wpdb->comments} WHERE comment_type = %s AND ( ( user_id = %d AND comment_karma = %d ) OR ( user_id = %d AND comment_karma = %d ) );",
-					'hp_message',
-					get_current_user_id(),
-					$user->get_id(),
-					$user->get_id(),
-					get_current_user_id()
-				),
-				ARRAY_A
-			),
-			'comment_ID'
+		// Get cached message IDs.
+		$message_ids = hivepress()->cache->get_user_cache(
+			get_current_user_id(),
+			[
+				'fields'  => 'ids',
+				'user_id' => $user->get_id(),
+			],
+			'models/message'
 		);
+
+		if ( is_null( $message_ids ) ) {
+
+			// Get message IDs.
+			$message_ids = array_column(
+				$wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT comment_ID FROM {$wpdb->comments}
+						WHERE comment_type = %s AND ( ( user_id = %d AND comment_karma = %d ) OR ( user_id = %d AND comment_karma = %d ) )
+						ORDER BY comment_date ASC;",
+						'hp_message',
+						get_current_user_id(),
+						$user->get_id(),
+						$user->get_id(),
+						get_current_user_id()
+					),
+					ARRAY_A
+				),
+				'comment_ID'
+			);
+
+			// Cache message IDs.
+			if ( count( $message_ids ) <= 1000 ) {
+				hivepress()->cache->set_user_cache(
+					get_current_user_id(),
+					[
+						'fields'  => 'ids',
+						'user_id' => $user->get_id(),
+					],
+					'models/message',
+					$message_ids
+				);
+			}
+		}
 
 		// Check messages.
 		if ( empty( $message_ids ) ) {
@@ -343,12 +389,16 @@ final class Message extends Controller {
 	 */
 	public function render_messages_view_page() {
 
+		// Get message IDs.
+		$message_ids = hivepress()->request->get_context( 'message_ids', [] );
+
 		// Get messages.
 		$messages = Models\Message::query()->filter(
 			[
-				'id__in' => hivepress()->request->get_context( 'message_ids', [] ),
+				'id__in' => $message_ids,
 			]
-		)->order( [ 'sent_date' => 'asc' ] )
+		)->order( 'id__in' )
+		->limit( count( $message_ids ) )
 		->get()
 		->serialize();
 
