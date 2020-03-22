@@ -16,7 +16,7 @@ return [
 		'_order'   => 110,
 
 		'sections' => [
-			'expiration' => [
+			'storage' => [
 				'title'  => hivepress()->translator->get_string( 'storage' ),
 				'_order' => 10,
 
@@ -40,7 +40,7 @@ return [
 				],
 			],
 
-			'emails'     => [
+			'emails'  => [
 				'title'  => hivepress()->translator->get_string( 'emails' ),
 				'_order' => 1000,
 
