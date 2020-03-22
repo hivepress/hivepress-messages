@@ -42,12 +42,6 @@ class Message extends Comment {
 						'_alias' => 'comment_date',
 					],
 
-					'expired_time'         => [
-						'type'      => 'number',
-						'min_value' => 0,
-						'_external' => true,
-					],
-
 					'sender'               => [
 						'type'      => 'number',
 						'min_value' => 1,

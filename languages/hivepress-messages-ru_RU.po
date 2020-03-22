@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HivePress Messages\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-21 20:30+0000\n"
-"PO-Revision-Date: 2020-01-21 20:31+0000\n"
+"POT-Creation-Date: 2020-03-21 23:28+0000\n"
+"PO-Revision-Date: 2020-03-21 23:38+0000\n"
 "Last-Translator: admin <admin@admin.com>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -28,24 +28,32 @@ msgstr "Отправить сообщение"
 msgid "Messages"
 msgstr "Сообщения"
 
-#: includes/configs/settings.php:25
-msgid "Expiration Period"
-msgstr "Срок хранения"
-
 #: includes/configs/settings.php:26
+msgid "Store messages in the database"
+msgstr "Хранить сообщения в базе данных"
+
+#: includes/configs/settings.php:27
+msgid ""
+"Check this option to store messages in the database, rather than sending "
+"them via email."
+msgstr ""
+"Отметьте эту опцию, чтобы хранить сообщения в базе данных, вместо того чтобы "
+"высылать их по эл. почте."
+
+#: includes/configs/settings.php:35
 msgid "Set the number of days after which a message is deleted."
 msgstr "Введите количество дней, после которого сообщение будет удалено."
 
-#: includes/configs/settings.php:40 includes/emails/class-message-send.php:30
+#: includes/configs/settings.php:49 includes/emails/class-message-send.php:30
 msgid "Message Received"
 msgstr "Сообщение получено"
 
-#: includes/configs/settings.php:41
+#: includes/configs/settings.php:50
 msgid "This email is sent to users when a new message is received."
 msgstr ""
 "Это письмо отправляется пользователям, когда они получают новое сообщение."
 
-#: includes/configs/settings.php:43
+#: includes/configs/settings.php:52
 msgid ""
 "Hi, %user_name%! You've received a new message, click on the following link "
 "to view it: %message_url%"
@@ -55,13 +63,23 @@ msgstr ""
 
 #: includes/configs/strings.php:14
 msgid "Reply to Listing"
-msgstr "Отправить сообщение"
+msgstr "Ответить на объявление"
 
 #: includes/controllers/class-message.php:113
 msgid "You can't send messages to yourself."
 msgstr "Вы не можете отправлять сообщения себе."
 
-#: includes/controllers/class-message.php:274
+#: includes/controllers/class-message.php:149
+#, php-format
+msgid "New reply to \"%s\""
+msgstr "Новый ответ на \"%s\""
+
+#: includes/controllers/class-message.php:151
+#, php-format
+msgid "New message from %s"
+msgstr "Новое сообщение от %s"
+
+#: includes/controllers/class-message.php:321
 #, php-format
 msgid "Messages from %s"
 msgstr "Сообщения от %s"

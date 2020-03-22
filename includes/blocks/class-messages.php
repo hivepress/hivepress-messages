@@ -40,9 +40,9 @@ class Messages extends Block {
 
 		if ( $messages ) {
 			if ( 'thread' === $this->mode ) {
-				$output .= '<table class="hp-table">';
+				$output .= '<table class="hp-messages hp-table">';
 			} else {
-				$output .= '<div class="hp-grid">';
+				$output .= '<div class="hp-messages hp-grid">';
 			}
 
 			foreach ( $messages as $message ) {
