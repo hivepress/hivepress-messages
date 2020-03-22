@@ -87,9 +87,10 @@ final class Message extends Controller {
 			return hp\rest_error( 400, $form->get_errors() );
 		}
 
-		// Get sender.
+		// Get sender ID.
 		$sender_id = $request->get_param( 'sender' ) ? $request->get_param( 'sender' ) : get_current_user_id();
 
+		// Get sender.
 		$sender = Models\User::query()->get_by_id( $sender_id );
 
 		if ( empty( $sender ) ) {
@@ -152,16 +153,6 @@ final class Message extends Controller {
 		}
 
 		if ( get_option( 'hp_message_enable_storage' ) ) {
-
-			// Get expiration period.
-			$expiration_period = absint( get_option( 'hp_message_expiration_period' ) );
-
-			if ( $expiration_period ) {
-
-				// Set expiration time.
-				$message->set_expired_time( time() + $expiration_period * DAY_IN_SECONDS );
-			}
-
 			if ( ! $message->save() ) {
 				return hp\rest_error( 400, $message->_get_errors() );
 			}
@@ -224,7 +215,7 @@ final class Message extends Controller {
 			);
 		}
 
-		// Check messages.
+		// Check threads.
 		if ( ! hivepress()->request->get_context( 'message_thread_ids' ) ) {
 			return hivepress()->router->get_url( 'user_account_page' );
 		}
@@ -270,7 +261,7 @@ final class Message extends Controller {
 				);
 			}
 
-			// Add message.
+			// Add thread.
 			if ( ! isset( $threads[ $message->get_sender__id() ] ) ) {
 				$threads[ $message->get_sender__id() ] = $message;
 			}

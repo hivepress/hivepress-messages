@@ -21,7 +21,7 @@ return [
 				'_order' => 10,
 
 				'fields' => [
-					'message_enable_storage'    => [
+					'message_enable_storage' => [
 						'label'       => hivepress()->translator->get_string( 'storage' ),
 						'caption'     => esc_html__( 'Store messages in the database', 'hivepress-messages' ),
 						'description' => esc_html__( 'Check this option to store messages in the database, rather than sending them via email.', 'hivepress-messages' ),
@@ -30,7 +30,7 @@ return [
 						'_order'      => 10,
 					],
 
-					'message_expiration_period' => [
+					'message_storage_period' => [
 						'label'       => hivepress()->translator->get_string( 'storage_period' ),
 						'description' => esc_html__( 'Set the number of days after which a message is deleted.', 'hivepress-messages' ),
 						'type'        => 'number',

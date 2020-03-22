@@ -28,11 +28,9 @@ final class Message extends Component {
 	public function __construct( $args = [] ) {
 		if ( get_option( 'hp_message_enable_storage' ) ) {
 
-			// Expire messages.
-			add_action( 'hivepress/v1/events/hourly', [ $this, 'expire_messages' ] );
-
 			// Delete messages.
-			add_action( 'hivepress/v1/models/user/delete', [ $this, 'delete_messages' ] );
+			add_action( 'hivepress/v1/events/hourly', [ $this, 'delete_old_messages' ] );
+			add_action( 'hivepress/v1/models/user/delete', [ $this, 'delete_user_messages' ] );
 
 			// Clear message cache.
 			add_action( 'hivepress/v1/models/message/create', [ $this, 'clear_message_cache' ] );
@@ -59,22 +57,49 @@ final class Message extends Component {
 	}
 
 	/**
-	 * Expires messages.
+	 * Delete old messages.
 	 */
-	public function expire_messages() {
-		Models\Message::query()->filter(
-			[
-				'expired_time__lte' => time(),
-			]
-		)->delete();
+	public function delete_old_messages() {
+
+		// @deprecated since version 1.2.1.
+		if ( get_option( 'hp_message_expiration_period' ) ) {
+			update_option( 'hp_message_storage_period', get_option( 'hp_message_expiration_period' ) );
+
+			delete_option( 'hp_message_expiration_period' );
+		}
+
+		// Get storage period.
+		$storage_period = absint( get_option( 'hp_message_storage_period' ) );
+
+		// @deprecated since core version 1.3.4.
+		if ( $storage_period ) {
+
+			// Get message IDs.
+			$message_ids = get_comments(
+				[
+					'type'       => 'hp_message',
+
+					'date_query' => [
+						[
+							'before' => date( 'Y-m-d H:i:s', time() - $storage_period * DAY_IN_SECONDS ),
+						],
+					],
+				]
+			);
+
+			// Delete messages.
+			foreach ( $message_ids as $message_id ) {
+				wp_delete_comment( $message_id, true );
+			}
+		}
 	}
 
 	/**
-	 * Deletes messages.
+	 * Deletes user messages.
 	 *
 	 * @param int $user_id User ID.
 	 */
-	public function delete_messages( $user_id ) {
+	public function delete_user_messages( $user_id ) {
 		Models\Message::query()->filter(
 			[
 				'sender' => $user_id,
