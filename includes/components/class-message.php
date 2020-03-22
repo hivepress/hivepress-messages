@@ -26,14 +26,24 @@ final class Message extends Component {
 	 * @param array $args Component arguments.
 	 */
 	public function __construct( $args = [] ) {
+		if ( get_option( 'hp_message_enable_storage' ) ) {
 
-		// Expire messages.
-		add_action( 'hivepress/v1/events/hourly', [ $this, 'expire_messages' ] );
+			// Expire messages.
+			add_action( 'hivepress/v1/events/hourly', [ $this, 'expire_messages' ] );
 
-		// Delete messages.
-		add_action( 'hivepress/v1/models/user/delete', [ $this, 'delete_messages' ] );
+			// Delete messages.
+			add_action( 'hivepress/v1/models/user/delete', [ $this, 'delete_messages' ] );
+
+			// Clear message cache.
+			add_action( 'hivepress/v1/models/message/create', [ $this, 'clear_message_cache' ] );
+			add_action( 'hivepress/v1/models/message/update', [ $this, 'clear_message_cache' ] );
+			add_action( 'hivepress/v1/models/message/delete', [ $this, 'clear_message_cache' ] );
+		}
 
 		if ( ! is_admin() ) {
+
+			// Set request context.
+			add_action( 'init', [ $this, 'set_request_context' ], 100 );
 
 			// Alter account menu.
 			add_filter( 'hivepress/v1/menus/user_account', [ $this, 'alter_account_menu' ] );
@@ -79,21 +89,68 @@ final class Message extends Component {
 	}
 
 	/**
+	 * Clears message cache.
+	 *
+	 * @param int $message_id Message ID.
+	 */
+	public function clear_message_cache( $message_id ) {
+
+		// Get message.
+		$message = Models\Message::query()->get_by_id( $message_id );
+
+		if ( $message ) {
+
+			// Delete cache.
+			hivepress()->cache->delete_user_cache( $message->get_recipient__id(), null, 'models/message' );
+		}
+	}
+
+	/**
+	 * Sets request context.
+	 */
+	public function set_request_context() {
+		global $wpdb;
+
+		// Get cached thread IDs.
+		$thread_ids = hivepress()->cache->get_user_cache( get_current_user_id(), 'thread_ids', 'models/message' );
+
+		if ( is_null( $thread_ids ) ) {
+
+			// Get thread IDs.
+			$thread_ids = array_column(
+				$wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT comment_ID FROM {$wpdb->comments}
+						WHERE comment_type = %s AND ( user_id = %d OR comment_karma = %d )
+						GROUP BY user_id, comment_karma
+						ORDER BY comment_date DESC;",
+						'hp_message',
+						get_current_user_id(),
+						get_current_user_id()
+					),
+					ARRAY_A
+				),
+				'comment_ID'
+			);
+
+			// Cache thread IDs.
+			if ( count( $thread_ids ) <= 1000 ) {
+				hivepress()->cache->set_user_cache( get_current_user_id(), 'thread_ids', 'models/message', $thread_ids );
+			}
+		}
+
+		// Set request context.
+		hivepress()->request->set_context( 'message_thread_ids', $thread_ids );
+	}
+
+	/**
 	 * Alters account menu.
 	 *
 	 * @param array $menu Menu arguments.
 	 * @return array
 	 */
 	public function alter_account_menu( $menu ) {
-		if ( get_option( 'hp_message_enable_storage' ) && ( Models\Message::query()->filter(
-			[
-				'sender' => get_current_user_id(),
-			]
-		)->get_first_id() || Models\Message::query()->filter(
-			[
-				'recipient' => get_current_user_id(),
-			]
-		)->get_first_id() ) ) {
+		if ( get_option( 'hp_message_enable_storage' ) && hivepress()->request->get_context( 'message_thread_ids' ) ) {
 			$menu['items']['messages_thread'] = [
 				'route'  => 'messages_thread_page',
 				'_order' => 30,

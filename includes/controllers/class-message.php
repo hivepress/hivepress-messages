@@ -208,7 +208,6 @@ final class Message extends Controller {
 	 * @return mixed
 	 */
 	public function redirect_messages_thread_page() {
-		global $wpdb;
 
 		// Check permissions.
 		if ( ! get_option( 'hp_message_enable_storage' ) ) {
@@ -225,41 +224,10 @@ final class Message extends Controller {
 			);
 		}
 
-		// Get cached message IDs.
-		$message_ids = hivepress()->cache->get_user_cache( get_current_user_id(), 'todo', 'models/message' );
-
-		if ( is_null( $message_ids ) ) {
-
-			// Get message IDs.
-			$message_ids = array_column(
-				$wpdb->get_results(
-					$wpdb->prepare(
-						"SELECT comment_ID FROM {$wpdb->comments}
-						WHERE comment_type = %s AND ( user_id = %d OR comment_karma = %d )
-						GROUP BY user_id, comment_karma
-						ORDER BY comment_date DESC;",
-						'hp_message',
-						get_current_user_id(),
-						get_current_user_id()
-					),
-					ARRAY_A
-				),
-				'comment_ID'
-			);
-
-			// Cache message IDs.
-			if ( count( $message_ids ) <= 1000 ) {
-				hivepress()->cache->set_user_cache( get_current_user_id(), 'todo', 'models/message', $message_ids );
-			}
-		}
-
 		// Check messages.
-		if ( empty( $message_ids ) ) {
+		if ( ! hivepress()->request->get_context( 'message_thread_ids' ) ) {
 			return hivepress()->router->get_url( 'user_account_page' );
 		}
-
-		// Set request context.
-		hivepress()->request->set_context( 'message_ids', $message_ids );
 
 		return false;
 	}
@@ -271,22 +239,22 @@ final class Message extends Controller {
 	 */
 	public function render_messages_thread_page() {
 
-		// Get message IDs.
-		$message_ids = hivepress()->request->get_context( 'message_ids', [] );
+		// Get thread IDs.
+		$thread_ids = hivepress()->request->get_context( 'message_thread_ids', [] );
 
-		// Get messages.
-		$messages = [];
+		// Get threads.
+		$threads = [];
 
-		$all_messages = Models\Message::query()->filter(
+		$messages = Models\Message::query()->filter(
 			[
-				'id__in' => $message_ids,
+				'id__in' => $thread_ids,
 			]
 		)->order( 'id__in' )
-		->limit( count( $message_ids ) )
+		->limit( count( $thread_ids ) )
 		->get()
 		->serialize();
 
-		foreach ( $all_messages as $message ) {
+		foreach ( $messages as $message ) {
 			if ( $message->get_sender__id() === get_current_user_id() ) {
 
 				// Get recipient.
@@ -303,8 +271,8 @@ final class Message extends Controller {
 			}
 
 			// Add message.
-			if ( ! isset( $messages[ $message->get_sender__id() ] ) ) {
-				$messages[ $message->get_sender__id() ] = $message;
+			if ( ! isset( $threads[ $message->get_sender__id() ] ) ) {
+				$threads[ $message->get_sender__id() ] = $message;
 			}
 		}
 
@@ -314,7 +282,7 @@ final class Message extends Controller {
 				'template' => 'messages_thread_page',
 
 				'context'  => [
-					'messages' => $messages,
+					'messages' => $threads,
 				],
 			]
 		) )->render();
@@ -369,7 +337,14 @@ final class Message extends Controller {
 		}
 
 		// Get cached message IDs.
-		$message_ids = hivepress()->cache->get_user_cache( get_current_user_id(), 'todo2', 'models/message' );
+		$message_ids = hivepress()->cache->get_user_cache(
+			get_current_user_id(),
+			[
+				'fields'  => 'ids',
+				'user_id' => $user->get_id(),
+			],
+			'models/message'
+		);
 
 		if ( is_null( $message_ids ) ) {
 
@@ -393,7 +368,15 @@ final class Message extends Controller {
 
 			// Cache message IDs.
 			if ( count( $message_ids ) <= 1000 ) {
-				hivepress()->cache->set_user_cache( get_current_user_id(), 'todo2', 'models/message', $message_ids );
+				hivepress()->cache->set_user_cache(
+					get_current_user_id(),
+					[
+						'fields'  => 'ids',
+						'user_id' => $user->get_id(),
+					],
+					'models/message',
+					$message_ids
+				);
 			}
 		}
 
