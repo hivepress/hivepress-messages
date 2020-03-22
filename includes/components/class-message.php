@@ -57,7 +57,7 @@ final class Message extends Component {
 	}
 
 	/**
-	 * Delete old messages.
+	 * Deletes old messages.
 	 */
 	public function delete_old_messages() {
 
@@ -136,6 +136,16 @@ final class Message extends Component {
 	public function set_request_context() {
 		global $wpdb;
 
+		// Check permissions.
+		if ( ! get_option( 'hp_message_enable_storage' ) ) {
+			return;
+		}
+
+		// Check authentication.
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
+
 		// Get cached thread IDs.
 		$thread_ids = hivepress()->cache->get_user_cache( get_current_user_id(), 'thread_ids', 'models/message' );
 
@@ -175,7 +185,7 @@ final class Message extends Component {
 	 * @return array
 	 */
 	public function alter_account_menu( $menu ) {
-		if ( get_option( 'hp_message_enable_storage' ) && hivepress()->request->get_context( 'message_thread_ids' ) ) {
+		if ( hivepress()->request->get_context( 'message_thread_ids' ) ) {
 			$menu['items']['messages_thread'] = [
 				'route'  => 'messages_thread_page',
 				'_order' => 30,
