@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 
 return [
 	'messages' => [
-		'title'    => esc_html__( 'Messages', 'hivepress-messages' ),
+		'title'    => hivepress()->translator->get_string( 'messages' ),
 		'_order'   => 110,
 
 		'sections' => [
