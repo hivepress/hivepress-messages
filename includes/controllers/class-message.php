@@ -45,7 +45,7 @@ final class Message extends Controller {
 					],
 
 					'messages_thread_page' => [
-						'title'    => esc_html__( 'Messages', 'hivepress-messages' ),
+						'title'    => hivepress()->translator->get_string( 'messages' ),
 						'base'     => 'user_account_page',
 						'path'     => '/messages',
 						'redirect' => [ $this, 'redirect_messages_thread_page' ],
