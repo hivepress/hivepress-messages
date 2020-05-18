@@ -251,6 +251,10 @@ final class Message extends Controller {
 				// Get recipient.
 				$recipient = $message->get_recipient();
 
+				if ( ! $recipient ) {
+					continue;
+				}
+
 				// Set sender.
 				$message->fill(
 					[

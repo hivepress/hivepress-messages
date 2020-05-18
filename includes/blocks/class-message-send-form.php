@@ -61,6 +61,18 @@ class Message_Send_Form extends Form {
 
 			if ( hp\is_class_instance( $vendor, '\HivePress\Models\Vendor' ) ) {
 				$this->values['recipient'] = $vendor->get_user__id();
+			} elseif ( hivepress()->get_version( 'marketplace' ) ) {
+
+				// Get order.
+				$order = $this->get_context( 'order' );
+
+				if ( hp\is_class_instance( $order, '\HivePress\Models\Order' ) ) {
+					if ( get_current_user_id() === $order->get_buyer__id() ) {
+						$this->values['recipient'] = $order->get_seller__id();
+					} else {
+						$this->values['recipient'] = $order->get_buyer__id();
+					}
+				}
 			}
 		}
 

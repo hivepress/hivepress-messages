@@ -2,7 +2,7 @@
 /**
  * Plugin Name: HivePress Messages
  * Description: Allow users to send private messages.
- * Version: 1.2.2
+ * Version: 1.2.3
  * Author: HivePress
  * Author URI: https://hivepress.io/
  * Text Domain: hivepress-messages
@@ -18,6 +18,8 @@ defined( 'ABSPATH' ) || exit;
 add_filter(
 	'hivepress/v1/extensions',
 	function( $extensions ) {
-		return array_merge( $extensions, [ __DIR__ ] );
+		$extensions[] = __DIR__;
+
+		return $extensions;
 	}
 );

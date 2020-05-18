@@ -9,6 +9,7 @@ namespace HivePress\Components;
 
 use HivePress\Helpers as hp;
 use HivePress\Models;
+use HivePress\Blocks;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
@@ -51,6 +52,10 @@ final class Message extends Component {
 			add_filter( 'hivepress/v1/templates/listing_view_page', [ $this, 'alter_listing_view_page' ] );
 			add_filter( 'hivepress/v1/templates/vendor_view_block', [ $this, 'alter_vendor_view_block' ] );
 			add_filter( 'hivepress/v1/templates/vendor_view_page', [ $this, 'alter_vendor_view_page' ] );
+
+			if ( hivepress()->get_version( 'marketplace' ) ) {
+				add_filter( 'hivepress/v1/templates/order_footer_block', [ $this, 'alter_order_footer_block' ] );
+			}
 		}
 
 		parent::__construct( $args );
@@ -212,6 +217,7 @@ final class Message extends Component {
 								'type'   => 'modal',
 								'model'  => 'listing',
 								'title'  => hivepress()->translator->get_string( 'reply_to_listing' ),
+								'_order' => 5,
 
 								'blocks' => [
 									'message_send_form' => [
@@ -254,6 +260,7 @@ final class Message extends Component {
 								'type'   => 'modal',
 								'model'  => 'listing',
 								'title'  => hivepress()->translator->get_string( 'reply_to_listing' ),
+								'_order' => 5,
 
 								'blocks' => [
 									'message_send_form' => [
@@ -296,6 +303,7 @@ final class Message extends Component {
 								'type'   => 'modal',
 								'model'  => 'vendor',
 								'title'  => esc_html__( 'Send Message', 'hivepress-messages' ),
+								'_order' => 5,
 
 								'blocks' => [
 									'message_send_form' => [
@@ -338,6 +346,7 @@ final class Message extends Component {
 								'type'   => 'modal',
 								'model'  => 'vendor',
 								'title'  => esc_html__( 'Send Message', 'hivepress-messages' ),
+								'_order' => 5,
 
 								'blocks' => [
 									'message_send_form' => [
@@ -354,6 +363,48 @@ final class Message extends Component {
 							'message_send_link'  => [
 								'type'   => 'part',
 								'path'   => 'vendor/view/page/message-send-link',
+								'_order' => 10,
+							],
+						],
+					],
+				],
+			]
+		);
+	}
+
+	/**
+	 * Alters order footer block.
+	 *
+	 * @param array $template Template arguments.
+	 * @return array
+	 */
+	public function alter_order_footer_block( $template ) {
+		return hp\merge_trees(
+			$template,
+			[
+				'blocks' => [
+					'order_actions_primary' => [
+						'blocks' => [
+							'message_send_modal' => [
+								'type'   => 'modal',
+								'title'  => esc_html__( 'Send Message', 'hivepress-messages' ),
+								'_order' => 5,
+
+								'blocks' => [
+									'message_send_form' => [
+										'type'       => 'message_send_form',
+										'_order'     => 10,
+
+										'attributes' => [
+											'class' => [ 'hp-form--narrow' ],
+										],
+									],
+								],
+							],
+
+							'message_send_link'  => [
+								'type'   => 'part',
+								'path'   => 'order/view/page/message-send-link',
 								'_order' => 10,
 							],
 						],
