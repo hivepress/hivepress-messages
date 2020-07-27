@@ -27,7 +27,7 @@ class Message_Send extends Model_Form {
 	public static function init( $meta = [] ) {
 		$meta = hp\merge_arrays(
 			[
-				'label'   => esc_html__( 'Send Message', 'hivepress-messages' ),
+				'label'   => hivepress()->translator->get_string( 'send_message' ),
 				'captcha' => false,
 				'model'   => 'message',
 			],
@@ -63,7 +63,7 @@ class Message_Send extends Model_Form {
 				],
 
 				'button'  => [
-					'label' => esc_html__( 'Send Message', 'hivepress-messages' ),
+					'label' => hivepress()->translator->get_string( 'send_message' ),
 				],
 			],
 			$args

@@ -302,7 +302,7 @@ final class Message extends Component {
 							'message_send_modal' => [
 								'type'   => 'modal',
 								'model'  => 'vendor',
-								'title'  => esc_html__( 'Send Message', 'hivepress-messages' ),
+								'title'  => hivepress()->translator->get_string( 'send_message' ),
 								'_order' => 5,
 
 								'blocks' => [
@@ -345,7 +345,7 @@ final class Message extends Component {
 							'message_send_modal' => [
 								'type'   => 'modal',
 								'model'  => 'vendor',
-								'title'  => esc_html__( 'Send Message', 'hivepress-messages' ),
+								'title'  => hivepress()->translator->get_string( 'send_message' ),
 								'_order' => 5,
 
 								'blocks' => [
@@ -387,7 +387,7 @@ final class Message extends Component {
 						'blocks' => [
 							'message_send_modal' => [
 								'type'   => 'modal',
-								'title'  => esc_html__( 'Send Message', 'hivepress-messages' ),
+								'title'  => hivepress()->translator->get_string( 'send_message' ),
 								'_order' => 5,
 
 								'blocks' => [
