@@ -34,9 +34,9 @@ final class Message extends Component {
 			add_action( 'hivepress/v1/models/user/delete', [ $this, 'delete_user_messages' ] );
 
 			// Clear message cache.
-			add_action( 'hivepress/v1/models/message/create', [ $this, 'clear_message_cache' ] );
-			add_action( 'hivepress/v1/models/message/update', [ $this, 'clear_message_cache' ] );
-			add_action( 'hivepress/v1/models/message/delete', [ $this, 'clear_message_cache' ] );
+			add_action( 'hivepress/v1/models/message/create', [ $this, 'clear_message_cache' ], 10, 2 );
+			add_action( 'hivepress/v1/models/message/update', [ $this, 'clear_message_cache' ], 10, 2 );
+			add_action( 'hivepress/v1/models/message/delete', [ $this, 'clear_message_cache' ], 10, 2 );
 		}
 
 		if ( ! is_admin() ) {
@@ -124,18 +124,11 @@ final class Message extends Component {
 	/**
 	 * Clears message cache.
 	 *
-	 * @param int $message_id Message ID.
+	 * @param int    $message_id Message ID.
+	 * @param object $message Message object.
 	 */
-	public function clear_message_cache( $message_id ) {
-
-		// Get message.
-		$message = Models\Message::query()->get_by_id( $message_id );
-
-		if ( $message ) {
-
-			// Delete cache.
-			hivepress()->cache->delete_user_cache( $message->get_recipient__id(), null, 'models/message' );
-		}
+	public function clear_message_cache( $message_id, $message ) {
+		hivepress()->cache->delete_user_cache( $message->get_recipient__id(), null, 'models/message' );
 	}
 
 	/**
