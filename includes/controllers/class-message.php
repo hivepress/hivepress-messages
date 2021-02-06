@@ -374,6 +374,24 @@ final class Message extends Controller {
 					$message_ids
 				);
 			}
+
+			if ( $message_ids ) {
+
+				// Read messages.
+				$wpdb->query(
+					$wpdb->prepare(
+						"UPDATE {$wpdb->comments} SET comment_approved = %s
+						WHERE comment_type = %s AND user_id = %d AND comment_karma = %d;",
+						'1',
+						'hp_message',
+						$user->get_id(),
+						get_current_user_id()
+					)
+				);
+
+				// Delete cache.
+				hivepress()->cache->delete_user_cache( get_current_user_id(), 'message_unread_count', 'models/message' );
+			}
 		}
 
 		// Check messages.
