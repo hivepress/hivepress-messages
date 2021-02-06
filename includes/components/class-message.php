@@ -181,6 +181,41 @@ final class Message extends Component {
 
 		// Set request context.
 		hivepress()->request->set_context( 'message_thread_ids', $thread_ids );
+
+		// Check thread IDs.
+		if ( ! $thread_ids ) {
+			return;
+		}
+
+		// Get cached message count.
+		$message_count = hivepress()->cache->get_user_cache( get_current_user_id(), 'message_unread_count', 'models/message' );
+
+		if ( is_null( $message_count ) ) {
+
+			// Get thread IDs.
+			$message_count = absint(
+				$wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(*)
+						FROM {$wpdb->comments}
+						WHERE comment_type = %s AND comment_karma = %d
+						AND comment_approved = %s",
+						'hp_message',
+						get_current_user_id(),
+						'0'
+					)
+				)
+			);
+
+			// Cache message count.
+			hivepress()->cache->set_user_cache( get_current_user_id(), 'message_unread_count', 'models/message', $message_count );
+		}
+
+		// Set request context.
+		if ( $message_count ) {
+			hivepress()->request->set_context( 'message_unread_count', $message_count );
+			hivepress()->request->set_context( 'notice_count', (int) hivepress()->request->get_context( 'notice_count' ) + $message_count );
+		}
 	}
 
 	/**
@@ -191,10 +226,16 @@ final class Message extends Component {
 	 */
 	public function alter_account_menu( $menu ) {
 		if ( hivepress()->request->get_context( 'message_thread_ids' ) ) {
-			$menu['items']['messages_thread'] = [
+			$menu_item = [
 				'route'  => 'messages_thread_page',
 				'_order' => 30,
 			];
+
+			if ( hivepress()->request->get_context( 'message_unread_count' ) ) {
+				$menu_item['meta'] = hivepress()->request->get_context( 'message_unread_count' );
+			}
+
+			$menu['items']['messages_thread'] = $menu_item;
 		}
 
 		return $menu;

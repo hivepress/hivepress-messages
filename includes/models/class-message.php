@@ -71,6 +71,13 @@ class Message extends Comment {
 						'_model'    => 'user',
 					],
 
+					'read'                 => [
+						'type'      => 'number',
+						'min_value' => 0,
+						'max_value' => 1,
+						'_alias'    => 'comment_approved',
+					],
+
 					'listing'              => [
 						'type'      => 'number',
 						'min_value' => 1,
