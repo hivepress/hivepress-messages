@@ -39,6 +39,7 @@ class Message extends Comment {
 					'sent_date'            => [
 						'type'   => 'date',
 						'format' => 'Y-m-d H:i:s',
+						'time'   => true,
 						'_alias' => 'comment_date',
 					],
 
