@@ -93,7 +93,7 @@ final class Message extends Controller {
 		// Get sender.
 		$sender = Models\User::query()->get_by_id( $sender_id );
 
-		if ( empty( $sender ) ) {
+		if ( ! $sender ) {
 			return hp\rest_error( 400 );
 		}
 
@@ -105,7 +105,7 @@ final class Message extends Controller {
 		// Get recipient.
 		$recipient = Models\User::query()->get_by_id( $form->get_value( 'recipient' ) );
 
-		if ( empty( $recipient ) ) {
+		if ( ! $recipient ) {
 			return hp\rest_error( 400 );
 		}
 
@@ -118,7 +118,7 @@ final class Message extends Controller {
 		if ( $form->get_value( 'listing' ) ) {
 			$listing = Models\Listing::query()->get_by_id( $form->get_value( 'listing' ) );
 
-			if ( empty( $listing ) || $listing->get_status() !== 'publish' ) {
+			if ( ! $listing || $listing->get_status() !== 'publish' ) {
 				return hp\rest_error( 400 );
 			}
 		}
@@ -328,7 +328,7 @@ final class Message extends Controller {
 		// Check user.
 		$user = hivepress()->request->get_context( 'message_user' );
 
-		if ( empty( $user ) || get_current_user_id() === $user->get_id() ) {
+		if ( ! $user || get_current_user_id() === $user->get_id() ) {
 			return hivepress()->router->get_url( 'messages_thread_page' );
 		}
 
@@ -377,7 +377,7 @@ final class Message extends Controller {
 		}
 
 		// Check messages.
-		if ( empty( $message_ids ) ) {
+		if ( ! $message_ids ) {
 			return hivepress()->router->get_url( 'messages_thread_page' );
 		}
 
