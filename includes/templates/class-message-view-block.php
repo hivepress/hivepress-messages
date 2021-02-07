@@ -87,10 +87,16 @@ class Message_View_Block extends Template {
 								],
 
 								'blocks'     => [
-									'message_text' => [
+									'message_text'       => [
 										'type'   => 'part',
 										'path'   => 'message/view/message-text',
 										'_order' => 10,
+									],
+
+									'message_attachment' => [
+										'type'   => 'part',
+										'path'   => 'message/view/message-attachment',
+										'_order' => 20,
 									],
 								],
 							],

@@ -137,6 +137,24 @@ final class Message extends Controller {
 			)
 		);
 
+		if ( get_option( 'hp_message_allow_attachment' ) ) {
+
+			// Get message draft.
+			$message_draft = hivepress()->message->get_message_draft();
+
+			if ( $message_draft && $message_draft->get_attachment__id() ) {
+
+				// Get attachment.
+				$attachment = $message_draft->get_attachment();
+
+				if ( $attachment ) {
+
+					// Set attachment.
+					$message->set_attachment( $attachment->get_id() );
+				}
+			}
+		}
+
 		// Set email arguments.
 		$email_args = [
 			'recipient' => $recipient->get_email(),
@@ -156,6 +174,13 @@ final class Message extends Controller {
 		if ( get_option( 'hp_message_enable_storage' ) ) {
 			if ( ! $message->save() ) {
 				return hp\rest_error( 400, $message->_get_errors() );
+			}
+
+			// Set attachment.
+			if ( isset( $attachment ) ) {
+				$attachment->set_parent( $message->get_id() )->save_parent();
+
+				$message_draft->set_attachment( null )->save_attachment();
 			}
 
 			// Send email.

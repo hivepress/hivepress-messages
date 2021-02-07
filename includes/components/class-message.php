@@ -27,6 +27,13 @@ final class Message extends Component {
 	 * @param array $args Component arguments.
 	 */
 	public function __construct( $args = [] ) {
+		if ( get_option( 'hp_message_allow_attachment' ) ) {
+
+			// Add message fields.
+			add_filter( 'hivepress/v1/models/message', [ $this, 'add_message_fields' ] );
+			add_filter( 'hivepress/v1/forms/message_send', [ $this, 'add_message_fields' ] );
+		}
+
 		if ( get_option( 'hp_message_enable_storage' ) ) {
 
 			// Delete messages.
@@ -62,6 +69,91 @@ final class Message extends Component {
 		}
 
 		parent::__construct( $args );
+	}
+
+	/**
+	 * Gets message draft.
+	 *
+	 * @return object
+	 */
+	public function get_message_draft() {
+		$draft = hivepress()->request->get_context( 'message_draft' );
+
+		if ( ! $draft ) {
+
+			// Get cached draft ID.
+			$draft_id = hivepress()->cache->get_user_cache( get_current_user_id(), 'draft_id', 'models/message' );
+
+			if ( is_null( $draft_id ) ) {
+
+				// Get draft ID.
+				$draft_id = Models\Message::query()->filter(
+					[
+						'sender'    => get_current_user_id(),
+						'recipient' => 0,
+					]
+				)->get_first_id();
+
+				if ( ! $draft_id ) {
+
+					// Add draft.
+					$draft_id = (int) wp_insert_comment(
+						[
+							'comment_type'  => 'hp_message',
+							'user_id'       => get_current_user_id(),
+							'comment_karma' => 0,
+						]
+					);
+				}
+
+				// Cache draft ID.
+				if ( $draft_id ) {
+					hivepress()->cache->set_user_cache( get_current_user_id(), 'draft_id', 'models/message', $draft_id );
+				}
+			}
+
+			if ( $draft_id ) {
+
+				// Get draft.
+				$draft = Models\Message::query()->get_by_id( $draft_id );
+
+				// Set request context.
+				hivepress()->request->set_context( 'message_draft', $draft );
+			}
+		}
+
+		return $draft;
+	}
+
+	/**
+	 * Adds message fields.
+	 *
+	 * @param array $form Form arguments.
+	 * @return array
+	 */
+	public function add_message_fields( $form ) {
+
+		// Get file formats.
+		$formats = hivepress()->request->get_context( 'message_attachment_types' );
+
+		if ( ! is_array( $formats ) ) {
+			$formats = array_filter( explode( '|', implode( '|', (array) get_option( 'hp_message_attachment_types' ) ) ) );
+
+			hivepress()->request->set_context( 'message_attachment_types', $formats );
+		}
+
+		// Add attachment field.
+		$form['fields']['attachment'] = [
+			'label'     => esc_html__( 'Attachment', 'hivepress-messages' ),
+			'type'      => 'attachment_upload',
+			'formats'   => $formats,
+			'protected' => true,
+			'_model'    => 'attachment',
+			'_external' => true,
+			'_order'    => 20,
+		];
+
+		return $form;
 	}
 
 	/**
@@ -158,6 +250,7 @@ final class Message extends Component {
 					$wpdb->prepare(
 						"SELECT comment_ID FROM {$wpdb->comments}
 						WHERE comment_type = %s AND ( user_id = %d OR comment_karma = %d )
+						AND comment_karma != 0
 						GROUP BY user_id, comment_karma
 						ORDER BY comment_date DESC;",
 						'hp_message',
@@ -183,13 +276,13 @@ final class Message extends Component {
 			return;
 		}
 
-		// Get cached message count.
-		$message_count = hivepress()->cache->get_user_cache( get_current_user_id(), 'message_unread_count', 'models/message' );
+		// Get cached unread count.
+		$unread_count = hivepress()->cache->get_user_cache( get_current_user_id(), 'unread_count', 'models/message' );
 
-		if ( is_null( $message_count ) ) {
+		if ( is_null( $unread_count ) ) {
 
-			// Get thread IDs.
-			$message_count = absint(
+			// Get unread count.
+			$unread_count = absint(
 				$wpdb->get_var(
 					$wpdb->prepare(
 						"SELECT COUNT(*)
@@ -203,14 +296,14 @@ final class Message extends Component {
 				)
 			);
 
-			// Cache message count.
-			hivepress()->cache->set_user_cache( get_current_user_id(), 'message_unread_count', 'models/message', $message_count );
+			// Cache unread count.
+			hivepress()->cache->set_user_cache( get_current_user_id(), 'unread_count', 'models/message', $unread_count );
 		}
 
 		// Set request context.
-		if ( $message_count ) {
-			hivepress()->request->set_context( 'message_unread_count', $message_count );
-			hivepress()->request->set_context( 'notice_count', (int) hivepress()->request->get_context( 'notice_count' ) + $message_count );
+		if ( $unread_count ) {
+			hivepress()->request->set_context( 'message_unread_count', $unread_count );
+			hivepress()->request->set_context( 'notice_count', (int) hivepress()->request->get_context( 'notice_count' ) + $unread_count );
 		}
 	}
 

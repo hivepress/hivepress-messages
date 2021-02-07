@@ -16,9 +16,32 @@ return [
 		'_order'   => 110,
 
 		'sections' => [
-			'storage' => [
-				'title'  => hivepress()->translator->get_string( 'storage' ),
+			'attachments' => [
+				'title'  => esc_html__( 'Attachments', 'hivepress-messages' ),
 				'_order' => 10,
+
+				'fields' => [
+					'message_allow_attachment' => [
+						'label'   => esc_html__( 'Attachments', 'hivepress-messages' ),
+						'caption' => esc_html__( 'Allow file attachments', 'hivepress-messages' ),
+						'type'    => 'checkbox',
+						'_order'  => 10,
+					],
+
+					'message_attachment_types' => [
+						'label'    => esc_html__( 'Allowed File Types', 'hivepress-messages' ),
+						'type'     => 'select',
+						'options'  => 'mime_types',
+						'multiple' => true,
+						'_parent'  => 'message_allow_attachment',
+						'_order'   => 20,
+					],
+				],
+			],
+
+			'storage'     => [
+				'title'  => hivepress()->translator->get_string( 'storage' ),
+				'_order' => 20,
 
 				'fields' => [
 					'message_enable_storage' => [
@@ -35,12 +58,13 @@ return [
 						'description' => esc_html__( 'Set the number of days after which a message is deleted.', 'hivepress-messages' ),
 						'type'        => 'number',
 						'min_value'   => 1,
+						'_parent'     => 'message_enable_storage',
 						'_order'      => 20,
 					],
 				],
 			],
 
-			'emails'  => [
+			'emails'      => [
 				'title'  => hivepress()->translator->get_string( 'emails' ),
 				'_order' => 1000,
 

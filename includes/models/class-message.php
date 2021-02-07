@@ -95,7 +95,24 @@ class Message extends Comment {
 	 *
 	 * @return mixed
 	 */
-	public function get_user__id() {
+	final public function get_user__id() {
 		return $this->get_sender__id();
+	}
+
+	/**
+	 * Gets attachment URL.
+	 *
+	 * @return string
+	 */
+	final public function get_attachment__url() {
+		if ( ! isset( $this->values['attachment__url'] ) ) {
+			$this->values['attachment__url'] = '';
+
+			if ( $this->get_attachment__id() ) {
+				$this->values['attachment__url'] = wp_get_attachment_url( $this->get_attachment__id() );
+			}
+		}
+
+		return $this->values['attachment__url'];
 	}
 }

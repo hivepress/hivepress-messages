@@ -39,40 +39,49 @@ class Message_Send_Form extends Form {
 	 * Bootstraps block properties.
 	 */
 	protected function boot() {
+		if ( is_user_logged_in() ) {
 
-		// Set recipient.
-		$this->values['recipient'] = hivepress()->request->get_param( 'user_id' );
+			// Set recipient.
+			$this->values['recipient'] = hivepress()->request->get_param( 'user_id' );
 
-		// Get listing.
-		$listing = $this->get_context( 'listing' );
+			// Get listing.
+			$listing = $this->get_context( 'listing' );
 
-		if ( hp\is_class_instance( $listing, '\HivePress\Models\Listing' ) ) {
-			$this->values = array_merge(
-				$this->values,
-				[
-					'recipient' => $listing->get_user__id(),
-					'listing'   => $listing->get_id(),
-				]
-			);
-		} else {
+			if ( hp\is_class_instance( $listing, '\HivePress\Models\Listing' ) ) {
+				$this->values = array_merge(
+					$this->values,
+					[
+						'recipient' => $listing->get_user__id(),
+						'listing'   => $listing->get_id(),
+					]
+				);
+			} else {
 
-			// Get vendor.
-			$vendor = $this->get_context( 'vendor' );
+				// Get vendor.
+				$vendor = $this->get_context( 'vendor' );
 
-			if ( hp\is_class_instance( $vendor, '\HivePress\Models\Vendor' ) ) {
-				$this->values['recipient'] = $vendor->get_user__id();
-			} elseif ( hivepress()->get_version( 'marketplace' ) ) {
+				if ( hp\is_class_instance( $vendor, '\HivePress\Models\Vendor' ) ) {
+					$this->values['recipient'] = $vendor->get_user__id();
+				} elseif ( hivepress()->get_version( 'marketplace' ) ) {
 
-				// Get order.
-				$order = $this->get_context( 'order' );
+					// Get order.
+					$order = $this->get_context( 'order' );
 
-				if ( hp\is_class_instance( $order, '\HivePress\Models\Order' ) ) {
-					if ( get_current_user_id() === $order->get_buyer__id() ) {
-						$this->values['recipient'] = $order->get_seller__id();
-					} else {
-						$this->values['recipient'] = $order->get_buyer__id();
+					if ( hp\is_class_instance( $order, '\HivePress\Models\Order' ) ) {
+						if ( get_current_user_id() === $order->get_buyer__id() ) {
+							$this->values['recipient'] = $order->get_seller__id();
+						} else {
+							$this->values['recipient'] = $order->get_buyer__id();
+						}
 					}
 				}
+			}
+
+			// Set draft.
+			if ( get_option( 'hp_message_allow_attachment' ) ) {
+				$this->context['message'] = hivepress()->message->get_message_draft();
+
+				$this->attributes['data-reset'] = true;
 			}
 		}
 
