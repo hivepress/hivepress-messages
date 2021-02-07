@@ -192,6 +192,15 @@ final class Message extends Component {
 				wp_delete_comment( $message_id, true );
 			}
 		}
+
+		// Delete message drafts.
+		if ( get_option( 'hp_message_allow_attachment' ) ) {
+			Models\Message::query()->filter(
+				[
+					'recipient' => 0,
+				]
+			)->delete();
+		}
 	}
 
 	/**
