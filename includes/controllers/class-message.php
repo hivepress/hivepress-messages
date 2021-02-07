@@ -160,6 +160,9 @@ final class Message extends Controller {
 			'recipient' => $recipient->get_email(),
 
 			'tokens'    => [
+				'sender'       => $sender,
+				'recipient'    => $recipient,
+				'message'      => $message,
 				'user_name'    => $recipient->get_display_name(),
 				'message_text' => $message->get_text(),
 			],
