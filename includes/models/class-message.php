@@ -44,11 +44,10 @@ class Message extends Comment {
 					],
 
 					'sender'               => [
-						'type'      => 'number',
-						'min_value' => 1,
-						'required'  => true,
-						'_alias'    => 'user_id',
-						'_model'    => 'user',
+						'type'     => 'id',
+						'required' => true,
+						'_alias'   => 'user_id',
+						'_model'   => 'user',
 					],
 
 					'sender__display_name' => [
@@ -65,11 +64,10 @@ class Message extends Comment {
 					],
 
 					'recipient'            => [
-						'type'      => 'number',
-						'min_value' => 1,
-						'required'  => true,
-						'_alias'    => 'comment_karma',
-						'_model'    => 'user',
+						'type'     => 'id',
+						'required' => true,
+						'_alias'   => 'comment_karma',
+						'_model'   => 'user',
 					],
 
 					'read'                 => [
@@ -80,10 +78,9 @@ class Message extends Comment {
 					],
 
 					'listing'              => [
-						'type'      => 'number',
-						'min_value' => 1,
-						'_alias'    => 'comment_post_ID',
-						'_model'    => 'listing',
+						'type'   => 'id',
+						'_alias' => 'comment_post_ID',
+						'_model' => 'listing',
 					],
 				],
 			],
@@ -91,5 +88,14 @@ class Message extends Comment {
 		);
 
 		parent::__construct( $args );
+	}
+
+	/**
+	 * Gets user ID.
+	 *
+	 * @return mixed
+	 */
+	public function get_user__id() {
+		return $this->get_sender__id();
 	}
 }
