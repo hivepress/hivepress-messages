@@ -56,6 +56,7 @@ final class Message extends Component {
 
 			// Alter templates.
 			add_filter( 'hivepress/v1/templates/message_view_block/blocks', [ $this, 'alter_message_view_blocks' ], 10, 2 );
+			add_filter( 'hivepress/v1/templates/message_thread_block/blocks', [ $this, 'alter_message_view_blocks' ], 10, 2 );
 
 			add_filter( 'hivepress/v1/templates/listing_view_block', [ $this, 'alter_listing_view_block' ] );
 			add_filter( 'hivepress/v1/templates/listing_view_page', [ $this, 'alter_listing_view_page' ] );
@@ -358,27 +359,26 @@ final class Message extends Component {
 
 			if ( $message->get_sender__id() === get_current_user_id() ) {
 				$classes[] = 'hp-message--sent';
-
-				if ( $message->is_read() ) {
-					$classes[] = 'hp-message--read';
-				}
 			}
 
-			// Add classes.
-			if ( $classes ) {
-				$blocks = hp\merge_trees(
-					[ 'blocks' => $blocks ],
-					[
-						'blocks' => [
-							'message_container' => [
-								'attributes' => [
-									'class' => $classes,
-								],
+			if ( $message->is_read() ) {
+				$classes[] = 'hp-message--read';
+			}
+
+			// Set attributes.
+			$blocks = hp\merge_trees(
+				[ 'blocks' => $blocks ],
+				[
+					'blocks' => [
+						'message_container' => [
+							'attributes' => [
+								'id'    => 'message-' . $message->get_id(),
+								'class' => $classes,
 							],
 						],
-					]
-				)['blocks'];
-			}
+					],
+				]
+			)['blocks'];
 		}
 
 		return $blocks;
