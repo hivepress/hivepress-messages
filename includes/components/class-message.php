@@ -27,17 +27,20 @@ final class Message extends Component {
 	 * @param array $args Component arguments.
 	 */
 	public function __construct( $args = [] ) {
-		if ( get_option( 'hp_message_allow_attachment' ) ) {
 
-			// Add message fields.
-			add_filter( 'hivepress/v1/models/message', [ $this, 'add_message_fields' ] );
-			add_filter( 'hivepress/v1/forms/message_send', [ $this, 'add_message_fields' ] );
-		}
+		// Validate message.
+		add_filter( 'hivepress/v1/models/message/errors', [ $this, 'validate_message' ], 10, 2 );
 
 		if ( get_option( 'hp_message_enable_storage' ) ) {
+			if ( get_option( 'hp_message_allow_attachment' ) ) {
+
+				// Add message fields.
+				add_filter( 'hivepress/v1/models/message', [ $this, 'add_message_fields' ] );
+				add_filter( 'hivepress/v1/forms/message_send', [ $this, 'add_message_fields' ] );
+			}
 
 			// Delete messages.
-			add_action( 'hivepress/v1/events/hourly', [ $this, 'delete_old_messages' ] );
+			add_action( 'hivepress/v1/events/daily', [ $this, 'delete_old_messages' ] );
 			add_action( 'hivepress/v1/models/user/delete', [ $this, 'delete_user_messages' ] );
 
 			// Clear message cache.
@@ -70,6 +73,38 @@ final class Message extends Component {
 		}
 
 		parent::__construct( $args );
+	}
+
+	/**
+	 * Validates message.
+	 *
+	 * @param array  $errors Error messages.
+	 * @param object $message Message object.
+	 * @return array
+	 */
+	public function validate_message( $errors, $message ) {
+		if ( ! $message->get_id() && empty( $errors ) ) {
+
+			// Get keywords.
+			$keywords = get_option( 'hp_message_blocked_keywords' );
+
+			if ( $keywords ) {
+				$keywords = array_filter( array_map( 'trim', explode( "\n", $keywords ) ) );
+
+				// Check keywords.
+				foreach ( $keywords as $keyword ) {
+					if ( preg_match( '/' . preg_quote( $keyword, '/' ) . '/i', $message->get_text() ) ) {
+
+						// Add error.
+						$errors[] = esc_html__( 'Your message contains inappropriate content.', 'hivepress-messages' );
+
+						break;
+					}
+				}
+			}
+		}
+
+		return $errors;
 	}
 
 	/**

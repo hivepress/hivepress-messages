@@ -16,8 +16,8 @@ return [
 		'_order'   => 110,
 
 		'sections' => [
-			'attachments' => [
-				'title'  => esc_html__( 'Attachments', 'hivepress-messages' ),
+			'sending' => [
+				'title'  => esc_html__( 'Sending', 'hivepress-messages' ),
 				'_order' => 10,
 
 				'fields' => [
@@ -36,10 +36,18 @@ return [
 						'_parent'  => 'message_allow_attachment',
 						'_order'   => 20,
 					],
+
+					'message_blocked_keywords' => [
+						'label'       => esc_html__( 'Blocked Keywords', 'hivepress-messages' ),
+						'description' => esc_html__( 'Messages containing these keywords will be blocked, enter each keyword on a new line.', 'hivepress-messages' ),
+						'type'        => 'textarea',
+						'max_length'  => 2048,
+						'_order'      => 30,
+					],
 				],
 			],
 
-			'storage'     => [
+			'storage' => [
 				'title'  => hivepress()->translator->get_string( 'storage' ),
 				'_order' => 20,
 
@@ -64,7 +72,7 @@ return [
 				],
 			],
 
-			'emails'      => [
+			'emails'  => [
 				'title'  => hivepress()->translator->get_string( 'emails' ),
 				'_order' => 1000,
 

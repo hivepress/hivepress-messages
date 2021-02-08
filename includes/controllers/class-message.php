@@ -290,6 +290,7 @@ final class Message extends Controller {
 						'sender'               => $recipient->get_id(),
 						'sender__display_name' => $recipient->get_display_name(),
 						'sender__email'        => $recipient->get_email(),
+						'read'                 => 1,
 					]
 				);
 			}
