@@ -419,7 +419,7 @@ final class Message extends Controller {
 				);
 
 				// Delete cache.
-				hivepress()->cache->delete_user_cache( get_current_user_id(), 'message_unread_count', 'models/message' );
+				hivepress()->cache->delete_user_cache( get_current_user_id(), 'unread_count', 'models/message' );
 			}
 		}
 
