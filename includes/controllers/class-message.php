@@ -192,7 +192,7 @@ final class Message extends Controller {
 					$email_args,
 					[
 						'tokens' => [
-							'message_url' => hivepress()->router->get_url( 'messages_view_page', [ 'user_id' => $sender->get_id() ] ),
+							'message_url' => hivepress()->router->get_url( 'messages_view_page', [ 'user_id' => $sender->get_id() ] ) . '#message-' . $message->get_id(),
 						],
 					]
 				)
