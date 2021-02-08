@@ -93,7 +93,7 @@ final class Message extends Controller {
 		// Get sender.
 		$sender = Models\User::query()->get_by_id( $sender_id );
 
-		if ( empty( $sender ) ) {
+		if ( ! $sender ) {
 			return hp\rest_error( 400 );
 		}
 
@@ -105,7 +105,7 @@ final class Message extends Controller {
 		// Get recipient.
 		$recipient = Models\User::query()->get_by_id( $form->get_value( 'recipient' ) );
 
-		if ( empty( $recipient ) ) {
+		if ( ! $recipient ) {
 			return hp\rest_error( 400 );
 		}
 
@@ -118,7 +118,7 @@ final class Message extends Controller {
 		if ( $form->get_value( 'listing' ) ) {
 			$listing = Models\Listing::query()->get_by_id( $form->get_value( 'listing' ) );
 
-			if ( empty( $listing ) || $listing->get_status() !== 'publish' ) {
+			if ( ! $listing || $listing->get_status() !== 'publish' ) {
 				return hp\rest_error( 400 );
 			}
 		}
@@ -132,15 +132,37 @@ final class Message extends Controller {
 					'sender__display_name' => $sender->get_display_name(),
 					'sender__email'        => $sender->get_email(),
 					'recipient'            => $recipient->get_id(),
+					'read'                 => 0,
 				]
 			)
 		);
+
+		if ( get_option( 'hp_message_allow_attachment' ) ) {
+
+			// Get message draft.
+			$message_draft = hivepress()->message->get_message_draft();
+
+			if ( $message_draft && $message_draft->get_attachment__id() ) {
+
+				// Get attachment.
+				$attachment = $message_draft->get_attachment();
+
+				if ( $attachment ) {
+
+					// Set attachment.
+					$message->set_attachment( $attachment->get_id() );
+				}
+			}
+		}
 
 		// Set email arguments.
 		$email_args = [
 			'recipient' => $recipient->get_email(),
 
 			'tokens'    => [
+				'sender'       => $sender,
+				'recipient'    => $recipient,
+				'message'      => $message,
 				'user_name'    => $recipient->get_display_name(),
 				'message_text' => $message->get_text(),
 			],
@@ -155,6 +177,13 @@ final class Message extends Controller {
 		if ( get_option( 'hp_message_enable_storage' ) ) {
 			if ( ! $message->save() ) {
 				return hp\rest_error( 400, $message->_get_errors() );
+			}
+
+			// Set attachment.
+			if ( isset( $attachment ) ) {
+				$attachment->set_parent( $message->get_id() )->save_parent();
+
+				$message_draft->set_attachment( null )->save_attachment();
 			}
 
 			// Send email.
@@ -240,7 +269,7 @@ final class Message extends Controller {
 			[
 				'id__in' => $thread_ids,
 			]
-		)->order( 'id__in' )
+		)->order( [ 'sent_date' => 'desc' ] )
 		->limit( count( $thread_ids ) )
 		->get()
 		->serialize();
@@ -261,6 +290,7 @@ final class Message extends Controller {
 						'sender'               => $recipient->get_id(),
 						'sender__display_name' => $recipient->get_display_name(),
 						'sender__email'        => $recipient->get_email(),
+						'read'                 => 1,
 					]
 				);
 			}
@@ -327,7 +357,7 @@ final class Message extends Controller {
 		// Check user.
 		$user = hivepress()->request->get_context( 'message_user' );
 
-		if ( empty( $user ) || get_current_user_id() === $user->get_id() ) {
+		if ( ! $user || get_current_user_id() === $user->get_id() ) {
 			return hivepress()->router->get_url( 'messages_thread_page' );
 		}
 
@@ -373,10 +403,28 @@ final class Message extends Controller {
 					$message_ids
 				);
 			}
+
+			if ( $message_ids ) {
+
+				// Read messages.
+				$wpdb->query(
+					$wpdb->prepare(
+						"UPDATE {$wpdb->comments} SET comment_approved = %s
+						WHERE comment_type = %s AND user_id = %d AND comment_karma = %d;",
+						'1',
+						'hp_message',
+						$user->get_id(),
+						get_current_user_id()
+					)
+				);
+
+				// Delete cache.
+				hivepress()->cache->delete_user_cache( get_current_user_id(), 'unread_count', 'models/message' );
+			}
 		}
 
 		// Check messages.
-		if ( empty( $message_ids ) ) {
+		if ( ! $message_ids ) {
 			return hivepress()->router->get_url( 'messages_thread_page' );
 		}
 

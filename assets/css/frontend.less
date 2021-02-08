@@ -3,6 +3,67 @@
 	Messages
 	--------------------------------------------------------------*/
 	&-message {
+		&--view-block {
+			background-color: #eff5fb;
+			padding: 1.25rem 1.5rem;
+			position: relative;
+			margin-right: 2rem;
+
+			&::after,
+			&::before {
+				display: block;
+				content: '';
+				position: absolute;
+				top: 1.6rem;
+			}
+
+			&::before {
+				border: 8px solid transparent;
+				width: 0;
+				height: 0;
+				left: -16px;
+				border-right-color: #eff5fb;
+			}
+		}
+
+		&--view-block&--sent {
+			margin-right: 0;
+			margin-left: 2rem;
+			background-color: #effaf5;
+
+			&::before {
+				left: auto;
+				border-right-color: transparent;
+				right: -16px;
+				border-left-color: #effaf5;
+			}
+
+			&::after {
+				content: '\f00c';
+				font-size: 16px;
+				right: 1.25rem;
+				opacity: 0.2;
+				font-family: 'Font Awesome 5 Free';
+				font-weight: 900;
+				font-style: normal;
+				font-variant: normal;
+				line-height: 1;
+				-moz-osx-font-smoothing: grayscale;
+				-webkit-font-smoothing: antialiased;
+				text-rendering: auto;
+			}
+		}
+
+		&--view-block&--sent&--read {
+			&::after {
+				content: '\f560';
+			}
+		}
+
+		&--view-block &__header {
+			padding-right: 1.5rem;
+		}
+
 		&--view-block &__header,
 		&--view-block &__listing {
 			&:not(:last-child) {
@@ -24,6 +85,16 @@
 
 		&--view-block &__sender {
 			word-wrap: break-word;
+
+			&::before {
+				opacity: 0;
+			}
+		}
+
+		&--thread-block:not(&--read) &__sender {
+			span {
+				font-weight: bold;
+			}
 		}
 
 		&--view-block &__sent-date {
@@ -31,12 +102,37 @@
 		}
 
 		&__text {
+			&:not(:last-child) {
+				margin-bottom: 0.5rem;
+			}
+
 			p {
 				margin-bottom: 0.5rem;
 
 				&:last-child {
 					margin-bottom: 0;
 				}
+			}
+		}
+
+		&__attachment {
+			max-width: 100%;
+
+			span {
+				white-space: nowrap;
+			    overflow: hidden;
+			    text-overflow: ellipsis;
+			}
+		}
+	}
+	/*--------------------------------------------------------------
+	Fields
+	--------------------------------------------------------------*/
+	&-modal &-field--attachment-upload {
+		> div:first-child {
+			> div {
+				flex-basis: 33.33333333%;
+				max-width: 33.33333333%;
 			}
 		}
 	}

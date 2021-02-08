@@ -27,16 +27,30 @@ final class Message extends Component {
 	 * @param array $args Component arguments.
 	 */
 	public function __construct( $args = [] ) {
+
+		// Validate message.
+		add_filter( 'hivepress/v1/models/message/errors', [ $this, 'validate_message' ], 10, 2 );
+
+		// Allow message attachment.
+		add_filter( 'option_hp_message_allow_attachment', [ $this, 'allow_message_attachment' ] );
+
+		if ( get_option( 'hp_message_allow_attachment' ) ) {
+
+			// Add message fields.
+			add_filter( 'hivepress/v1/models/message', [ $this, 'add_message_fields' ] );
+			add_filter( 'hivepress/v1/forms/message_send', [ $this, 'add_message_fields' ] );
+		}
+
 		if ( get_option( 'hp_message_enable_storage' ) ) {
 
 			// Delete messages.
-			add_action( 'hivepress/v1/events/hourly', [ $this, 'delete_old_messages' ] );
+			add_action( 'hivepress/v1/events/daily', [ $this, 'delete_old_messages' ] );
 			add_action( 'hivepress/v1/models/user/delete', [ $this, 'delete_user_messages' ] );
 
 			// Clear message cache.
-			add_action( 'hivepress/v1/models/message/create', [ $this, 'clear_message_cache' ] );
-			add_action( 'hivepress/v1/models/message/update', [ $this, 'clear_message_cache' ] );
-			add_action( 'hivepress/v1/models/message/delete', [ $this, 'clear_message_cache' ] );
+			add_action( 'hivepress/v1/models/message/create', [ $this, 'clear_message_cache' ], 10, 2 );
+			add_action( 'hivepress/v1/models/message/update', [ $this, 'clear_message_cache' ], 10, 2 );
+			add_action( 'hivepress/v1/models/message/delete', [ $this, 'clear_message_cache' ], 10, 2 );
 		}
 
 		if ( ! is_admin() ) {
@@ -48,8 +62,12 @@ final class Message extends Component {
 			add_filter( 'hivepress/v1/menus/user_account', [ $this, 'alter_account_menu' ] );
 
 			// Alter templates.
+			add_filter( 'hivepress/v1/templates/message_view_block/blocks', [ $this, 'alter_message_view_blocks' ], 10, 2 );
+			add_filter( 'hivepress/v1/templates/message_thread_block/blocks', [ $this, 'alter_message_view_blocks' ], 10, 2 );
+
 			add_filter( 'hivepress/v1/templates/listing_view_block', [ $this, 'alter_listing_view_block' ] );
 			add_filter( 'hivepress/v1/templates/listing_view_page', [ $this, 'alter_listing_view_page' ] );
+
 			add_filter( 'hivepress/v1/templates/vendor_view_block', [ $this, 'alter_vendor_view_block' ] );
 			add_filter( 'hivepress/v1/templates/vendor_view_page', [ $this, 'alter_vendor_view_page' ] );
 
@@ -59,6 +77,133 @@ final class Message extends Component {
 		}
 
 		parent::__construct( $args );
+	}
+
+	/**
+	 * Gets message draft.
+	 *
+	 * @return object
+	 */
+	public function get_message_draft() {
+		$draft = hivepress()->request->get_context( 'message_draft' );
+
+		if ( ! $draft ) {
+
+			// Get cached draft ID.
+			$draft_id = hivepress()->cache->get_user_cache( get_current_user_id(), 'draft_id', 'models/message' );
+
+			if ( is_null( $draft_id ) ) {
+
+				// Get draft ID.
+				$draft_id = Models\Message::query()->filter(
+					[
+						'sender'    => get_current_user_id(),
+						'recipient' => 0,
+					]
+				)->get_first_id();
+
+				if ( ! $draft_id ) {
+
+					// Add draft.
+					$draft_id = (int) wp_insert_comment(
+						[
+							'comment_type'  => 'hp_message',
+							'user_id'       => get_current_user_id(),
+							'comment_karma' => 0,
+						]
+					);
+				}
+
+				// Cache draft ID.
+				if ( $draft_id ) {
+					hivepress()->cache->set_user_cache( get_current_user_id(), 'draft_id', 'models/message', $draft_id );
+				}
+			}
+
+			if ( $draft_id ) {
+
+				// Get draft.
+				$draft = Models\Message::query()->get_by_id( $draft_id );
+
+				// Set request context.
+				hivepress()->request->set_context( 'message_draft', $draft );
+			}
+		}
+
+		return $draft;
+	}
+
+	/**
+	 * Validates message.
+	 *
+	 * @param array  $errors Error messages.
+	 * @param object $message Message object.
+	 * @return array
+	 */
+	public function validate_message( $errors, $message ) {
+		if ( ! $message->get_id() && empty( $errors ) ) {
+
+			// Get keywords.
+			$keywords = get_option( 'hp_message_blocked_keywords' );
+
+			if ( $keywords ) {
+				$keywords = array_filter( array_map( 'trim', explode( "\n", $keywords ) ) );
+
+				// Check keywords.
+				foreach ( $keywords as $keyword ) {
+					if ( preg_match( '/' . preg_quote( $keyword, '/' ) . '/i', $message->get_text() ) ) {
+
+						// Add error.
+						$errors[] = esc_html__( 'Your message contains inappropriate content.', 'hivepress-messages' );
+
+						break;
+					}
+				}
+			}
+		}
+
+		return $errors;
+	}
+
+	/**
+	 * Allows message attachment.
+	 *
+	 * @param mixed $value Option value.
+	 * @return bool
+	 */
+	public function allow_message_attachment( $value ) {
+		return $value && get_option( 'hp_message_enable_storage' );
+	}
+
+	/**
+	 * Adds message fields.
+	 *
+	 * @param array $form Form arguments.
+	 * @return array
+	 */
+	public function add_message_fields( $form ) {
+
+		// Get file formats.
+		$formats = hivepress()->request->get_context( 'message_attachment_types' );
+
+		if ( ! is_array( $formats ) ) {
+			$formats = array_filter( explode( '|', implode( '|', (array) get_option( 'hp_message_attachment_types' ) ) ) );
+
+			hivepress()->request->set_context( 'message_attachment_types', $formats );
+		}
+
+		// Add attachment field.
+		$form['fields']['attachment'] = [
+			'label'     => esc_html__( 'Attachment', 'hivepress-messages' ),
+			'type'      => 'attachment_upload',
+			'formats'   => $formats,
+			'protected' => true,
+			'_model'    => 'attachment',
+			'_external' => true,
+			'_order'    => 20,
+		];
+
+		return $form;
 	}
 
 	/**
@@ -97,6 +242,15 @@ final class Message extends Component {
 				wp_delete_comment( $message_id, true );
 			}
 		}
+
+		// Delete message drafts.
+		if ( get_option( 'hp_message_allow_attachment' ) ) {
+			Models\Message::query()->filter(
+				[
+					'recipient' => 0,
+				]
+			)->delete();
+		}
 	}
 
 	/**
@@ -121,18 +275,11 @@ final class Message extends Component {
 	/**
 	 * Clears message cache.
 	 *
-	 * @param int $message_id Message ID.
+	 * @param int    $message_id Message ID.
+	 * @param object $message Message object.
 	 */
-	public function clear_message_cache( $message_id ) {
-
-		// Get message.
-		$message = Models\Message::query()->get_by_id( $message_id );
-
-		if ( $message ) {
-
-			// Delete cache.
-			hivepress()->cache->delete_user_cache( $message->get_recipient__id(), null, 'models/message' );
-		}
+	public function clear_message_cache( $message_id, $message ) {
+		hivepress()->cache->delete_user_cache( $message->get_recipient__id(), null, 'models/message' );
 	}
 
 	/**
@@ -160,10 +307,14 @@ final class Message extends Component {
 			$thread_ids = array_column(
 				$wpdb->get_results(
 					$wpdb->prepare(
-						"SELECT comment_ID FROM {$wpdb->comments}
-						WHERE comment_type = %s AND ( user_id = %d OR comment_karma = %d )
-						GROUP BY user_id, comment_karma
-						ORDER BY comment_date DESC;",
+						"WITH threads AS (
+  							SELECT comment_ID, ROW_NUMBER()
+							OVER (PARTITION BY user_id, comment_karma ORDER BY comment_ID DESC) AS priority
+  							FROM {$wpdb->comments}
+							WHERE comment_type = %s AND ( user_id = %d OR comment_karma = %d ) AND comment_karma != 0
+						)
+
+						SELECT * FROM threads WHERE priority = 1;",
 						'hp_message',
 						get_current_user_id(),
 						get_current_user_id()
@@ -181,6 +332,41 @@ final class Message extends Component {
 
 		// Set request context.
 		hivepress()->request->set_context( 'message_thread_ids', $thread_ids );
+
+		// Check thread IDs.
+		if ( ! $thread_ids ) {
+			return;
+		}
+
+		// Get cached unread count.
+		$unread_count = hivepress()->cache->get_user_cache( get_current_user_id(), 'unread_count', 'models/message' );
+
+		if ( is_null( $unread_count ) ) {
+
+			// Get unread count.
+			$unread_count = absint(
+				$wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(*)
+						FROM {$wpdb->comments}
+						WHERE comment_type = %s AND comment_karma = %d
+						AND comment_approved = %s",
+						'hp_message',
+						get_current_user_id(),
+						'0'
+					)
+				)
+			);
+
+			// Cache unread count.
+			hivepress()->cache->set_user_cache( get_current_user_id(), 'unread_count', 'models/message', $unread_count );
+		}
+
+		// Set request context.
+		if ( $unread_count ) {
+			hivepress()->request->set_context( 'message_unread_count', $unread_count );
+			hivepress()->request->set_context( 'notice_count', (int) hivepress()->request->get_context( 'notice_count' ) + $unread_count );
+		}
 	}
 
 	/**
@@ -191,13 +377,63 @@ final class Message extends Component {
 	 */
 	public function alter_account_menu( $menu ) {
 		if ( hivepress()->request->get_context( 'message_thread_ids' ) ) {
-			$menu['items']['messages_thread'] = [
+			$menu_item = [
 				'route'  => 'messages_thread_page',
 				'_order' => 30,
 			];
+
+			if ( hivepress()->request->get_context( 'message_unread_count' ) ) {
+				$menu_item['meta'] = hivepress()->request->get_context( 'message_unread_count' );
+			}
+
+			$menu['items']['messages_thread'] = $menu_item;
 		}
 
 		return $menu;
+	}
+
+	/**
+	 * Alters message view blocks.
+	 *
+	 * @param array  $blocks Block arguments.
+	 * @param object $template Template object.
+	 * @return array
+	 */
+	public function alter_message_view_blocks( $blocks, $template ) {
+
+		// Get message.
+		$message = $template->get_context( 'message' );
+
+		if ( $message ) {
+
+			// Get classes.
+			$classes = [];
+
+			if ( $message->get_sender__id() === get_current_user_id() ) {
+				$classes[] = 'hp-message--sent';
+			}
+
+			if ( $message->is_read() ) {
+				$classes[] = 'hp-message--read';
+			}
+
+			// Set attributes.
+			$blocks = hp\merge_trees(
+				[ 'blocks' => $blocks ],
+				[
+					'blocks' => [
+						'message_container' => [
+							'attributes' => [
+								'id'    => 'message-' . $message->get_id(),
+								'class' => $classes,
+							],
+						],
+					],
+				]
+			)['blocks'];
+		}
+
+		return $blocks;
 	}
 
 	/**

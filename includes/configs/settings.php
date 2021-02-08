@@ -16,9 +16,40 @@ return [
 		'_order'   => 110,
 
 		'sections' => [
+			'sending' => [
+				'title'  => esc_html__( 'Sending', 'hivepress-messages' ),
+				'_order' => 10,
+
+				'fields' => [
+					'message_allow_attachment' => [
+						'label'   => esc_html__( 'Attachments', 'hivepress-messages' ),
+						'caption' => esc_html__( 'Allow file attachments', 'hivepress-messages' ),
+						'type'    => 'checkbox',
+						'_order'  => 10,
+					],
+
+					'message_attachment_types' => [
+						'label'    => esc_html__( 'Allowed File Types', 'hivepress-messages' ),
+						'type'     => 'select',
+						'options'  => 'mime_types',
+						'multiple' => true,
+						'_parent'  => 'message_allow_attachment',
+						'_order'   => 20,
+					],
+
+					'message_blocked_keywords' => [
+						'label'       => esc_html__( 'Blocked Keywords', 'hivepress-messages' ),
+						'description' => esc_html__( 'Messages containing these keywords will be blocked, enter each keyword on a new line.', 'hivepress-messages' ),
+						'type'        => 'textarea',
+						'max_length'  => 2048,
+						'_order'      => 30,
+					],
+				],
+			],
+
 			'storage' => [
 				'title'  => hivepress()->translator->get_string( 'storage' ),
-				'_order' => 10,
+				'_order' => 20,
 
 				'fields' => [
 					'message_enable_storage' => [
@@ -35,6 +66,7 @@ return [
 						'description' => esc_html__( 'Set the number of days after which a message is deleted.', 'hivepress-messages' ),
 						'type'        => 'number',
 						'min_value'   => 1,
+						'_parent'     => 'message_enable_storage',
 						'_order'      => 20,
 					],
 				],

@@ -39,15 +39,15 @@ class Message extends Comment {
 					'sent_date'            => [
 						'type'   => 'date',
 						'format' => 'Y-m-d H:i:s',
+						'time'   => true,
 						'_alias' => 'comment_date',
 					],
 
 					'sender'               => [
-						'type'      => 'number',
-						'min_value' => 1,
-						'required'  => true,
-						'_alias'    => 'user_id',
-						'_model'    => 'user',
+						'type'     => 'id',
+						'required' => true,
+						'_alias'   => 'user_id',
+						'_model'   => 'user',
 					],
 
 					'sender__display_name' => [
@@ -64,18 +64,23 @@ class Message extends Comment {
 					],
 
 					'recipient'            => [
+						'type'     => 'id',
+						'required' => true,
+						'_alias'   => 'comment_karma',
+						'_model'   => 'user',
+					],
+
+					'read'                 => [
 						'type'      => 'number',
-						'min_value' => 1,
-						'required'  => true,
-						'_alias'    => 'comment_karma',
-						'_model'    => 'user',
+						'min_value' => 0,
+						'max_value' => 1,
+						'_alias'    => 'comment_approved',
 					],
 
 					'listing'              => [
-						'type'      => 'number',
-						'min_value' => 1,
-						'_alias'    => 'comment_post_ID',
-						'_model'    => 'listing',
+						'type'   => 'id',
+						'_alias' => 'comment_post_ID',
+						'_model' => 'listing',
 					],
 				],
 			],
@@ -83,5 +88,31 @@ class Message extends Comment {
 		);
 
 		parent::__construct( $args );
+	}
+
+	/**
+	 * Gets user ID.
+	 *
+	 * @return mixed
+	 */
+	final public function get_user__id() {
+		return $this->get_sender__id();
+	}
+
+	/**
+	 * Gets attachment URL.
+	 *
+	 * @return string
+	 */
+	final public function get_attachment__url() {
+		if ( ! isset( $this->values['attachment__url'] ) ) {
+			$this->values['attachment__url'] = '';
+
+			if ( $this->get_attachment__id() ) {
+				$this->values['attachment__url'] = wp_get_attachment_url( $this->get_attachment__id() );
+			}
+		}
+
+		return $this->values['attachment__url'];
 	}
 }
