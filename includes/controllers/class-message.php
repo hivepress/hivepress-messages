@@ -269,7 +269,7 @@ final class Message extends Controller {
 			[
 				'id__in' => $thread_ids,
 			]
-		)->order( 'id__in' )
+		)->order( [ 'sent_date' => 'desc' ] )
 		->limit( count( $thread_ids ) )
 		->get()
 		->serialize();
