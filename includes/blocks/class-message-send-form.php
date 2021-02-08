@@ -47,7 +47,7 @@ class Message_Send_Form extends Form {
 			// Get listing.
 			$listing = $this->get_context( 'listing' );
 
-			if ( hp\is_class_instance( $listing, '\HivePress\Models\Listing' ) ) {
+			if ( $listing ) {
 				$this->values = array_merge(
 					$this->values,
 					[
@@ -60,14 +60,14 @@ class Message_Send_Form extends Form {
 				// Get vendor.
 				$vendor = $this->get_context( 'vendor' );
 
-				if ( hp\is_class_instance( $vendor, '\HivePress\Models\Vendor' ) ) {
+				if ( $vendor ) {
 					$this->values['recipient'] = $vendor->get_user__id();
 				} elseif ( hivepress()->get_version( 'marketplace' ) ) {
 
 					// Get order.
 					$order = $this->get_context( 'order' );
 
-					if ( hp\is_class_instance( $order, '\HivePress\Models\Order' ) ) {
+					if ( $order ) {
 						if ( get_current_user_id() === $order->get_buyer__id() ) {
 							$this->values['recipient'] = $order->get_seller__id();
 						} else {
@@ -81,7 +81,7 @@ class Message_Send_Form extends Form {
 			if ( get_option( 'hp_message_allow_attachment' ) ) {
 				$this->context['message'] = hivepress()->message->get_message_draft();
 
-				$this->attributes['data-reset'] = true;
+				$this->attributes['data-reset'] = 'true';
 			}
 		}
 
