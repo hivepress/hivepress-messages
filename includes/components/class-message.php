@@ -307,14 +307,9 @@ final class Message extends Component {
 			$thread_ids = array_column(
 				$wpdb->get_results(
 					$wpdb->prepare(
-						"WITH threads AS (
-  							SELECT comment_ID, ROW_NUMBER()
-							OVER (PARTITION BY user_id, comment_karma ORDER BY comment_ID DESC) AS priority
-  							FROM {$wpdb->comments}
-							WHERE comment_type = %s AND ( user_id = %d OR comment_karma = %d ) AND comment_karma != 0
-						)
-
-						SELECT * FROM threads WHERE priority = 1;",
+						"SELECT MAX(comment_ID) AS comment_ID FROM {$wpdb->comments}
+						WHERE comment_type = %s AND ( user_id = %d OR comment_karma = %d ) AND comment_karma != 0
+						GROUP BY user_id, comment_karma;",
 						'hp_message',
 						get_current_user_id(),
 						get_current_user_id()
