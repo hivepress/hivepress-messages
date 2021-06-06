@@ -15,7 +15,7 @@ Allow users to send private messages.
 
 HivePress Messages is an extension for [HivePress](https://wordpress.org/plugins/hivepress/) plugin. It allows users to send private messages.
 
-[Demo](https://demo.hivepress.io/) | [Docs](https://hivepress.io/docs/extensions/messages/) | [Support](https://hivepress.io/support/forum/extensions/messages/)
+[Demo](https://demo.hivepress.io/) | [Docs](https://hivepress.io/docs/extensions/messages/?utm_medium=referral&utm_source=wordpress.org) | [Support](https://hivepress.io/support/forum/extensions/messages/?utm_medium=referral&utm_source=wordpress.org)
 
 == Changelog ==
 
