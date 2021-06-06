@@ -55,6 +55,13 @@ class Message_Send_Form extends Form {
 						'listing'   => $listing->get_id(),
 					]
 				);
+
+				// Get booking.
+				$booking = $this->get_context( 'booking' );
+
+				if ( $booking && get_current_user_id() === $listing->get_user__id() ) {
+					$this->values['recipient'] = $booking->get_user__id();
+				}
 			} else {
 
 				// Get vendor.

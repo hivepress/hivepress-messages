@@ -74,6 +74,11 @@ final class Message extends Component {
 			if ( hivepress()->get_version( 'marketplace' ) ) {
 				add_filter( 'hivepress/v1/templates/order_footer_block', [ $this, 'alter_order_footer_block' ] );
 			}
+
+			if ( hivepress()->get_version( 'bookings' ) ) {
+				add_filter( 'hivepress/v1/templates/booking_view_block', [ $this, 'alter_booking_view_block' ] );
+				add_filter( 'hivepress/v1/templates/booking_view_page', [ $this, 'alter_booking_view_page' ] );
+			}
 		}
 
 		parent::__construct( $args );
@@ -636,6 +641,92 @@ final class Message extends Component {
 							'message_send_link'  => [
 								'type'   => 'part',
 								'path'   => 'order/view/page/message-send-link',
+								'_order' => 10,
+							],
+						],
+					],
+				],
+			]
+		);
+	}
+
+	/**
+	 * Alters booking view block.
+	 *
+	 * @param array $template Template arguments.
+	 * @return array
+	 */
+	public function alter_booking_view_block( $template ) {
+		return hp\merge_trees(
+			$template,
+			[
+				'blocks' => [
+					'booking_actions_primary' => [
+						'blocks' => [
+							'message_send_modal' => [
+								'type'   => 'modal',
+								'model'  => 'booking',
+								'title'  => hivepress()->translator->get_string( 'send_message' ),
+								'_order' => 5,
+
+								'blocks' => [
+									'message_send_form' => [
+										'type'       => 'message_send_form',
+										'_order'     => 10,
+
+										'attributes' => [
+											'class' => [ 'hp-form--narrow' ],
+										],
+									],
+								],
+							],
+
+							'message_send_link'  => [
+								'type'   => 'part',
+								'path'   => 'booking/view/block/message-send-link',
+								'_order' => 10,
+							],
+						],
+					],
+				],
+			]
+		);
+	}
+
+	/**
+	 * Alters booking view page.
+	 *
+	 * @param array $template Template arguments.
+	 * @return array
+	 */
+	public function alter_booking_view_page( $template ) {
+		return hp\merge_trees(
+			$template,
+			[
+				'blocks' => [
+					'booking_actions_primary' => [
+						'blocks' => [
+							'message_send_modal' => [
+								'type'   => 'modal',
+								'model'  => 'booking',
+								'title'  => hivepress()->translator->get_string( 'send_message' ),
+								'_order' => 5,
+
+								'blocks' => [
+									'message_send_form' => [
+										'type'       => 'message_send_form',
+										'_order'     => 10,
+
+										'attributes' => [
+											'class' => [ 'hp-form--narrow' ],
+										],
+									],
+								],
+							],
+
+							'message_send_link'  => [
+								'type'   => 'part',
+								'path'   => 'booking/view/page/message-send-link',
 								'_order' => 10,
 							],
 						],
