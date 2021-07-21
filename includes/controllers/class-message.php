@@ -145,7 +145,11 @@ final class Message extends Controller {
 			if ( $message_draft && $message_draft->get_attachment__id() ) {
 
 				// Get attachments.
-				$attachments = (array) $message_draft->get_attachment();
+				$attachments = $message_draft->get_attachment();
+
+				if ( ! is_array( $attachments ) ) {
+					$attachments = [ $attachments ];
+				}
 
 				if ( $attachments ) {
 
