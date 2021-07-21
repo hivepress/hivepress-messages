@@ -69,7 +69,7 @@ class Message_Send_Form extends Form {
 
 				if ( $vendor ) {
 					$this->values['recipient'] = $vendor->get_user__id();
-				} elseif ( hivepress()->get_version( 'marketplace' ) ) {
+				} elseif ( hivepress()->get_version( 'marketplace' ) || hivepress()->get_version( 'requests' ) ) {
 
 					// Get order.
 					$order = $this->get_context( 'order' );
@@ -79,6 +79,14 @@ class Message_Send_Form extends Form {
 							$this->values['recipient'] = $order->get_seller__id();
 						} else {
 							$this->values['recipient'] = $order->get_buyer__id();
+						}
+					} else {
+
+						// Get request.
+						$request = $this->get_context( 'request' );
+
+						if ( $request ) {
+							$this->values['recipient'] = $request->get_user__id();
 						}
 					}
 				}
