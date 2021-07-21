@@ -144,13 +144,17 @@ final class Message extends Controller {
 
 			if ( $message_draft && $message_draft->get_attachment__id() ) {
 
-				// Get attachment.
-				$attachment = $message_draft->get_attachment();
+				// Get attachments.
+				$attachments = $message_draft->get_attachment();
 
-				if ( $attachment ) {
+				if ( ! is_array( $attachments ) ) {
+					$attachments = [ $attachments ];
+				}
+
+				if ( $attachments ) {
 
 					// Set attachment.
-					$message->set_attachment( $attachment->get_id() );
+					$message->set_attachment( $message_draft->get_attachment__id() );
 				}
 			}
 		}
@@ -179,9 +183,11 @@ final class Message extends Controller {
 				return hp\rest_error( 400, $message->_get_errors() );
 			}
 
-			// Set attachment.
-			if ( isset( $attachment ) ) {
-				$attachment->set_parent( $message->get_id() )->save_parent();
+			// Set attachments.
+			if ( isset( $attachments ) ) {
+				foreach ( $attachments as $attachment ) {
+					$attachment->set_parent( $message->get_id() )->save_parent();
+				}
 
 				$message_draft->set_attachment( null )->save_attachment();
 			}
