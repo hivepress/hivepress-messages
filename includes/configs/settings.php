@@ -44,6 +44,13 @@ return [
 						'max_length'  => 2048,
 						'_order'      => 30,
 					],
+
+					'message_allow_monitoring' => [
+						'label'   => hivepress()->translator->get_string( 'messages' ),
+						'caption' => esc_html__( 'Allow admins to monitor messages', 'hivepress-messages' ),
+						'type'    => 'checkbox',
+						'_order'  => 40,
+					],
 				],
 			],
 
