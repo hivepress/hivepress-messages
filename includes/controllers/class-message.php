@@ -500,7 +500,7 @@ final class Message extends Controller {
 	}
 
 	/**
-	 * Redirects messages view page.
+	 * Redirects messages monitor page.
 	 *
 	 * @return mixed
 	 */
@@ -557,7 +557,7 @@ final class Message extends Controller {
 	}
 
 	/**
-	 * Renders messages view page.
+	 * Renders messages monitor page.
 	 *
 	 * @return string
 	 */
