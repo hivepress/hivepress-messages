@@ -32,19 +32,19 @@ final class Message extends Controller {
 		$args = hp\merge_arrays(
 			[
 				'routes' => [
-					'messages_resource'    => [
+					'messages_resource'     => [
 						'path' => '/messages',
 						'rest' => true,
 					],
 
-					'message_send_action'  => [
+					'message_send_action'   => [
 						'base'   => 'messages_resource',
 						'method' => 'POST',
 						'action' => [ $this, 'send_message' ],
 						'rest'   => true,
 					],
 
-					'messages_thread_page' => [
+					'messages_thread_page'  => [
 						'title'    => hivepress()->translator->get_string( 'messages' ),
 						'base'     => 'user_account_page',
 						'path'     => '/messages',
@@ -52,12 +52,20 @@ final class Message extends Controller {
 						'action'   => [ $this, 'render_messages_thread_page' ],
 					],
 
-					'messages_view_page'   => [
+					'messages_view_page'    => [
 						'base'     => 'messages_thread_page',
 						'path'     => '/(?P<user_id>\d+)',
 						'title'    => [ $this, 'get_messages_view_title' ],
 						'redirect' => [ $this, 'redirect_messages_view_page' ],
 						'action'   => [ $this, 'render_messages_view_page' ],
+					],
+
+					'messages_monitor_page' => [
+						'base'     => 'messages_thread_page',
+						'path'     => '/(?P<user_id>\d+)/(?P<recipient_id>\d+)',
+						'title'    => [ $this, 'get_messages_view_title' ],
+						'redirect' => [ $this, 'redirect_messages_monitor_page' ],
+						'action'   => [ $this, 'render_messages_monitor_page' ],
 					],
 				],
 			],
@@ -263,20 +271,33 @@ final class Message extends Controller {
 		// Get thread IDs.
 		$thread_ids = hivepress()->request->get_context( 'message_thread_ids', [] );
 
+		// Set query.
+		$query = [
+			'id__in' => $thread_ids,
+		];
+
+		if ( get_option( 'hp_message_allow_monitoring' ) && current_user_can( 'manage_options' ) ) {
+			$query = [];
+		}
+
 		// Get threads.
 		$threads = [];
 
 		$messages = Models\Message::query()->filter(
-			[
-				'id__in' => $thread_ids,
-			]
+			$query
 		)->order( [ 'sent_date' => 'desc' ] )
-		->limit( count( $thread_ids ) )
 		->get()
 		->serialize();
 
 		foreach ( $messages as $message ) {
-			if ( $message->get_sender__id() === get_current_user_id() ) {
+
+			// Get sender id.
+			$sender_id = $message->get_sender__id();
+
+			// Get recipient id.
+			$recipient_id = $message->get_recipient__id();
+
+			if ( get_current_user_id() === $sender_id ) {
 
 				// Get recipient.
 				$recipient = $message->get_recipient();
@@ -297,8 +318,8 @@ final class Message extends Controller {
 			}
 
 			// Add thread.
-			if ( ! isset( $threads[ $message->get_sender__id() ] ) ) {
-				$threads[ $message->get_sender__id() ] = $message;
+			if ( ! hp\get_array_value( $threads, $sender_id . '&' . $recipient_id ) && ! hp\get_array_value( $threads, $recipient_id . '&' . $sender_id ) ) {
+				$threads[ $sender_id . '&' . $recipient_id ] = $message;
 			}
 		}
 
@@ -324,11 +345,27 @@ final class Message extends Controller {
 		// Get user.
 		$user = Models\User::query()->get_by_id( hivepress()->request->get_param( 'user_id' ) );
 
+		// Get recipient.
+		$recipient = Models\User::query()->get_by_id( hivepress()->request->get_param( 'recipient_id' ) );
+
 		// Set request context.
 		hivepress()->request->set_context( 'message_user', $user );
 
 		if ( $user ) {
-			return sprintf( esc_html__( 'Messages from %s', 'hivepress-messages' ), $user->get_display_name() );
+
+			// Set title.
+			/* translators: 1: user public name. */
+			$title = sprintf( esc_html__( 'Messages from %s', 'hivepress-messages' ), $user->get_display_name() );
+
+			if ( $recipient ) {
+				/* translators: 1: user public name, 2: recipient public name. */
+				$title = sprintf( esc_html__( 'Messages from %1$s to %2$s', 'hivepress-messages' ), $user->get_display_name(), $recipient->get_display_name() );
+
+				// Set request context.
+				hivepress()->request->set_context( 'message_recipient', $recipient );
+			}
+
+			return $title;
 		}
 	}
 
@@ -454,6 +491,95 @@ final class Message extends Controller {
 		return ( new Blocks\Template(
 			[
 				'template' => 'messages_view_page',
+
+				'context'  => [
+					'messages' => $messages,
+				],
+			]
+		) )->render();
+	}
+
+	/**
+	 * Redirects messages view page.
+	 *
+	 * @return mixed
+	 */
+	public function redirect_messages_monitor_page() {
+		global $wpdb;
+
+		// Check permissions.
+		if ( ! get_option( 'hp_message_enable_storage' ) || ! get_option( 'hp_message_allow_monitoring' ) ) {
+			return true;
+		}
+
+		// Check authentication.
+		if ( ! is_user_logged_in() ) {
+			return hivepress()->router->get_return_url( 'user_login_page' );
+		}
+
+		// Get user.
+		$user = hivepress()->request->get_context( 'message_user' );
+
+		// Get recipient.
+		$recipient = hivepress()->request->get_context( 'message_recipient' );
+
+		if ( ! $user || ! $recipient || ! current_user_can( 'manage_options' ) ) {
+			return hivepress()->router->get_url( 'messages_thread_page' );
+		}
+
+		// Get message IDs.
+		$message_ids = array_column(
+			$wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT comment_ID FROM {$wpdb->comments}
+					WHERE comment_type = %s AND ( ( user_id = %d AND comment_karma = %d ) OR ( user_id = %d AND comment_karma = %d ) )
+					ORDER BY comment_date ASC;",
+					'hp_message',
+					$recipient->get_id(),
+					$user->get_id(),
+					$user->get_id(),
+					$recipient->get_id()
+				),
+				ARRAY_A
+			),
+			'comment_ID'
+		);
+
+		// Check messages.
+		if ( ! $message_ids ) {
+			return hivepress()->router->get_url( 'messages_thread_page' );
+		}
+
+		// Set request context.
+		hivepress()->request->set_context( 'message_ids', $message_ids );
+
+		return false;
+	}
+
+	/**
+	 * Renders messages view page.
+	 *
+	 * @return string
+	 */
+	public function render_messages_monitor_page() {
+
+		// Get message IDs.
+		$message_ids = hivepress()->request->get_context( 'message_ids', [] );
+
+		// Get messages.
+		$messages = Models\Message::query()->filter(
+			[
+				'id__in' => $message_ids,
+			]
+		)->order( 'id__in' )
+		->limit( count( $message_ids ) )
+		->get()
+		->serialize();
+
+		// Render template.
+		return ( new Blocks\Template(
+			[
+				'template' => 'messages_monitor_page',
 
 				'context'  => [
 					'messages' => $messages,
