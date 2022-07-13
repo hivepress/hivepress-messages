@@ -64,6 +64,7 @@ final class Message extends Component {
 			// Alter templates.
 			add_filter( 'hivepress/v1/templates/message_view_block/blocks', [ $this, 'alter_message_view_blocks' ], 10, 2 );
 			add_filter( 'hivepress/v1/templates/message_thread_block/blocks', [ $this, 'alter_message_view_blocks' ], 10, 2 );
+			add_filter( 'hivepress/v1/templates/messages_view_page/blocks', [ $this, 'alter_message_view_page' ], 10, 2 );
 
 			add_filter( 'hivepress/v1/templates/listing_view_block', [ $this, 'alter_listing_view_block' ] );
 			add_filter( 'hivepress/v1/templates/listing_view_page', [ $this, 'alter_listing_view_page' ] );
@@ -734,5 +735,33 @@ final class Message extends Component {
 				],
 			]
 		);
+	}
+
+	/**
+	 * Alters messages view page.
+	 *
+	 * @param array  $blocks Block arguments.
+	 * @param object $template Template object.
+	 * @return array
+	 */
+	public function alter_message_view_page( $blocks, $template ) {
+		if ( 'monitor' !== $template->get_context( 'access_type' ) ) {
+			$blocks = hivepress()->helper->merge_trees(
+				[ 'blocks' => $blocks ],
+				[
+					'blocks' => [
+						'page_content' => [
+							'blocks' => [
+								'message_send_form' => [
+									'type'   => 'message_send_form',
+									'_order' => 20,
+								],
+							],
+						],
+					],
+				]
+			)['blocks'];
+		}
+		return $blocks;
 	}
 }

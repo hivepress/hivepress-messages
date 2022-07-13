@@ -32,19 +32,19 @@ final class Message extends Controller {
 		$args = hp\merge_arrays(
 			[
 				'routes' => [
-					'messages_resource'     => [
+					'messages_resource'    => [
 						'path' => '/messages',
 						'rest' => true,
 					],
 
-					'message_send_action'   => [
+					'message_send_action'  => [
 						'base'   => 'messages_resource',
 						'method' => 'POST',
 						'action' => [ $this, 'send_message' ],
 						'rest'   => true,
 					],
 
-					'messages_thread_page'  => [
+					'messages_thread_page' => [
 						'title'    => hivepress()->translator->get_string( 'messages' ),
 						'base'     => 'user_account_page',
 						'path'     => '/messages',
@@ -52,20 +52,12 @@ final class Message extends Controller {
 						'action'   => [ $this, 'render_messages_thread_page' ],
 					],
 
-					'messages_view_page'    => [
+					'messages_view_page'   => [
 						'base'     => 'messages_thread_page',
-						'path'     => '/(?P<user_id>\d+)',
+						'path'     => '/(?P<user_id>\d+)/?(?P<recipient_id>\d+)?',
 						'title'    => [ $this, 'get_messages_view_title' ],
 						'redirect' => [ $this, 'redirect_messages_view_page' ],
 						'action'   => [ $this, 'render_messages_view_page' ],
-					],
-
-					'messages_monitor_page' => [
-						'base'     => 'messages_thread_page',
-						'path'     => '/(?P<user_id>\d+)/(?P<recipient_id>\d+)',
-						'title'    => [ $this, 'get_messages_view_title' ],
-						'redirect' => [ $this, 'redirect_messages_monitor_page' ],
-						'action'   => [ $this, 'render_messages_monitor_page' ],
 					],
 				],
 			],
@@ -276,7 +268,7 @@ final class Message extends Controller {
 			'id__in' => $thread_ids,
 		];
 
-		if ( get_option( 'hp_message_allow_monitoring' ) && current_user_can( 'manage_options' ) ) {
+		if ( get_option( 'hp_message_monitoring' ) && current_user_can( 'manage_options' ) ) {
 			$query = [];
 		}
 
@@ -362,7 +354,7 @@ final class Message extends Controller {
 				$title = sprintf( esc_html__( 'Messages from %1$s to %2$s', 'hivepress-messages' ), $user->get_display_name(), $recipient->get_display_name() );
 
 				// Set request context.
-				hivepress()->request->set_context( 'message_recipient', $recipient );
+				hivepress()->request->set_context( 'message_recipient_id', $recipient->get_id() );
 			}
 
 			return $title;
@@ -390,13 +382,16 @@ final class Message extends Controller {
 		// Check user.
 		$user = hivepress()->request->get_context( 'message_user' );
 
-		if ( ! $user || get_current_user_id() === $user->get_id() ) {
+		// Get recipient.
+		$recipient_id = hivepress()->request->get_context( 'message_recipient_id' ) ? hivepress()->request->get_context( 'message_recipient_id' ) : get_current_user_id();
+
+		if ( ! $user || ! $recipient_id || get_current_user_id() === $user->get_id() ) {
 			return hivepress()->router->get_url( 'messages_thread_page' );
 		}
 
 		// Get cached message IDs.
 		$message_ids = hivepress()->cache->get_user_cache(
-			get_current_user_id(),
+			$recipient_id,
 			[
 				'fields'  => 'ids',
 				'user_id' => $user->get_id(),
@@ -414,45 +409,47 @@ final class Message extends Controller {
 						WHERE comment_type = %s AND ( ( user_id = %d AND comment_karma = %d ) OR ( user_id = %d AND comment_karma = %d ) )
 						ORDER BY comment_date ASC;",
 						'hp_message',
-						get_current_user_id(),
+						$recipient_id,
 						$user->get_id(),
 						$user->get_id(),
-						get_current_user_id()
+						$recipient_id
 					),
 					ARRAY_A
 				),
 				'comment_ID'
 			);
 
-			// Cache message IDs.
-			if ( count( $message_ids ) <= 1000 ) {
-				hivepress()->cache->set_user_cache(
-					get_current_user_id(),
-					[
-						'fields'  => 'ids',
-						'user_id' => $user->get_id(),
-					],
-					'models/message',
-					$message_ids
-				);
-			}
+			if ( get_current_user_id() === $recipient_id ) {
+				// Cache message IDs.
+				if ( count( $message_ids ) <= 1000 ) {
+					hivepress()->cache->set_user_cache(
+						get_current_user_id(),
+						[
+							'fields'  => 'ids',
+							'user_id' => $user->get_id(),
+						],
+						'models/message',
+						$message_ids
+					);
+				}
 
-			if ( $message_ids ) {
+				if ( $message_ids ) {
 
-				// Read messages.
-				$wpdb->query(
-					$wpdb->prepare(
-						"UPDATE {$wpdb->comments} SET comment_approved = %s
-						WHERE comment_type = %s AND user_id = %d AND comment_karma = %d;",
-						'1',
-						'hp_message',
-						$user->get_id(),
-						get_current_user_id()
-					)
-				);
+					// Read messages.
+					$wpdb->query(
+						$wpdb->prepare(
+							"UPDATE {$wpdb->comments} SET comment_approved = %s
+							WHERE comment_type = %s AND user_id = %d AND comment_karma = %d;",
+							'1',
+							'hp_message',
+							$user->get_id(),
+							get_current_user_id()
+						)
+					);
 
-				// Delete cache.
-				hivepress()->cache->delete_user_cache( get_current_user_id(), 'unread_count', 'models/message' );
+					// Delete cache.
+					hivepress()->cache->delete_user_cache( get_current_user_id(), 'unread_count', 'models/message' );
+				}
 			}
 		}
 
@@ -487,103 +484,21 @@ final class Message extends Controller {
 		->get()
 		->serialize();
 
+		// Set context.
+		$context = [
+			'messages' => $messages,
+		];
+
+		if ( hivepress()->request->get_context( 'message_recipient_id' ) ) {
+			$context['access_type'] = 'monitor';
+		}
+
 		// Render template.
 		return ( new Blocks\Template(
 			[
 				'template' => 'messages_view_page',
 
-				'context'  => [
-					'messages' => $messages,
-				],
-			]
-		) )->render();
-	}
-
-	/**
-	 * Redirects messages monitor page.
-	 *
-	 * @return mixed
-	 */
-	public function redirect_messages_monitor_page() {
-		global $wpdb;
-
-		// Check permissions.
-		if ( ! get_option( 'hp_message_enable_storage' ) || ! get_option( 'hp_message_allow_monitoring' ) ) {
-			return true;
-		}
-
-		// Check authentication.
-		if ( ! is_user_logged_in() ) {
-			return hivepress()->router->get_return_url( 'user_login_page' );
-		}
-
-		// Get user.
-		$user = hivepress()->request->get_context( 'message_user' );
-
-		// Get recipient.
-		$recipient = hivepress()->request->get_context( 'message_recipient' );
-
-		if ( ! $user || ! $recipient || ! current_user_can( 'manage_options' ) ) {
-			return hivepress()->router->get_url( 'messages_thread_page' );
-		}
-
-		// Get message IDs.
-		$message_ids = array_column(
-			$wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT comment_ID FROM {$wpdb->comments}
-					WHERE comment_type = %s AND ( ( user_id = %d AND comment_karma = %d ) OR ( user_id = %d AND comment_karma = %d ) )
-					ORDER BY comment_date ASC;",
-					'hp_message',
-					$recipient->get_id(),
-					$user->get_id(),
-					$user->get_id(),
-					$recipient->get_id()
-				),
-				ARRAY_A
-			),
-			'comment_ID'
-		);
-
-		// Check messages.
-		if ( ! $message_ids ) {
-			return hivepress()->router->get_url( 'messages_thread_page' );
-		}
-
-		// Set request context.
-		hivepress()->request->set_context( 'message_ids', $message_ids );
-
-		return false;
-	}
-
-	/**
-	 * Renders messages monitor page.
-	 *
-	 * @return string
-	 */
-	public function render_messages_monitor_page() {
-
-		// Get message IDs.
-		$message_ids = hivepress()->request->get_context( 'message_ids', [] );
-
-		// Get messages.
-		$messages = Models\Message::query()->filter(
-			[
-				'id__in' => $message_ids,
-			]
-		)->order( 'id__in' )
-		->limit( count( $message_ids ) )
-		->get()
-		->serialize();
-
-		// Render template.
-		return ( new Blocks\Template(
-			[
-				'template' => 'messages_monitor_page',
-
-				'context'  => [
-					'messages' => $messages,
-				],
+				'context'  => $context,
 			]
 		) )->render();
 	}

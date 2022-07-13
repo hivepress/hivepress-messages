@@ -45,7 +45,7 @@ return [
 						'_order'      => 30,
 					],
 
-					'message_allow_monitoring' => [
+					'message_monitoring' => [
 						'label'   => hivepress()->translator->get_string( 'messages' ),
 						'caption' => esc_html__( 'Allow admins to monitor messages', 'hivepress-messages' ),
 						'type'    => 'checkbox',
