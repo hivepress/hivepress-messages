@@ -461,10 +461,6 @@ final class Message extends Component {
 									'message_send_form' => [
 										'type'       => 'message_send_form',
 										'_order'     => 10,
-
-										'attributes' => [
-											'class' => [ 'hp-form--narrow' ],
-										],
 									],
 								],
 							],
@@ -505,10 +501,6 @@ final class Message extends Component {
 									'message_send_form' => [
 										'type'       => 'message_send_form',
 										'_order'     => 10,
-
-										'attributes' => [
-											'class' => [ 'hp-form--narrow' ],
-										],
 									],
 								],
 							],
@@ -549,10 +541,6 @@ final class Message extends Component {
 									'message_send_form' => [
 										'type'       => 'message_send_form',
 										'_order'     => 10,
-
-										'attributes' => [
-											'class' => [ 'hp-form--narrow' ],
-										],
 									],
 								],
 							],
@@ -593,10 +581,6 @@ final class Message extends Component {
 									'message_send_form' => [
 										'type'       => 'message_send_form',
 										'_order'     => 10,
-
-										'attributes' => [
-											'class' => [ 'hp-form--narrow' ],
-										],
 									],
 								],
 							],
@@ -636,10 +620,6 @@ final class Message extends Component {
 									'message_send_form' => [
 										'type'       => 'message_send_form',
 										'_order'     => 10,
-
-										'attributes' => [
-											'class' => [ 'hp-form--narrow' ],
-										],
 									],
 								],
 							],
@@ -680,10 +660,6 @@ final class Message extends Component {
 									'message_send_form' => [
 										'type'       => 'message_send_form',
 										'_order'     => 10,
-
-										'attributes' => [
-											'class' => [ 'hp-form--narrow' ],
-										],
 									],
 								],
 							],
@@ -724,10 +700,6 @@ final class Message extends Component {
 									'message_send_form' => [
 										'type'       => 'message_send_form',
 										'_order'     => 10,
-
-										'attributes' => [
-											'class' => [ 'hp-form--narrow' ],
-										],
 									],
 								],
 							],
