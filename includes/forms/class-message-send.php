@@ -71,4 +71,20 @@ class Message_Send extends Model_Form {
 
 		parent::__construct( $args );
 	}
+
+	/**
+	 * Bootstraps form properties.
+	 */
+	protected function boot() {
+
+		// Set rendering.
+		$this->attributes['data-render'] = wp_json_encode(
+			[
+				'url'   => hivepress()->router->get_url( 'message_send_action' ),
+				'block' => 'messages',
+			]
+		);
+
+		parent::boot();
+	}
 }
