@@ -298,8 +298,10 @@ final class Message extends Controller {
 			}
 
 			// Add thread.
-			if ( ! isset( $threads[ $message->get_sender__id() ] ) ) {
-				$threads[ $message->get_sender__id() ] = $message;
+			$thread_key = $message->get_sender__id() . '-' . $message->get_recipient__id();
+
+			if ( ! isset( $threads[ $thread_key ] ) && ! isset( $threads[ $message->get_recipient__id() . '-' . $message->get_sender__id() ] ) ) {
+				$threads[ $thread_key ] = $message;
 			}
 		}
 
