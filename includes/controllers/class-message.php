@@ -392,7 +392,7 @@ final class Message extends Controller {
 				'fields'  => 'ids',
 				'user_id' => $sender->get_id(),
 			],
-			'models/message',
+			'models/message'
 		);
 
 		if ( is_null( $message_ids ) ) {
