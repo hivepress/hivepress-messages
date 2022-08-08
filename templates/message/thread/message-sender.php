@@ -8,7 +8,7 @@ $url = hivepress()->router->get_url( 'messages_view_page', [ 'user_id' => $messa
 // Set messages sender.
 $name = $message->get_sender__display_name();
 
-if ( get_option( 'hp_message_monitoring' ) && current_user_can( 'manage_options' ) && ( $message->get_sender__id() !== $message->get_recipient__id() && ! in_array( get_current_user_id(), [ $message->get_sender__id(), $message->get_recipient__id() ] ) ) ) {
+if ( get_option( 'hp_message_allow_monitoring' ) && current_user_can( 'manage_options' ) && ( $message->get_sender__id() !== $message->get_recipient__id() && ! in_array( get_current_user_id(), [ $message->get_sender__id(), $message->get_recipient__id() ] ) ) ) {
 	$url = hivepress()->router->get_url(
 		'messages_view_page',
 		[

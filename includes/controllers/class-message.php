@@ -268,7 +268,7 @@ final class Message extends Controller {
 			'id__in' => $thread_ids,
 		];
 
-		if ( get_option( 'hp_message_monitoring' ) && current_user_can( 'manage_options' ) ) {
+		if ( get_option( 'hp_message_allow_monitoring' ) && current_user_can( 'manage_options' ) ) {
 			$query = [];
 		}
 
