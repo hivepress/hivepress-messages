@@ -37,12 +37,20 @@ return [
 						'_order'   => 20,
 					],
 
+					'message_allow_monitoring' => [
+						'label'       => esc_html__( 'Monitoring', 'hivepress-messages' ),
+						'caption'     => esc_html__( 'Allow administrators to monitor messages', 'hivepress-messages' ),
+						'description' => esc_html__( 'Check this option to allow administrators to monitor the conversations of other users.', 'hivepress-messages' ),
+						'type'        => 'checkbox',
+						'_order'      => 30,
+					],
+
 					'message_blocked_keywords' => [
 						'label'       => esc_html__( 'Blocked Keywords', 'hivepress-messages' ),
 						'description' => esc_html__( 'Messages containing these keywords will be blocked, enter each keyword on a new line.', 'hivepress-messages' ),
 						'type'        => 'textarea',
 						'max_length'  => 2048,
-						'_order'      => 30,
+						'_order'      => 40,
 					],
 				],
 			],
