@@ -297,10 +297,15 @@ final class Message extends Controller {
 				);
 			}
 
-			// Add thread.
-			$thread_key = $message->get_sender__id() . '-' . $message->get_recipient__id();
+			// Get thread key.
+			$thread_key = [ $message->get_sender__id(), $message->get_recipient__id() ];
 
-			if ( ! isset( $threads[ $thread_key ] ) && ! isset( $threads[ $message->get_recipient__id() . '-' . $message->get_sender__id() ] ) ) {
+			sort( $thread_key );
+
+			$thread_key = implode( '-', $thread_key );
+
+			// Add thread.
+			if ( ! isset( $threads[ $thread_key ] ) ) {
 				$threads[ $thread_key ] = $message;
 			}
 		}
