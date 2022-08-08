@@ -341,7 +341,7 @@ final class Message extends Component {
 			);
 
 			// Cache thread IDs.
-			if ( count( $thread_ids ) <= 1000 ) {
+			if ( count( $thread_ids ) <= 1000 && ( ! get_option( 'hp_message_allow_monitoring' ) || ! current_user_can( 'manage_options' ) ) ) {
 				hivepress()->cache->set_user_cache( get_current_user_id(), 'thread_ids', 'models/message', $thread_ids );
 			}
 		}
@@ -420,7 +420,7 @@ final class Message extends Component {
 		// Get recipient.
 		$recipient = $template->get_context( 'recipient' );
 
-		if ( $recipient && get_current_user_id() !== $recipient ) {
+		if ( $recipient && get_current_user_id() !== $recipient->get_id() ) {
 			$blocks = hp\merge_trees(
 				[ 'blocks' => $blocks ],
 				[

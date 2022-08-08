@@ -291,6 +291,7 @@ final class Message extends Controller {
 						'sender'               => $recipient->get_id(),
 						'sender__display_name' => $recipient->get_display_name(),
 						'sender__email'        => $recipient->get_email(),
+						'recipient'            => $message->get_sender__id(),
 						'read'                 => 1,
 					]
 				);
@@ -384,7 +385,7 @@ final class Message extends Controller {
 				'fields'  => 'ids',
 				'user_id' => $sender->get_id(),
 			],
-			'models/message'
+			'models/message',
 		);
 
 		if ( is_null( $message_ids ) ) {
@@ -420,7 +421,7 @@ final class Message extends Controller {
 				);
 			}
 
-			if ( $message_ids ) {
+			if ( $message_ids && get_current_user_id() === $recipient->get_id() ) {
 
 				// Read messages.
 				$wpdb->query(
