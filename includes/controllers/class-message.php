@@ -345,7 +345,7 @@ final class Message extends Controller {
 		hivepress()->request->set_context( 'message_recipient', $recipient );
 
 		if ( $sender ) {
-			if ( get_current_user_id() !== $recipient->get_id() ) {
+			if ( $recipient && get_current_user_id() !== $recipient->get_id() ) {
 
 				/* translators: 1: sender name, 2: recipient name. */
 				$title = sprintf( esc_html__( 'Messages from %1$s to %2$s', 'hivepress-messages' ), $sender->get_display_name(), $recipient->get_display_name() );
