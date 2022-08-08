@@ -73,9 +73,9 @@ class Messages extends Block {
 
 							'context'  => [
 								'message'     => $message,
-								'recipient'   => $this->get_context( 'recipient' ),
-								'sender_name' => $sender_name,
 								'message_url' => $message_url,
+								'sender_name' => $sender_name,
+								'recipient'   => $this->get_context( 'recipient' ),
 							],
 						]
 					) )->render();
