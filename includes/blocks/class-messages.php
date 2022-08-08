@@ -57,7 +57,8 @@ class Messages extends Block {
 							'template' => 'message_' . $this->mode . '_block',
 
 							'context'  => [
-								'message' => $message,
+								'message'   => $message,
+								'recipient' => $this->get_context( 'recipient' ),
 							],
 						]
 					) )->render();

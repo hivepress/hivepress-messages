@@ -320,16 +320,35 @@ final class Message extends Controller {
 	 * @return string
 	 */
 	public function get_messages_view_title() {
+		$title = null;
 
-		// Get user.
-		$user = Models\User::query()->get_by_id( hivepress()->request->get_param( 'user_id' ) );
+		// Get sender.
+		$sender = Models\User::query()->get_by_id( hivepress()->request->get_param( 'user_id' ) );
+
+		// Get recipient.
+		$recipient = hivepress()->request->get_user();
+
+		if ( get_option( 'hp_message_allow_monitoring' ) && current_user_can( 'manage_options' ) && hivepress()->request->get_param( 'recipient_id' ) ) {
+			$recipient = Models\User::query()->get_by_id( hivepress()->request->get_param( 'recipient_id' ) );
+		}
 
 		// Set request context.
-		hivepress()->request->set_context( 'message_user', $user );
+		hivepress()->request->set_context( 'message_sender', $sender );
+		hivepress()->request->set_context( 'message_recipient', $recipient );
 
-		if ( $user ) {
-			return sprintf( esc_html__( 'Messages from %s', 'hivepress-messages' ), $user->get_display_name() );
+		if ( $sender ) {
+			if ( get_current_user_id() !== $recipient->get_id() ) {
+
+				/* translators: 1: sender name, 2: recipient name. */
+				$title = sprintf( esc_html__( 'Messages from %1$s to %2$s', 'hivepress-messages' ), $sender->get_display_name(), $recipient->get_display_name() );
+			} else {
+
+				/* translators: %s: sender name. */
+				$title = sprintf( esc_html__( 'Messages from %s', 'hivepress-messages' ), $sender->get_display_name() );
+			}
 		}
+
+		return $title;
 	}
 
 	/**
@@ -350,19 +369,20 @@ final class Message extends Controller {
 			return hivepress()->router->get_return_url( 'user_login_page' );
 		}
 
-		// Check user.
-		$user = hivepress()->request->get_context( 'message_user' );
+		// Get sender and recipient.
+		$sender    = hivepress()->request->get_context( 'message_sender' );
+		$recipient = hivepress()->request->get_context( 'message_recipient' );
 
-		if ( ! $user || get_current_user_id() === $user->get_id() ) {
+		if ( ! $sender || ! $recipient || $recipient->get_id() === $sender->get_id() ) {
 			return hivepress()->router->get_url( 'messages_thread_page' );
 		}
 
 		// Get cached message IDs.
 		$message_ids = hivepress()->cache->get_user_cache(
-			get_current_user_id(),
+			$recipient->get_id(),
 			[
 				'fields'  => 'ids',
-				'user_id' => $user->get_id(),
+				'user_id' => $sender->get_id(),
 			],
 			'models/message'
 		);
@@ -377,10 +397,10 @@ final class Message extends Controller {
 						WHERE comment_type = %s AND ( ( user_id = %d AND comment_karma = %d ) OR ( user_id = %d AND comment_karma = %d ) )
 						ORDER BY comment_date ASC;",
 						'hp_message',
-						get_current_user_id(),
-						$user->get_id(),
-						$user->get_id(),
-						get_current_user_id()
+						$recipient->get_id(),
+						$sender->get_id(),
+						$sender->get_id(),
+						$recipient->get_id()
 					),
 					ARRAY_A
 				),
@@ -390,10 +410,10 @@ final class Message extends Controller {
 			// Cache message IDs.
 			if ( count( $message_ids ) <= 1000 ) {
 				hivepress()->cache->set_user_cache(
-					get_current_user_id(),
+					$recipient->get_id(),
 					[
 						'fields'  => 'ids',
-						'user_id' => $user->get_id(),
+						'user_id' => $sender->get_id(),
 					],
 					'models/message',
 					$message_ids
@@ -409,13 +429,13 @@ final class Message extends Controller {
 						WHERE comment_type = %s AND user_id = %d AND comment_karma = %d;",
 						'1',
 						'hp_message',
-						$user->get_id(),
-						get_current_user_id()
+						$sender->get_id(),
+						$recipient->get_id()
 					)
 				);
 
 				// Delete cache.
-				hivepress()->cache->delete_user_cache( get_current_user_id(), 'unread_count', 'models/message' );
+				hivepress()->cache->delete_user_cache( $recipient->get_id(), 'unread_count', 'models/message' );
 			}
 		}
 
@@ -456,7 +476,8 @@ final class Message extends Controller {
 				'template' => 'messages_view_page',
 
 				'context'  => [
-					'messages' => $messages,
+					'messages'  => $messages,
+					'recipient' => hivepress()->request->get_context( 'message_recipient' ),
 				],
 			]
 		) )->render();

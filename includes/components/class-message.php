@@ -62,6 +62,8 @@ final class Message extends Component {
 			add_filter( 'hivepress/v1/menus/user_account', [ $this, 'alter_account_menu' ] );
 
 			// Alter templates.
+			add_filter( 'hivepress/v1/templates/messages_view_page/blocks', [ $this, 'alter_messages_view_blocks' ], 10, 2 );
+
 			add_filter( 'hivepress/v1/templates/message_view_block/blocks', [ $this, 'alter_message_view_blocks' ], 10, 2 );
 			add_filter( 'hivepress/v1/templates/message_thread_block/blocks', [ $this, 'alter_message_view_blocks' ], 10, 2 );
 
@@ -407,6 +409,34 @@ final class Message extends Component {
 	}
 
 	/**
+	 * Alters messages view blocks.
+	 *
+	 * @param array  $blocks Block arguments.
+	 * @param object $template Template object.
+	 * @return array
+	 */
+	public function alter_messages_view_blocks( $blocks, $template ) {
+
+		// Get recipient.
+		$recipient = $template->get_context( 'recipient' );
+
+		if ( $recipient && get_current_user_id() !== $recipient ) {
+			$blocks = hp\merge_trees(
+				[ 'blocks' => $blocks ],
+				[
+					'blocks' => [
+						'message_send_form' => [
+							'type' => 'content',
+						],
+					],
+				]
+			)['blocks'];
+		}
+
+		return $blocks;
+	}
+
+	/**
 	 * Alters message view blocks.
 	 *
 	 * @param array  $blocks Block arguments.
@@ -415,15 +445,16 @@ final class Message extends Component {
 	 */
 	public function alter_message_view_blocks( $blocks, $template ) {
 
-		// Get message.
-		$message = $template->get_context( 'message' );
+		// Get message and recipient.
+		$message   = $template->get_context( 'message' );
+		$recipient = $template->get_context( 'recipient' );
 
 		if ( $message ) {
 
 			// Get classes.
 			$classes = [];
 
-			if ( $message->get_sender__id() === get_current_user_id() ) {
+			if ( $recipient && $message->get_sender__id() === $recipient->get_id() ) {
 				$classes[] = 'hp-message--sent';
 			}
 
