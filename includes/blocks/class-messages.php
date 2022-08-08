@@ -47,7 +47,22 @@ class Messages extends Block {
 
 			foreach ( $messages as $message ) {
 				if ( hp\is_class_instance( $message, '\HivePress\Models\Message' ) ) {
-					if ( 'thread' !== $this->mode ) {
+
+					// Get context.
+					$sender_name = $message->get_sender__display_name();
+					$message_url = null;
+
+					if ( 'thread' === $this->mode ) {
+						$message_url_args = [ 'user_id' => $message->get_sender__id() ];
+
+						if ( get_current_user_id() !== $message->get_recipient__id() ) {
+							$message_url_args['recipient_id'] = $message->get_recipient__id();
+
+							$sender_name .= '&nbsp;&rarr;&nbsp;' . $message->get_recipient__display_name();
+						}
+
+						$message_url = hivepress()->router->get_url( 'messages_view_page', $message_url_args ) . '#message-' . $message->get_id();
+					} else {
 						$output .= '<div class="hp-grid__item">';
 					}
 
@@ -57,8 +72,10 @@ class Messages extends Block {
 							'template' => 'message_' . $this->mode . '_block',
 
 							'context'  => [
-								'message'   => $message,
-								'recipient' => $this->get_context( 'recipient' ),
+								'message'     => $message,
+								'recipient'   => $this->get_context( 'recipient' ),
+								'sender_name' => $sender_name,
+								'message_url' => $message_url,
 							],
 						]
 					) )->render();
