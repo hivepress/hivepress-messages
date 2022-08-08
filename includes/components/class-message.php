@@ -56,7 +56,6 @@ final class Message extends Component {
 		if ( ! is_admin() ) {
 
 			// Set request context.
-			// todo to filter
 			add_action( 'init', [ $this, 'set_request_context' ], 100 );
 
 			// Alter account menu.
@@ -459,8 +458,8 @@ final class Message extends Component {
 
 								'blocks'      => [
 									'message_send_form' => [
-										'type'       => 'message_send_form',
-										'_order'     => 10,
+										'type'   => 'message_send_form',
+										'_order' => 10,
 									],
 								],
 							],
@@ -499,8 +498,8 @@ final class Message extends Component {
 
 								'blocks'      => [
 									'message_send_form' => [
-										'type'       => 'message_send_form',
-										'_order'     => 10,
+										'type'   => 'message_send_form',
+										'_order' => 10,
 									],
 								],
 							],
@@ -539,8 +538,8 @@ final class Message extends Component {
 
 								'blocks'      => [
 									'message_send_form' => [
-										'type'       => 'message_send_form',
-										'_order'     => 10,
+										'type'   => 'message_send_form',
+										'_order' => 10,
 									],
 								],
 							],
@@ -579,8 +578,8 @@ final class Message extends Component {
 
 								'blocks'      => [
 									'message_send_form' => [
-										'type'       => 'message_send_form',
-										'_order'     => 10,
+										'type'   => 'message_send_form',
+										'_order' => 10,
 									],
 								],
 							],
@@ -618,8 +617,8 @@ final class Message extends Component {
 
 								'blocks'      => [
 									'message_send_form' => [
-										'type'       => 'message_send_form',
-										'_order'     => 10,
+										'type'   => 'message_send_form',
+										'_order' => 10,
 									],
 								],
 							],
@@ -658,8 +657,8 @@ final class Message extends Component {
 
 								'blocks'      => [
 									'message_send_form' => [
-										'type'       => 'message_send_form',
-										'_order'     => 10,
+										'type'   => 'message_send_form',
+										'_order' => 10,
 									],
 								],
 							],
@@ -698,8 +697,8 @@ final class Message extends Component {
 
 								'blocks'      => [
 									'message_send_form' => [
-										'type'       => 'message_send_form',
-										'_order'     => 10,
+										'type'   => 'message_send_form',
+										'_order' => 10,
 									],
 								],
 							],
