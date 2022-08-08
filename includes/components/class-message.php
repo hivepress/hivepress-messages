@@ -308,17 +308,31 @@ final class Message extends Component {
 
 		if ( is_null( $thread_ids ) ) {
 
+			// Get thread query.
+			$thread_query = null;
+
+			if ( get_option( 'hp_message_allow_monitoring' ) && current_user_can( 'manage_options' ) ) {
+				$thread_query = $wpdb->prepare(
+					"SELECT MAX(comment_ID) AS comment_ID FROM {$wpdb->comments}
+					WHERE comment_type = %s AND comment_karma != 0
+					GROUP BY user_id, comment_karma;",
+					'hp_message'
+				);
+			} else {
+				$thread_query = $wpdb->prepare(
+					"SELECT MAX(comment_ID) AS comment_ID FROM {$wpdb->comments}
+					WHERE comment_type = %s AND ( user_id = %d OR comment_karma = %d ) AND comment_karma != 0
+					GROUP BY user_id, comment_karma;",
+					'hp_message',
+					get_current_user_id(),
+					get_current_user_id()
+				);
+			}
+
 			// Get thread IDs.
 			$thread_ids = array_column(
 				$wpdb->get_results(
-					$wpdb->prepare(
-						"SELECT MAX(comment_ID) AS comment_ID FROM {$wpdb->comments}
-						WHERE comment_type = %s AND ( user_id = %d OR comment_karma = %d ) AND comment_karma != 0
-						GROUP BY user_id, comment_karma;",
-						'hp_message',
-						get_current_user_id(),
-						get_current_user_id()
-					),
+					$thread_query,
 					ARRAY_A
 				),
 				'comment_ID'

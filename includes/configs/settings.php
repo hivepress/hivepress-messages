@@ -39,7 +39,7 @@ return [
 
 					'message_allow_monitoring' => [
 						'label'       => esc_html__( 'Monitoring', 'hivepress-messages' ),
-						'caption'     => esc_html__( 'Allow administrators to monitor messages', 'hivepress-messages' ),
+						'caption'     => esc_html__( 'Allow monitoring messages', 'hivepress-messages' ),
 						'description' => esc_html__( 'Check this option to allow administrators to monitor the conversations of other users.', 'hivepress-messages' ),
 						'type'        => 'checkbox',
 						'_order'      => 30,

@@ -54,7 +54,7 @@ final class Message extends Controller {
 
 					'messages_view_page'   => [
 						'base'     => 'messages_thread_page',
-						'path'     => '/(?P<user_id>\d+)',
+						'path'     => '/(?P<user_id>\d+)/?(?P<recipient_id>\d+)?',
 						'title'    => [ $this, 'get_messages_view_title' ],
 						'redirect' => [ $this, 'redirect_messages_view_page' ],
 						'action'   => [ $this, 'render_messages_view_page' ],
