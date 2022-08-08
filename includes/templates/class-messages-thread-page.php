@@ -20,6 +20,22 @@ defined( 'ABSPATH' ) || exit;
 class Messages_Thread_Page extends User_Account_Page {
 
 	/**
+	 * Class initializer.
+	 *
+	 * @param array $meta Class meta values.
+	 */
+	public static function init( $meta = [] ) {
+		$meta = hp\merge_arrays(
+			[
+				'label' => esc_html__( 'Conversations', 'hivepress-messages' ),
+			],
+			$meta
+		);
+
+		parent::init( $meta );
+	}
+
+	/**
 	 * Class constructor.
 	 *
 	 * @param array $args Template arguments.
@@ -33,6 +49,7 @@ class Messages_Thread_Page extends User_Account_Page {
 							'messages' => [
 								'type'   => 'messages',
 								'mode'   => 'thread',
+								'_label' => esc_html__( 'Conversations', 'hivepress-messages' ),
 								'_order' => 10,
 							],
 						],
