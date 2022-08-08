@@ -30,9 +30,14 @@ class Messages_View_Page extends User_Account_Page {
 				'blocks' => [
 					'page_content' => [
 						'blocks' => [
-							'messages' => [
+							'messages'          => [
 								'type'   => 'messages',
 								'_order' => 10,
+							],
+
+							'message_send_form' => [
+								'type'   => 'message_send_form',
+								'_order' => 20,
 							],
 						],
 					],

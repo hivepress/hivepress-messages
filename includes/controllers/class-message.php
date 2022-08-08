@@ -45,11 +45,12 @@ final class Message extends Controller {
 					],
 
 					'messages_thread_page' => [
-						'title'    => hivepress()->translator->get_string( 'messages' ),
-						'base'     => 'user_account_page',
-						'path'     => '/messages',
-						'redirect' => [ $this, 'redirect_messages_thread_page' ],
-						'action'   => [ $this, 'render_messages_thread_page' ],
+						'title'     => hivepress()->translator->get_string( 'messages' ),
+						'base'      => 'user_account_page',
+						'path'      => '/messages',
+						'redirect'  => [ $this, 'redirect_messages_thread_page' ],
+						'action'    => [ $this, 'render_messages_thread_page' ],
+						'paginated' => true,
 					],
 
 					'messages_view_page'   => [
@@ -263,23 +264,16 @@ final class Message extends Controller {
 		// Get thread IDs.
 		$thread_ids = hivepress()->request->get_context( 'message_thread_ids', [] );
 
-		// Set query.
-		$query = [
-			'id__in' => $thread_ids,
-		];
-
-		if ( get_option( 'hp_message_allow_monitoring' ) && current_user_can( 'manage_options' ) ) {
-			$query = [];
-		}
-
 		// Get threads.
 		$threads = [];
 
-		$messages = Models\Message::query()->filter(
-			$query
-		)->order( [ 'sent_date' => 'desc' ] )
-		->get()
-		->serialize();
+		$messages = Models\Message::query()->order( [ 'sent_date' => 'desc' ] );
+
+		if ( ! get_option( 'hp_message_allow_monitoring' ) || ! current_user_can( 'manage_options' ) ) {
+			$messages->filter( [ 'id__in' => $thread_ids ] );
+		}
+
+		$messages->get()->serialize();
 
 		foreach ( $messages as $message ) {
 
