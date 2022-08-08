@@ -450,19 +450,16 @@ final class Message extends Component {
 					'listing_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'   => 'modal',
-								'model'  => 'listing',
-								'title'  => hivepress()->translator->get_string( 'reply_to_listing' ),
-								'_order' => 5,
+								'type'        => 'modal',
+								'model'       => 'listing',
+								'title'       => hivepress()->translator->get_string( 'reply_to_listing' ),
+								'_capability' => 'read',
+								'_order'      => 5,
 
-								'blocks' => [
+								'blocks'      => [
 									'message_send_form' => [
-										'type'       => 'message_send_form',
-										'_order'     => 10,
-
-										'attributes' => [
-											'class' => [ 'hp-form--narrow' ],
-										],
+										'type'   => 'message_send_form',
+										'_order' => 10,
 									],
 								],
 							],
@@ -493,19 +490,16 @@ final class Message extends Component {
 					'listing_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'   => 'modal',
-								'model'  => 'listing',
-								'title'  => hivepress()->translator->get_string( 'reply_to_listing' ),
-								'_order' => 5,
+								'type'        => 'modal',
+								'model'       => 'listing',
+								'title'       => hivepress()->translator->get_string( 'reply_to_listing' ),
+								'_capability' => 'read',
+								'_order'      => 5,
 
-								'blocks' => [
+								'blocks'      => [
 									'message_send_form' => [
-										'type'       => 'message_send_form',
-										'_order'     => 10,
-
-										'attributes' => [
-											'class' => [ 'hp-form--narrow' ],
-										],
+										'type'   => 'message_send_form',
+										'_order' => 10,
 									],
 								],
 							],
@@ -536,19 +530,16 @@ final class Message extends Component {
 					'vendor_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'   => 'modal',
-								'model'  => 'vendor',
-								'title'  => hivepress()->translator->get_string( 'send_message' ),
-								'_order' => 5,
+								'type'        => 'modal',
+								'model'       => 'vendor',
+								'title'       => hivepress()->translator->get_string( 'send_message' ),
+								'_capability' => 'read',
+								'_order'      => 5,
 
-								'blocks' => [
+								'blocks'      => [
 									'message_send_form' => [
-										'type'       => 'message_send_form',
-										'_order'     => 10,
-
-										'attributes' => [
-											'class' => [ 'hp-form--narrow' ],
-										],
+										'type'   => 'message_send_form',
+										'_order' => 10,
 									],
 								],
 							],
@@ -579,19 +570,16 @@ final class Message extends Component {
 					'vendor_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'   => 'modal',
-								'model'  => 'vendor',
-								'title'  => hivepress()->translator->get_string( 'send_message' ),
-								'_order' => 5,
+								'type'        => 'modal',
+								'model'       => 'vendor',
+								'title'       => hivepress()->translator->get_string( 'send_message' ),
+								'_capability' => 'read',
+								'_order'      => 5,
 
-								'blocks' => [
+								'blocks'      => [
 									'message_send_form' => [
-										'type'       => 'message_send_form',
-										'_order'     => 10,
-
-										'attributes' => [
-											'class' => [ 'hp-form--narrow' ],
-										],
+										'type'   => 'message_send_form',
+										'_order' => 10,
 									],
 								],
 							],
@@ -622,18 +610,15 @@ final class Message extends Component {
 					'order_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'   => 'modal',
-								'title'  => hivepress()->translator->get_string( 'send_message' ),
-								'_order' => 5,
+								'type'        => 'modal',
+								'title'       => hivepress()->translator->get_string( 'send_message' ),
+								'_capability' => 'read',
+								'_order'      => 5,
 
-								'blocks' => [
+								'blocks'      => [
 									'message_send_form' => [
-										'type'       => 'message_send_form',
-										'_order'     => 10,
-
-										'attributes' => [
-											'class' => [ 'hp-form--narrow' ],
-										],
+										'type'   => 'message_send_form',
+										'_order' => 10,
 									],
 								],
 							],
@@ -664,19 +649,16 @@ final class Message extends Component {
 					'booking_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'   => 'modal',
-								'model'  => 'booking',
-								'title'  => hivepress()->translator->get_string( 'send_message' ),
-								'_order' => 5,
+								'type'        => 'modal',
+								'model'       => 'booking',
+								'title'       => hivepress()->translator->get_string( 'send_message' ),
+								'_capability' => 'read',
+								'_order'      => 5,
 
-								'blocks' => [
+								'blocks'      => [
 									'message_send_form' => [
-										'type'       => 'message_send_form',
-										'_order'     => 10,
-
-										'attributes' => [
-											'class' => [ 'hp-form--narrow' ],
-										],
+										'type'   => 'message_send_form',
+										'_order' => 10,
 									],
 								],
 							],
@@ -707,19 +689,16 @@ final class Message extends Component {
 					'booking_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'   => 'modal',
-								'model'  => 'booking',
-								'title'  => hivepress()->translator->get_string( 'send_message' ),
-								'_order' => 5,
+								'type'        => 'modal',
+								'model'       => 'booking',
+								'title'       => hivepress()->translator->get_string( 'send_message' ),
+								'_capability' => 'read',
+								'_order'      => 5,
 
-								'blocks' => [
+								'blocks'      => [
 									'message_send_form' => [
-										'type'       => 'message_send_form',
-										'_order'     => 10,
-
-										'attributes' => [
-											'class' => [ 'hp-form--narrow' ],
-										],
+										'type'   => 'message_send_form',
+										'_order' => 10,
 									],
 								],
 							],
