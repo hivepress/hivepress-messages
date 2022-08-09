@@ -258,6 +258,18 @@ final class Message extends Component {
 				]
 			)->delete();
 		}
+
+		// Delete message cache.
+		if ( get_option( 'hp_message_allow_monitoring' ) ) {
+			foreach ( get_users(
+				[
+					'role'   => 'administrator',
+					'fields' => 'ids',
+				]
+			) as $user_id ) {
+				hivepress()->cache->delete_user_cache( $user_id, null, 'models/message' );
+			}
+		}
 	}
 
 	/**
@@ -341,7 +353,7 @@ final class Message extends Component {
 			);
 
 			// Cache thread IDs.
-			if ( count( $thread_ids ) <= 1000 && ( ! get_option( 'hp_message_allow_monitoring' ) || ! current_user_can( 'manage_options' ) ) ) {
+			if ( count( $thread_ids ) <= 1000 ) {
 				hivepress()->cache->set_user_cache( get_current_user_id(), 'thread_ids', 'models/message', $thread_ids );
 			}
 		}
