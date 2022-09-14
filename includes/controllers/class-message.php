@@ -32,19 +32,26 @@ final class Message extends Controller {
 		$args = hp\merge_arrays(
 			[
 				'routes' => [
-					'messages_resource'    => [
+					'messages_resource'     => [
 						'path' => '/messages',
 						'rest' => true,
 					],
 
-					'message_send_action'  => [
+					'message_send_action'   => [
 						'base'   => 'messages_resource',
 						'method' => 'POST',
 						'action' => [ $this, 'send_message' ],
 						'rest'   => true,
 					],
 
-					'messages_thread_page' => [
+					'message_delete_action' => [
+						'base'   => 'messages_resource',
+						'method' => 'DELETE',
+						'action' => [ $this, 'delete_message' ],
+						'rest'   => true,
+					],
+
+					'messages_thread_page'  => [
 						'title'    => hivepress()->translator->get_string( 'messages' ),
 						'base'     => 'user_account_page',
 						'path'     => '/messages',
@@ -52,7 +59,7 @@ final class Message extends Controller {
 						'action'   => [ $this, 'render_messages_thread_page' ],
 					],
 
-					'messages_view_page'   => [
+					'messages_view_page'    => [
 						'base'     => 'messages_thread_page',
 						'path'     => '/(?P<user_id>\d+)/?(?P<recipient_id>\d+)?',
 						'title'    => [ $this, 'get_messages_view_title' ],
@@ -226,6 +233,39 @@ final class Message extends Controller {
 				'id' => $message->get_id(),
 			]
 		);
+	}
+
+	/**
+	 * Deletes message.
+	 *
+	 * @param WP_REST_Request $request API request.
+	 * @return WP_Rest_Response
+	 */
+	public function delete_message( $request ) {
+
+		// Check authentication.
+		if ( ! is_user_logged_in() ) {
+			return hp\rest_error( 401 );
+		}
+
+		// Check permissions.
+		if ( ! get_option( 'hp_message_allow_monitoring' ) || ! current_user_can( 'delete_others_posts' ) ) {
+			return hp\rest_error( 403 );
+		}
+
+		// Get message.
+		$message = Models\Message::query()->get_by_id( $request->get_param( 'message_id' ) );
+
+		if ( ! $message || in_array( get_current_user_id(), [ $message->get_sender__id(), $message->get_recipient__id() ] ) ) {
+			return hp\rest_error( 404 );
+		}
+
+		// Delete message.
+		if ( ! $message->delete() ) {
+			return hp\rest_error( 400 );
+		}
+
+		return hp\rest_response( 204 );
 	}
 
 	/**
