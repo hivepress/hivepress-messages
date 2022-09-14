@@ -52,6 +52,14 @@ return [
 						'max_length'  => 2048,
 						'_order'      => 40,
 					],
+
+					'message_without_account'  => [
+						'label'       => hivepress()->translator->get_string( 'messages' ),
+						'caption'     => esc_html__( 'Allow sending messages without account', 'hivepress-messages' ),
+						'description' => esc_html__( 'Check this option to allow non-registered users send messages.', 'hivepress-messages' ),
+						'type'        => 'checkbox',
+						'_order'      => 50,
+					],
 				],
 			],
 

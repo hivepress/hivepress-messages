@@ -39,7 +39,7 @@ class Message_Send_Form extends Form {
 	 * Bootstraps block properties.
 	 */
 	protected function boot() {
-		if ( is_user_logged_in() ) {
+		if ( is_user_logged_in() || get_option( 'hp_message_without_account' ) ) {
 
 			// Set recipient.
 			$this->values['recipient'] = hivepress()->request->get_param( 'user_id' );

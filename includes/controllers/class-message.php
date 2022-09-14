@@ -76,7 +76,7 @@ final class Message extends Controller {
 	public function send_message( $request ) {
 
 		// Check authentication.
-		if ( ! is_user_logged_in() ) {
+		if ( ! is_user_logged_in() && ! get_option( 'hp_message_without_account' ) ) {
 			return hp\rest_error( 401 );
 		}
 
@@ -85,6 +85,44 @@ final class Message extends Controller {
 
 		if ( ! $form->validate() ) {
 			return hp\rest_error( 400, $form->get_errors() );
+		}
+
+		// Get listing.
+		if ( $form->get_value( 'listing' ) ) {
+			$listing = Models\Listing::query()->get_by_id( $form->get_value( 'listing' ) );
+
+			if ( ! $listing || $listing->get_status() !== 'publish' ) {
+				return hp\rest_error( 400, 't' );
+			}
+		}
+
+		// Get recipient.
+		$recipient = Models\User::query()->get_by_id( $form->get_value( 'recipient' ) );
+
+		if ( ! $recipient ) {
+			return hp\rest_error( 400, 'y' );
+		}
+
+		if ( ! is_user_logged_in() && get_option( 'hp_message_without_account' ) ) {
+
+			// Send email.
+			( new Emails\Message_Send(
+				[
+					'subject'   => sprintf( hp\sanitize_html( __( 'New reply to "%s"', 'hivepress-messages' ) ), $listing->get_title() ),
+					'body'      => '%message_text%',
+
+					'recipient' => $recipient->get_email(),
+
+					'tokens'    => [
+						'message_text' => $form->get_value( 'text' ),
+					],
+				]
+			) )->send();
+
+			return hp\rest_response(
+				201,
+				[]
+			);
 		}
 
 		// Get sender ID.
@@ -102,25 +140,9 @@ final class Message extends Controller {
 			return hp\rest_error( 403 );
 		}
 
-		// Get recipient.
-		$recipient = Models\User::query()->get_by_id( $form->get_value( 'recipient' ) );
-
-		if ( ! $recipient ) {
-			return hp\rest_error( 400 );
-		}
-
 		// Check recipient.
 		if ( $recipient->get_id() === $sender->get_id() ) {
 			return hp\rest_error( 403, esc_html__( 'You can\'t send messages to yourself.', 'hivepress-messages' ) );
-		}
-
-		// Get listing.
-		if ( $form->get_value( 'listing' ) ) {
-			$listing = Models\Listing::query()->get_by_id( $form->get_value( 'listing' ) );
-
-			if ( ! $listing || $listing->get_status() !== 'publish' ) {
-				return hp\rest_error( 400 );
-			}
 		}
 
 		// Add message.

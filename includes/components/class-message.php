@@ -34,12 +34,9 @@ final class Message extends Component {
 		// Allow message attachment.
 		add_filter( 'option_hp_message_allow_attachment', [ $this, 'allow_message_attachment' ] );
 
-		if ( get_option( 'hp_message_allow_attachment' ) ) {
-
-			// Add message fields.
-			add_filter( 'hivepress/v1/models/message', [ $this, 'add_message_fields' ] );
-			add_filter( 'hivepress/v1/forms/message_send', [ $this, 'add_message_fields' ] );
-		}
+		// Add message fields.
+		add_filter( 'hivepress/v1/models/message', [ $this, 'add_message_fields' ] );
+		add_filter( 'hivepress/v1/forms/message_send', [ $this, 'add_message_fields' ] );
 
 		if ( get_option( 'hp_message_enable_storage' ) ) {
 
@@ -190,25 +187,37 @@ final class Message extends Component {
 	 */
 	public function add_message_fields( $form ) {
 
-		// Get file formats.
-		$formats = hivepress()->request->get_context( 'message_attachment_types' );
+		if ( get_option( 'hp_message_allow_attachment' ) ) {
+			// Get file formats.
+			$formats = hivepress()->request->get_context( 'message_attachment_types' );
 
-		if ( ! is_array( $formats ) ) {
-			$formats = array_filter( explode( '|', implode( '|', (array) get_option( 'hp_message_attachment_types' ) ) ) );
+			if ( ! is_array( $formats ) ) {
+				$formats = array_filter( explode( '|', implode( '|', (array) get_option( 'hp_message_attachment_types' ) ) ) );
 
-			hivepress()->request->set_context( 'message_attachment_types', $formats );
+				hivepress()->request->set_context( 'message_attachment_types', $formats );
+			}
+
+			// Add attachment field.
+			$form['fields']['attachment'] = [
+				'label'     => esc_html__( 'Attachment', 'hivepress-messages' ),
+				'type'      => 'attachment_upload',
+				'formats'   => $formats,
+				'protected' => true,
+				'_model'    => 'attachment',
+				'_external' => true,
+				'_order'    => 20,
+			];
 		}
 
-		// Add attachment field.
-		$form['fields']['attachment'] = [
-			'label'     => esc_html__( 'Attachment', 'hivepress-messages' ),
-			'type'      => 'attachment_upload',
-			'formats'   => $formats,
-			'protected' => true,
-			'_model'    => 'attachment',
-			'_external' => true,
-			'_order'    => 20,
-		];
+		if ( ! is_user_logged_in() && get_option( 'hp_message_without_account' ) && strpos( current_filter(), 'models' ) === false ) {
+			$form['fields']['email'] = [
+				'label'      => esc_html__( 'Email', 'hivepress-messages' ),
+				'type'       => 'text',
+				'max_length' => 256,
+				'required'   => true,
+				'_order'     => 5,
+			];
+		}
 
 		return $form;
 	}
@@ -507,13 +516,12 @@ final class Message extends Component {
 					'listing_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'        => 'modal',
-								'model'       => 'listing',
-								'title'       => hivepress()->translator->get_string( 'reply_to_listing' ),
-								'_capability' => 'read',
-								'_order'      => 5,
+								'type'   => 'modal',
+								'model'  => 'listing',
+								'title'  => hivepress()->translator->get_string( 'reply_to_listing' ),
+								'_order' => 5,
 
-								'blocks'      => [
+								'blocks' => [
 									'message_send_form' => [
 										'type'   => 'message_send_form',
 										'_order' => 10,
@@ -547,13 +555,12 @@ final class Message extends Component {
 					'listing_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'        => 'modal',
-								'model'       => 'listing',
-								'title'       => hivepress()->translator->get_string( 'reply_to_listing' ),
-								'_capability' => 'read',
-								'_order'      => 5,
+								'type'   => 'modal',
+								'model'  => 'listing',
+								'title'  => hivepress()->translator->get_string( 'reply_to_listing' ),
+								'_order' => 5,
 
-								'blocks'      => [
+								'blocks' => [
 									'message_send_form' => [
 										'type'   => 'message_send_form',
 										'_order' => 10,
@@ -587,13 +594,12 @@ final class Message extends Component {
 					'vendor_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'        => 'modal',
-								'model'       => 'vendor',
-								'title'       => hivepress()->translator->get_string( 'send_message' ),
-								'_capability' => 'read',
-								'_order'      => 5,
+								'type'   => 'modal',
+								'model'  => 'vendor',
+								'title'  => hivepress()->translator->get_string( 'send_message' ),
+								'_order' => 5,
 
-								'blocks'      => [
+								'blocks' => [
 									'message_send_form' => [
 										'type'   => 'message_send_form',
 										'_order' => 10,
@@ -627,13 +633,12 @@ final class Message extends Component {
 					'vendor_actions_primary' => [
 						'blocks' => [
 							'message_send_modal' => [
-								'type'        => 'modal',
-								'model'       => 'vendor',
-								'title'       => hivepress()->translator->get_string( 'send_message' ),
-								'_capability' => 'read',
-								'_order'      => 5,
+								'type'   => 'modal',
+								'model'  => 'vendor',
+								'title'  => hivepress()->translator->get_string( 'send_message' ),
+								'_order' => 5,
 
-								'blocks'      => [
+								'blocks' => [
 									'message_send_form' => [
 										'type'   => 'message_send_form',
 										'_order' => 10,
