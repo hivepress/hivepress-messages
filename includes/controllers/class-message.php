@@ -88,11 +88,13 @@ final class Message extends Controller {
 		}
 
 		// Get listing.
+		$listing = null;
+
 		if ( $form->get_value( 'listing' ) ) {
 			$listing = Models\Listing::query()->get_by_id( $form->get_value( 'listing' ) );
 
 			if ( ! $listing || $listing->get_status() !== 'publish' ) {
-				return hp\rest_error( 400, 't' );
+				return hp\rest_error( 400 );
 			}
 		}
 
@@ -100,27 +102,44 @@ final class Message extends Controller {
 		$recipient = Models\User::query()->get_by_id( $form->get_value( 'recipient' ) );
 
 		if ( ! $recipient ) {
-			return hp\rest_error( 400, 'y' );
+			return hp\rest_error( 400 );
 		}
+
+		// Set email arguments.
+		$email_args = [
+			'recipient' => $recipient->get_email(),
+
+			'tokens'    => [
+				'recipient'    => $recipient,
+				'user_name'    => $recipient->get_display_name(),
+				'message_text' => $form->get_value( 'text' ),
+			],
+		];
 
 		if ( ! is_user_logged_in() && get_option( 'hp_message_without_account' ) ) {
 
+			if ( $listing ) {
+				$email_args['subject'] = sprintf( hp\sanitize_html( __( 'New reply to "%s"', 'hivepress-messages' ) ), $listing->get_title() );
+			} else {
+				$email_args['subject'] = sprintf( hp\sanitize_html( __( 'New message from %s', 'hivepress-messages' ) ), $form->get_value( 'name' ) );
+			}
+
 			// Send email.
 			( new Emails\Message_Send(
-				[
-					'subject'   => sprintf( hp\sanitize_html( __( 'New reply to "%s"', 'hivepress-messages' ) ), $listing->get_title() ),
-					'body'      => '%message_text%',
+				hp\merge_arrays(
+					$email_args,
+					[
+						'headers' => [
+							'reply-to' => $form->get_value( 'name' ) . ' <' . $form->get_value( 'email' ) . '>',
+						],
 
-					'recipient' => $recipient->get_email(),
-
-					'tokens'    => [
-						'message_text' => $form->get_value( 'text' ),
-					],
-				]
+						'body'    => '%message_text%',
+					]
+				)
 			) )->send();
 
 			return hp\rest_response(
-				201,
+				200,
 				[]
 			);
 		}
@@ -181,22 +200,16 @@ final class Message extends Controller {
 			}
 		}
 
-		// Set email arguments.
-		$email_args = [
-			'recipient' => $recipient->get_email(),
+		// Add email tokens.
+		$email_args['tokens'] = array_merge(
+			$email_args['tokens'],
+			[
+				'sender'  => $sender,
+				'message' => $message,
+			]
+		);
 
-			'tokens'    => [
-				'sender'       => $sender,
-				'recipient'    => $recipient,
-				'message'      => $message,
-				'user_name'    => $recipient->get_display_name(),
-				'message_text' => $message->get_text(),
-			],
-		];
-
-		if ( $message->get_listing__id() ) {
-			$email_args['subject'] = sprintf( hp\sanitize_html( __( 'New reply to "%s"', 'hivepress-messages' ) ), $message->get_listing__title() );
-		} else {
+		if ( ! $message->get_listing__id() ) {
 			$email_args['subject'] = sprintf( hp\sanitize_html( __( 'New message from %s', 'hivepress-messages' ) ), $sender->get_display_name() );
 		}
 

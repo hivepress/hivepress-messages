@@ -209,13 +209,20 @@ final class Message extends Component {
 			];
 		}
 
-		if ( ! is_user_logged_in() && get_option( 'hp_message_without_account' ) && strpos( current_filter(), 'models' ) === false ) {
-			$form['fields']['email'] = [
-				'label'      => esc_html__( 'Email', 'hivepress-messages' ),
+		if ( ! is_user_logged_in() && get_option( 'hp_message_without_account' ) && ! strpos( current_filter(), 'models' ) ) {
+			$form['fields']['name'] = [
+				'label'      => esc_html__( 'Name', 'hivepress-messages' ),
 				'type'       => 'text',
 				'max_length' => 256,
 				'required'   => true,
 				'_order'     => 5,
+			];
+
+			$form['fields']['email'] = [
+				'label'    => esc_html__( 'Email', 'hivepress-messages' ),
+				'type'     => 'email',
+				'required' => true,
+				'_order'   => 7,
 			];
 		}
 
