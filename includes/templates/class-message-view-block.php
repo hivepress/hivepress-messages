@@ -100,6 +100,18 @@ class Message_View_Block extends Template {
 									],
 								],
 							],
+
+							'message_actions' => [
+								'type'       => 'container',
+								'optional'   => true,
+								'_order'     => 30,
+
+								'attributes' => [
+									'class' => [ 'hp-message__actions' ],
+								],
+
+								'blocks'     => [],
+							],
 						],
 					],
 				],

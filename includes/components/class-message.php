@@ -488,6 +488,29 @@ final class Message extends Component {
 					],
 				]
 			)['blocks'];
+
+			if ( current_user_can( 'delete_others_posts' ) && strpos( current_filter(), 'message_view_block' ) ) {
+				$blocks = hp\merge_trees(
+					[ 'blocks' => $blocks ],
+					[
+						'blocks' => [
+							'message_container' => [
+								'blocks' => [
+									'message_actions' => [
+										'blocks' => [
+											'message_delete_link' => [
+												'type'   => 'part',
+												'path'   => 'message/view/block/message-delete-link',
+												'_order' => 5,
+											],
+										],
+									],
+								],
+							],
+						],
+					]
+				)['blocks'];
+			}
 		}
 
 		return $blocks;
