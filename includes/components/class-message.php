@@ -489,7 +489,7 @@ final class Message extends Component {
 				]
 			)['blocks'];
 
-			if ( get_option( 'hp_message_allow_monitoring' ) && current_user_can( 'delete_others_posts' ) && strpos( current_filter(), 'message_view_block' ) !== false ) {
+			if ( current_user_can( 'delete_others_posts' ) && strpos( current_filter(), 'message_view_block' ) ) {
 				$blocks = hp\merge_trees(
 					[ 'blocks' => $blocks ],
 					[
@@ -497,14 +497,7 @@ final class Message extends Component {
 							'message_container' => [
 								'blocks' => [
 									'message_actions' => [
-										'type'       => 'container',
-										'_order'     => 30,
-
-										'attributes' => [
-											'class' => [ 'hp-message__actions' ],
-										],
-
-										'blocks'     => [
+										'blocks' => [
 											'message_delete_link' => [
 												'type'   => 'part',
 												'path'   => 'message/view/block/message-delete-link',

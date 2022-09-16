@@ -93,7 +93,15 @@
 
 		&--view-block &__actions {
 			display: flex;
+			align-items: center;
+			flex-wrap: wrap;
 			justify-content: flex-end;
+		}
+
+		&--view-block &__actions &__action {
+			&:not(:last-child) {
+				margin-right: 1.5rem;
+			}
 		}
 
 		&--thread-block:not(&--read) &__sender {
@@ -125,8 +133,8 @@
 
 			span {
 				white-space: nowrap;
-			    overflow: hidden;
-			    text-overflow: ellipsis;
+				overflow: hidden;
+				text-overflow: ellipsis;
 			}
 		}
 	}

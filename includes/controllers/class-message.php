@@ -44,8 +44,14 @@ final class Message extends Controller {
 						'rest'   => true,
 					],
 
+					'message_resource'      => [
+						'base' => 'messages_resource',
+						'path' => '/(?P<message_id>\d+)',
+						'rest' => true,
+					],
+
 					'message_delete_action' => [
-						'base'   => 'messages_resource',
+						'base'   => 'message_resource',
 						'method' => 'DELETE',
 						'action' => [ $this, 'delete_message' ],
 						'rest'   => true,
@@ -249,15 +255,20 @@ final class Message extends Controller {
 		}
 
 		// Check permissions.
-		if ( ! get_option( 'hp_message_allow_monitoring' ) || ! current_user_can( 'delete_others_posts' ) ) {
+		if ( ! current_user_can( 'delete_others_posts' ) ) {
 			return hp\rest_error( 403 );
 		}
 
 		// Get message.
 		$message = Models\Message::query()->get_by_id( $request->get_param( 'message_id' ) );
 
-		if ( ! $message || in_array( get_current_user_id(), [ $message->get_sender__id(), $message->get_recipient__id() ] ) ) {
+		if ( ! $message ) {
 			return hp\rest_error( 404 );
+		}
+
+		// Check user.
+		if ( in_array( get_current_user_id(), [ $message->get_sender__id(), $message->get_recipient__id() ] ) ) {
+			return hp\rest_error( 403 );
 		}
 
 		// Delete message.
@@ -265,7 +276,7 @@ final class Message extends Controller {
 			return hp\rest_error( 400 );
 		}
 
-		return hp\rest_response( 204 );
+		return hp\rest_response( 200 );
 	}
 
 	/**
