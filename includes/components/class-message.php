@@ -73,6 +73,10 @@ final class Message extends Component {
 			add_filter( 'hivepress/v1/templates/vendor_view_block', [ $this, 'alter_vendor_view_block' ] );
 			add_filter( 'hivepress/v1/templates/vendor_view_page', [ $this, 'alter_vendor_view_page' ] );
 
+			add_filter( 'hivepress/v1/templates/offer_view_block/blocks', [ $this, 'alter_offer_view_block' ], 10, 2 );
+
+			add_filter( 'hivepress/v1/templates/user_view_block/blocks', [ $this, 'alter_user_view_block' ], 10, 2 );
+
 			if ( hivepress()->get_version( 'marketplace' ) ) {
 				add_filter( 'hivepress/v1/templates/order_footer_block', [ $this, 'alter_order_footer_block' ] );
 			}
@@ -764,6 +768,125 @@ final class Message extends Component {
 								'type'   => 'part',
 								'path'   => 'booking/view/page/message-send-link',
 								'_order' => 10,
+							],
+						],
+					],
+				],
+			]
+		);
+	}
+
+	/**
+	 * Alters offer view block.
+	 *
+	 * @param array $blocks Block arguments.
+	 * @param array $template Template arguments.
+	 * @return array
+	 */
+	public function alter_offer_view_block( $blocks, $template ) {
+
+		// Get offer.
+		$offer = $template->get_context( 'offer' );
+
+		if ( ! $offer || get_current_user_id() === $offer->get_bidder__id() ) {
+			return $blocks;
+		}
+
+		return hivepress()->template->merge_blocks(
+			$blocks,
+			[
+				'offer_actions_primary' => [
+					'blocks' => [
+						'message_send_modal' => [
+							'type'        => 'modal',
+							'model'       => 'vendor',
+							'title'       => hivepress()->translator->get_string( 'send_message' ),
+							'_capability' => 'read',
+							'_order'      => 5,
+
+							'blocks'      => [
+								'message_send_form' => [
+									'type'   => 'message_send_form',
+									'_order' => 10,
+								],
+							],
+						],
+
+						'message_send_link'  => [
+							'type'   => 'part',
+							'path'   => 'offer/view/block/message-send-link',
+							'_order' => 10,
+						],
+					],
+				],
+			]
+		);
+	}
+
+	/**
+	 * Alters user view block.
+	 *
+	 * @param array $blocks Block arguments.
+	 * @param array $template Template arguments.
+	 * @return array
+	 */
+	public function alter_user_view_block( $blocks, $template ) {
+
+		// Get user.
+		$user = $template->get_context( 'user' );
+
+		if ( ! $user || get_current_user_id() === $user->get_id() ) {
+			return $blocks;
+		}
+
+		// todo: add user footer to user_view_block.
+		return hivepress()->template->merge_blocks(
+			$blocks,
+			[
+				'user_container' => [
+					'blocks' => [
+						'user_footer' => [
+							'type'       => 'container',
+							'tag'        => 'footer',
+							'_order'     => 30,
+
+							'attributes' => [
+								'class' => [ 'hp-vendor__footer' ],
+							],
+
+							'blocks'     => [
+								'user_actions_primary' => [
+									'type'       => 'container',
+
+									'attributes' => [
+										'class' => [ 'hp-vendor__actions', 'hp-vendor__actions--primary' ],
+									],
+
+									'blocks'     => [
+										'message_send_modal' => [
+											'type'        => 'modal',
+											'model'       => 'user',
+											'title'       => hivepress()->translator->get_string( 'send_message' ),
+											'_capability' => 'read',
+											'_order'      => 5,
+
+											'blocks'      => [
+												'message_send_form' => [
+													'type' => 'message_send_form',
+													'_order' => 10,
+												],
+											],
+										],
+
+										'message_send_link'  => [
+											'type'   => 'part',
+											'path'   => 'user/view/block/message-send-link',
+											'_order' => 10,
+										],
+									],
+
+									'_order'     => 20,
+								],
 							],
 						],
 					],
