@@ -168,7 +168,7 @@ final class Message extends Controller {
 				'recipient'    => $recipient,
 				'message'      => $message,
 				'user_name'    => $recipient->get_display_name(),
-				'message_text' => $message->get_text(),
+				'message_text' => $message->display_text(),
 			],
 		];
 
