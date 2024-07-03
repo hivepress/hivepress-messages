@@ -32,19 +32,19 @@ final class Message extends Controller {
 		$args = hp\merge_arrays(
 			[
 				'routes' => [
-					'messages_resource'    => [
+					'messages_resource'     => [
 						'path' => '/messages',
 						'rest' => true,
 					],
 
-					'message_send_action'  => [
+					'message_send_action'   => [
 						'base'   => 'messages_resource',
 						'method' => 'POST',
 						'action' => [ $this, 'send_message' ],
 						'rest'   => true,
 					],
 
-					'messages_thread_page' => [
+					'messages_thread_page'  => [
 						'title'    => hivepress()->translator->get_string( 'messages' ),
 						'base'     => 'user_account_page',
 						'path'     => '/messages',
@@ -52,13 +52,21 @@ final class Message extends Controller {
 						'action'   => [ $this, 'render_messages_thread_page' ],
 					],
 
-					'messages_view_page'   => [
+					'messages_view_page'    => [
 						'base'     => 'messages_thread_page',
 						'path'     => '/(?P<user_id>\d+)/?(?P<recipient_id>\d+)?',
 						'title'    => [ $this, 'get_messages_view_title' ],
 						'redirect' => [ $this, 'redirect_messages_view_page' ],
 						'action'   => [ $this, 'render_messages_view_page' ],
 					],
+
+                    'message_report_action' => [
+                        'base'   => 'messages_resource',
+                        'path'   => '/report',
+                        'method' => 'POST',
+                        'action' => [ $this, 'report_user' ],
+                        'rest'   => true,
+                    ],
 				],
 			],
 			$args
@@ -66,6 +74,55 @@ final class Message extends Controller {
 
 		parent::__construct( $args );
 	}
+
+    /**
+     * Reports user.
+     *
+     * @param WP_REST_Request $request API request.
+     * @return WP_Rest_Response
+     */
+    public function report_user( $request ) {
+
+        // Check authentication.
+        if ( ! is_user_logged_in() ) {
+            return hp\rest_error( 401 );
+        }
+
+        // Get user.
+        $user = Models\User::query()->get_by_id( $request->get_param( 'user_id' ) );
+
+        if ( empty( $user ) ) {
+            return hp\rest_error( 404 );
+        }
+
+        // Validate form.
+        $form = ( new Forms\Message_Report() )->set_values( $request->get_params() );
+
+        if ( ! $form->validate() ) {
+            return hp\rest_error( 400, $form->get_errors() );
+        }
+
+        // Send email.
+        ( new Emails\Message_Report(
+            [
+                'recipient' => get_option( 'admin_email' ),
+
+                'tokens'    => [
+                    'user_name'      => $user->get_username(),
+                    'user_url'       => get_permalink( $user->get_id() ),
+                    'report_details' => $form->get_value( 'details' ),
+                    'user'           => hivepress()->request->get_user(),
+                ],
+            ]
+        ) )->send();
+
+        return hp\rest_response(
+            200,
+            [
+                'id' => $user->get_id(),
+            ]
+        );
+    }
 
 	/**
 	 * Sends message.
