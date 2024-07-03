@@ -109,7 +109,7 @@ final class Message extends Controller {
 
                 'tokens'    => [
                     'user_name'      => $user->get_username(),
-                    'user_url'       => get_permalink( $user->get_id() ),
+                    'user_url'       => get_edit_user_link( $user->get_id() ),
                     'report_details' => $form->get_value( 'details' ),
                     'user'           => hivepress()->request->get_user(),
                 ],

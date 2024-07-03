@@ -73,12 +73,15 @@ class Message_Report extends Model_Form {
      */
     protected function boot() {
 
+        // Get sender.
+        $sender = hivepress()->request->get_context( 'message_sender' );
+
         // Set action.
-        if ( $this->model->get_sender__id() ) {
+        if ( $sender ) {
             $this->action = hivepress()->router->get_url(
                 'message_report_action',
                 [
-                    'user_id' => $this->model->get_sender__id(),
+                    'user_id' => $sender->get_id(),
                 ]
             );
         }
