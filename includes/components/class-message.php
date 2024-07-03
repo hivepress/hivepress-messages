@@ -73,6 +73,9 @@ final class Message extends Component {
 			add_filter( 'hivepress/v1/templates/vendor_view_block', [ $this, 'alter_vendor_view_block' ] );
 			add_filter( 'hivepress/v1/templates/vendor_view_page', [ $this, 'alter_vendor_view_page' ] );
 
+            // Validate message form.
+            add_filter( 'hivepress/v1/forms/message_send/errors', [ $this, 'validate_message_form' ], 10, 2 );
+
 			if ( hivepress()->get_version( 'marketplace' ) ) {
 				add_filter( 'hivepress/v1/templates/order_footer_block', [ $this, 'alter_order_footer_block' ] );
 			}
@@ -85,6 +88,39 @@ final class Message extends Component {
 
 		parent::__construct( $args );
 	}
+
+    /**
+     * Validates message form.
+     *
+     * @param array  $errors Form errors.
+     * @param object $form Form object.
+     * @return array
+     */
+    public function validate_message_form( $errors, $form ) {
+
+        if ( ! empty( $errors ) ) {
+            return $errors;
+        }
+
+        // Get recipient ID.
+        $recipient_id = $form->get_value( 'recipient' );
+
+        // Get blocked users.
+        $blocked_users = (array) get_user_meta( get_current_user_id(), hp\prefix( 'blocked_users' ), true );
+
+        if ( in_array( $recipient_id, $blocked_users ) ) {
+            $errors[] = esc_html__( 'You cannot send message to a blocked user.', 'hivepress-messsages' );
+        }
+
+        // Get recipient blocked users.
+        $blocked_users = (array) get_user_meta( $recipient_id, hp\prefix( 'blocked_users' ), true );
+
+        if ( in_array( get_current_user_id(), $blocked_users ) ) {
+            $errors[] = esc_html__( 'The recipient blocked messages from you.', 'hivepress-messsages' );
+        }
+
+        return $errors;
+    }
 
 	/**
 	 * Gets message draft.
