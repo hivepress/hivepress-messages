@@ -91,7 +91,7 @@ final class Message extends Controller {
         $blocked_users = (array) get_user_meta( get_current_user_id(), hp\prefix( 'blocked_users' ), true );
 
         // Get blocking user ID.
-        $user_id = $request->get_param('user_id');
+        $user_id = $request->get_param( 'user_id' );
 
         if ( in_array( $user_id, $blocked_users, true ) ) {
 
