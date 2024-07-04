@@ -221,37 +221,27 @@ final class Message extends Controller {
 			) )->send();
 		}
 
+        // Set output.
+        $output = '';
+
         if ( $request->get_param( '_render' ) ) {
 
-            // Get block arguments.
-            $block_args = hp\search_array_value( ( new Templates\Messages_View_Page() )->get_blocks(), 'messages' );
-
-            if ( ! $block_args ) {
-                return hp\rest_error(400);
-            }
-
-            // Create block.
-            $block = hp\create_class_instance(
-                '\HivePress\Blocks\\' . $block_args['type'],
-                [
-                    array_merge(
-                        $block_args,
-                        [
-                            'name'        => 'messages',
-                            'render_type' => 'single',
-
-                            'context'     => [
-                                'messages' => [ $message ],
-                            ],
-                        ]
-                    ),
-                ]
-            );
-
             // Render block.
-            if ( $block ) {
-                $output = $block->render();
-            }
+            $output = '<div class="hp-grid__item">';
+
+            $output .= ( new Blocks\Template(
+                [
+                    'template' => 'message_view_block',
+
+                    'context'  => [
+                        'message'     => $message,
+                        'sender_name' => $sender->get_display_name(),
+                        'recipient'   => $recipient,
+                    ],
+                ]
+            ) )->render();
+
+            $output .= '</div>';
         }
 
 		return hp\rest_response(

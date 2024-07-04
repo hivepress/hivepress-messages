@@ -46,6 +46,7 @@ class Message_Send extends Model_Form {
 		$args = hp\merge_arrays(
 			[
 				'message' => esc_html__( 'Your message has been sent.', 'hivepress-messages' ),
+                'action'  => hivepress()->router->get_url( 'message_send_action' ),
 
 				'fields'  => [
 					'text'      => [
@@ -76,26 +77,19 @@ class Message_Send extends Model_Form {
      */
     protected function boot() {
 
-        // Set arguments.
-        $args = [];
-
         // Check thread page.
         if ( hivepress()->request->get_context( 'message_ids' ) ) {
-
-            // Set render.
-            $args['_render'] = true;
 
             // Set rendering.
             $this->attributes['data-render'] = wp_json_encode(
                 [
                     'url'   => hivepress()->router->get_url( 'message_send_action' ),
                     'block' => 'messages',
+                    'event' => 'submit',
+                    'type'  => 'append',
                 ]
             );
         }
-
-        // Set action.
-        $this->action = hivepress()->router->get_url( 'message_send_action', $args );
 
         parent::boot();
     }

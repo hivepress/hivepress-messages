@@ -28,11 +28,15 @@ class Messages extends Block {
 	protected $mode = 'view';
 
     /**
-     * Block render type.
-     *
-     * @var string
+     * Bootstraps block properties.
      */
-    protected $render_type = 'all';
+    protected function boot() {
+
+        // Set block.
+        $this->attributes['data-block'] = 'messages';
+
+        parent::boot();
+    }
 
 	/**
 	 * Renders block HTML.
@@ -46,13 +50,11 @@ class Messages extends Block {
 		$messages = $this->get_context( 'messages' );
 
 		if ( $messages ) {
-            if ( 'all' === $this->render_type ) {
-                if ( 'thread' === $this->mode ) {
-                    $output .= '<table class="hp-messages hp-table">';
-                } else {
-                    $output .= '<div class="hp-messages hp-grid">';
-                }
-            }
+			if ( 'thread' === $this->mode ) {
+				$output .= '<table class="hp-messages hp-table" ' . hp\html_attributes( $this->attributes ) . '>';
+			} else {
+				$output .= '<div class="hp-messages hp-grid" ' . hp\html_attributes( $this->attributes ) . '>';
+			}
 
 			foreach ( $messages as $message ) {
 				if ( hp\is_class_instance( $message, '\HivePress\Models\Message' ) ) {
@@ -95,13 +97,11 @@ class Messages extends Block {
 				}
 			}
 
-            if ( 'all' === $this->render_type ) {
-                if ('thread' === $this->mode) {
-                    $output .= '</table>';
-                } else {
-                    $output .= '</div>';
-                }
-            }
+			if ( 'thread' === $this->mode ) {
+				$output .= '</table>';
+			} else {
+				$output .= '</div>';
+			}
 		}
 
 		return $output;
