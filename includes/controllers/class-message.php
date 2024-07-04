@@ -230,19 +230,6 @@ final class Message extends Controller {
                 return hp\rest_error(400);
             }
 
-            // Get message IDs.
-            $message_ids = hivepress()->request->get_context( 'message_ids', [] );
-
-            // Get messages.
-            $messages = Models\Message::query()->filter(
-                [
-                    'id__in' => $message_ids,
-                ]
-            )->order( 'id__in' )
-                ->limit( count( $message_ids ) )
-                ->get()
-                ->serialize();
-
             // Create block.
             $block = hp\create_class_instance(
                 '\HivePress\Blocks\\' . $block_args['type'],
@@ -250,10 +237,11 @@ final class Message extends Controller {
                     array_merge(
                         $block_args,
                         [
-                            'name'    => 'messages',
+                            'name'        => 'messages',
+                            'render_type' => 'single',
 
-                            'context' => [
-                                'messages' => $messages,
+                            'context'     => [
+                                'messages' => [ $message ],
                             ],
                         ]
                     ),

@@ -27,6 +27,13 @@ class Messages extends Block {
 	 */
 	protected $mode = 'view';
 
+    /**
+     * Block render type.
+     *
+     * @var string
+     */
+    protected $render_type = 'all';
+
 	/**
 	 * Renders block HTML.
 	 *
@@ -39,11 +46,13 @@ class Messages extends Block {
 		$messages = $this->get_context( 'messages' );
 
 		if ( $messages ) {
-			if ( 'thread' === $this->mode ) {
-				$output .= '<table class="hp-messages hp-table">';
-			} else {
-				$output .= '<div class="hp-messages hp-grid">';
-			}
+            if ( 'all' === $this->render_type ) {
+                if ( 'thread' === $this->mode ) {
+                    $output .= '<table class="hp-messages hp-table">';
+                } else {
+                    $output .= '<div class="hp-messages hp-grid">';
+                }
+            }
 
 			foreach ( $messages as $message ) {
 				if ( hp\is_class_instance( $message, '\HivePress\Models\Message' ) ) {
@@ -86,11 +95,13 @@ class Messages extends Block {
 				}
 			}
 
-			if ( 'thread' === $this->mode ) {
-				$output .= '</table>';
-			} else {
-				$output .= '</div>';
-			}
+            if ( 'all' === $this->render_type ) {
+                if ('thread' === $this->mode) {
+                    $output .= '</table>';
+                } else {
+                    $output .= '</div>';
+                }
+            }
 		}
 
 		return $output;
