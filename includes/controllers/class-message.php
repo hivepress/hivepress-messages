@@ -12,6 +12,7 @@ use HivePress\Models;
 use HivePress\Forms;
 use HivePress\Blocks;
 use HivePress\Emails;
+use HivePress\Templates;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
@@ -220,10 +221,56 @@ final class Message extends Controller {
 			) )->send();
 		}
 
+        if ( $request->get_param( '_render' ) ) {
+
+            // Get block arguments.
+            $block_args = hp\search_array_value( ( new Templates\Messages_View_Page() )->get_blocks(), 'messages' );
+
+            if ( ! $block_args ) {
+                return hp\rest_error(400);
+            }
+
+            // Get message IDs.
+            $message_ids = hivepress()->request->get_context( 'message_ids', [] );
+
+            // Get messages.
+            $messages = Models\Message::query()->filter(
+                [
+                    'id__in' => $message_ids,
+                ]
+            )->order( 'id__in' )
+                ->limit( count( $message_ids ) )
+                ->get()
+                ->serialize();
+
+            // Create block.
+            $block = hp\create_class_instance(
+                '\HivePress\Blocks\\' . $block_args['type'],
+                [
+                    array_merge(
+                        $block_args,
+                        [
+                            'name'    => 'messages',
+
+                            'context' => [
+                                'messages' => $messages,
+                            ],
+                        ]
+                    ),
+                ]
+            );
+
+            // Render block.
+            if ( $block ) {
+                $output = $block->render();
+            }
+        }
+
 		return hp\rest_response(
 			201,
 			[
-				'id' => $message->get_id(),
+				'id'   => $message->get_id(),
+                'html' => $output,
 			]
 		);
 	}
