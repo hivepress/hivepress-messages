@@ -83,10 +83,12 @@ class Message_Send extends Model_Form {
             // Set rendering.
             $this->attributes['data-render'] = wp_json_encode(
                 [
-                    'url'   => hivepress()->router->get_url( 'message_send_action' ),
-                    'block' => 'messages',
-                    'event' => 'submit',
-                    'type'  => 'append',
+                    'url'            => hivepress()->router->get_url( 'message_send_action' ),
+                    'block'          => 'messages',
+                    'event'          => 'submit',
+                    'type'           => 'append',
+                    'fetch_url'      => hivepress()->router->get_url( 'messages_fetch_action', [ 'message_id' => hp\get_last_array_value( hivepress()->request->get_context( 'message_ids' ) ) ] ),
+                    'fetch_interval' => 5,
                 ]
             );
         }

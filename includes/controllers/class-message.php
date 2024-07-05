@@ -60,6 +60,12 @@ final class Message extends Controller {
 						'redirect' => [ $this, 'redirect_messages_view_page' ],
 						'action'   => [ $this, 'render_messages_view_page' ],
 					],
+
+                    'messages_fetch_action' => [
+                        'base'   => 'messages_resource',
+                        'action' => [ $this, 'fetch_messages' ],
+                        'rest'   => true,
+                    ],
 				],
 			],
 			$args
@@ -67,6 +73,64 @@ final class Message extends Controller {
 
 		parent::__construct( $args );
 	}
+
+    /**
+     * Fetches messages.
+     *
+     * @return WP_Rest_Response
+     */
+    public function fetch_messages() {
+
+        // Get last message ID.
+        $last_id = hp\get_array_value( $_GET, 'message_id' );
+
+        // Check last message ID.
+        if ( ! $last_id ) {
+            return hp\rest_response(400 );
+        }
+
+        // Get messages.
+        $messages = Models\Message::query()->filter(
+            [
+                'id__gt' => $last_id,
+            ]
+        )->order( 'sent_date' )
+            ->get()
+            ->serialize();
+
+        // Set response.
+        $response = [];
+
+        // Set output.
+        $output = '';
+
+        foreach ( $messages as $message ) {
+
+            // Render block.
+            $output .= '<div class="hp-grid__item">';
+
+            $output .= ( new Blocks\Template(
+                [
+                    'template' => 'message_view_block',
+
+                    'context'  => [
+                        'message'     => $message,
+                        'sender_name' => $message->get_sender__display_name(),
+                        'recipient'   => $message->get_recipient(),
+                    ],
+                ]
+            ) )->render();
+
+            $output .= '</div>';
+        }
+
+        if ( $output ) {
+            $response['html'] = $output;
+            $response['fetch_url'] = hivepress()->router->get_url( 'messages_fetch_action', [ 'message_id' => hp\get_last_array_value( $messages )->get_id() ] );
+        }
+
+        return hp\rest_response( 201, $response );
+    }
 
 	/**
 	 * Sends message.
