@@ -221,8 +221,10 @@ final class Message extends Controller {
 			) )->send();
 		}
 
-        // Set output.
-        $output = '';
+        // Set response.
+        $response = [
+            'id' => $message->get_id(),
+        ];
 
         if ( $request->get_param( '_render' ) ) {
 
@@ -234,23 +236,19 @@ final class Message extends Controller {
                     'template' => 'message_view_block',
 
                     'context'  => [
-                        'message'     => $message,
+                        'message'     => Models\Message::query()->get_by_id( $message->get_id() ),
                         'sender_name' => $sender->get_display_name(),
-                        'recipient'   => $recipient,
+                        'recipient'   => $sender,
                     ],
                 ]
             ) )->render();
 
             $output .= '</div>';
+
+            $response['html'] = $output;
         }
 
-		return hp\rest_response(
-			201,
-			[
-				'id'   => $message->get_id(),
-                'html' => $output,
-			]
-		);
+		return hp\rest_response( 201, $response );
 	}
 
 	/**

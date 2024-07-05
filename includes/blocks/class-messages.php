@@ -8,7 +8,6 @@
 namespace HivePress\Blocks;
 
 use HivePress\Helpers as hp;
-use HivePress\Models;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
@@ -27,17 +26,6 @@ class Messages extends Block {
 	 */
 	protected $mode = 'view';
 
-    /**
-     * Bootstraps block properties.
-     */
-    protected function boot() {
-
-        // Set block.
-        $this->attributes['data-block'] = 'messages';
-
-        parent::boot();
-    }
-
 	/**
 	 * Renders block HTML.
 	 *
@@ -51,9 +39,9 @@ class Messages extends Block {
 
 		if ( $messages ) {
 			if ( 'thread' === $this->mode ) {
-				$output .= '<table class="hp-messages hp-table" ' . hp\html_attributes( $this->attributes ) . '>';
+				$output .= '<table class="hp-messages hp-table">';
 			} else {
-				$output .= '<div class="hp-messages hp-grid" ' . hp\html_attributes( $this->attributes ) . '>';
+				$output .= '<div class="hp-messages hp-grid" data-block="messages">';
 			}
 
 			foreach ( $messages as $message ) {
