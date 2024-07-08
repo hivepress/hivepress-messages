@@ -87,8 +87,8 @@ class Message_Send extends Model_Form {
                     'block'          => 'messages',
                     'event'          => 'submit',
                     'type'           => 'append',
-                    'fetch_url'      => hivepress()->router->get_url( 'messages_fetch_action', [ 'message_id' => hp\get_last_array_value( hivepress()->request->get_context( 'message_ids' ) ) ] ),
-                    'fetch_interval' => 5,
+                    'fetch_url'      => hivepress()->router->get_url( 'messages_fetch_action' ),
+                    'fetch_interval' => 15,
                 ]
             );
         }

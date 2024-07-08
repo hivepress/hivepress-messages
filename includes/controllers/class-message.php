@@ -81,18 +81,53 @@ final class Message extends Controller {
      */
     public function fetch_messages() {
 
-        // Get last message ID.
-        $last_id = hp\get_array_value( $_GET, 'message_id' );
-
-        // Check last message ID.
-        if ( ! $last_id ) {
-            return hp\rest_response(400 );
+        // Check authentication.
+        if ( ! is_user_logged_in() ) {
+            return hp\rest_error( 401 );
         }
 
-        // Get messages.
+        // Get thread.
+        $thread_ids = hivepress()->request->get_context( 'message_thread_ids');
+
+        // Check thread.
+        if ( ! $thread_ids ) {
+            return hp\rest_error( 400 );
+        }
+
+        // Get thread messages.
+        $thread_messages = Models\Message::query()->filter(
+            [
+                'id__in' => $thread_ids,
+            ]
+        )->order( [ 'sent_date' => 'desc' ] )
+            ->limit( count( $thread_ids ) )
+            ->get()
+            ->serialize();
+
+        // Set sender ID.
+        $sender_id = null;
+
+        foreach ( $thread_messages as $thread_message ) {
+            if ( $thread_message->get_sender__id() === get_current_user_id() ) {
+                continue;
+            }
+
+            $sender_id = $thread_message->get_sender__id();
+
+            break;
+        }
+
+        // Check sender ID.
+        if ( ! $sender_id ) {
+            return hp\rest_error( 400 );
+        }
+
+        // Get new messages.
         $messages = Models\Message::query()->filter(
             [
-                'id__gt' => $last_id,
+                'read'      => 0,
+                'recipient' => get_current_user_id(),
+                'sender'    => $sender_id,
             ]
         )->order( 'sent_date' )
             ->get()
@@ -105,6 +140,9 @@ final class Message extends Controller {
         $output = '';
 
         foreach ( $messages as $message ) {
+
+            // Mark as read.
+            $message->set_read( 1 )->save_read();
 
             // Render block.
             $output .= '<div class="hp-grid__item">';
@@ -126,7 +164,6 @@ final class Message extends Controller {
 
         if ( $output ) {
             $response['html'] = $output;
-            $response['fetch_url'] = hivepress()->router->get_url( 'messages_fetch_action', [ 'message_id' => hp\get_last_array_value( $messages )->get_id() ] );
         }
 
         return hp\rest_response( 201, $response );
