@@ -58,7 +58,7 @@ class Message_Block_Toggle extends Toggle {
             $this->url = hivepress()->router->get_url( 'messages_block_user', [ 'user_id' => $sender->get_id() ] );
 
             // Set active state if user is blocked.
-            if ( in_array( $sender->get_id(), (array) get_user_meta( get_current_user_id(), hp\prefix( 'blocked_users' ), true ) ) ) {
+            if ( in_array( $sender->get_id(), (array) get_user_meta( get_current_user_id(), 'hp_blocked_users', true ) ) ) {
                 $this->active = true;
             }
         }

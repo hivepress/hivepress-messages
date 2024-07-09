@@ -62,7 +62,7 @@ final class Message extends Controller {
 
                     'messages_block_user'  => [
                         'method' => 'POST',
-                        'path'   => '/block-user',
+                        'path'   => '/users/(?P<user_id>\d+)/block',
                         'action' => [ $this, 'block_user' ],
                         'rest'   => true,
                     ],
@@ -87,33 +87,7 @@ final class Message extends Controller {
             return hp\rest_error( 401 );
         }
 
-        // Get blocked users.
-        $blocked_users = (array) get_user_meta( get_current_user_id(), hp\prefix( 'blocked_users' ), true );
-
-        // Get blocking user ID.
-        $user_id = $request->get_param( 'user_id' );
-
-        if ( in_array( $user_id, $blocked_users, true ) ) {
-
-            // Remove user from blocked list.
-            unset( $blocked_users[ array_search( $user_id, $blocked_users ) ] );
-        } else {
-
-            // Add user to blocked list.
-            $blocked_users[] = $user_id;
-        }
-
-        $blocked_users = array_filter( $blocked_users );
-
-        if ( empty( $blocked_users ) ) {
-
-            // Remove blocked users.
-            delete_user_meta( get_current_user_id(), hp\prefix( 'blocked_users' ) );
-        } else {
-
-            // Update blocked users.
-            update_user_meta( get_current_user_id(), hp\prefix( 'blocked_users' ), $blocked_users );
-        }
+		hivepress()->message->update_blocked_users( $request->get_param( 'user_id' ) );
 
         return hp\rest_response(200, [] );
     }
