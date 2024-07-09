@@ -74,94 +74,94 @@ final class Message extends Controller {
 		parent::__construct( $args );
 	}
 
-    /**
-     * Fetches messages.
-     *
-     * @return WP_Rest_Response
-     */
-    public function fetch_messages() {
+	/**
+	 * Fetches messages.
+	 *
+	 * @return WP_Rest_Response
+	 */
+	public function fetch_messages() {
 
-        // Check authentication.
-        if ( ! is_user_logged_in() ) {
-            return hp\rest_error( 401 );
-        }
+		// Check authentication.
+		if ( ! is_user_logged_in() ) {
+			return hp\rest_error( 401 );
+		}
 
-        // Get thread.
-        $thread_ids = hivepress()->request->get_context( 'message_thread_ids');
+		// Get thread.
+		$thread_ids = hivepress()->request->get_context( 'message_thread_ids' );
 
-        // Check thread.
-        if ( ! $thread_ids ) {
-            return hp\rest_error( 400 );
-        }
+		// Check thread.
+		if ( ! $thread_ids ) {
+			return hp\rest_error( 400 );
+		}
 
-        // Get thread messages.
-        $thread_messages = Models\Message::query()->filter(
-            [
-                'id__in' => $thread_ids,
-            ]
-        )->order( [ 'sent_date' => 'desc' ] )
-            ->get();
+		// Get thread messages.
+		$thread_messages = Models\Message::query()->filter(
+			[
+				'id__in' => $thread_ids,
+			]
+		)->order( [ 'sent_date' => 'desc' ] )
+			->get();
 
-        // Set sender ID.
-        $sender_id = null;
+		// Set sender ID.
+		$sender_id = null;
 
-        foreach ( $thread_messages as $thread_message ) {
-            if ( $thread_message->get_sender__id() !== get_current_user_id() ) {
-	            $sender_id = $thread_message->get_sender__id();
-	            break;
-            }
-        }
+		foreach ( $thread_messages as $thread_message ) {
+			if ( $thread_message->get_sender__id() !== get_current_user_id() ) {
+				$sender_id = $thread_message->get_sender__id();
+				break;
+			}
+		}
 
-        // Check sender ID.
-        if ( ! $sender_id ) {
-            return hp\rest_error( 400 );
-        }
+		// Check sender ID.
+		if ( ! $sender_id ) {
+			return hp\rest_error( 400 );
+		}
 
-        // Get new messages.
-        $messages = Models\Message::query()->filter(
-            [
-                'read'      => 0,
-                'recipient' => get_current_user_id(),
-                'sender'    => $sender_id,
-            ]
-        )->order( 'sent_date' )
-            ->get();
+		// Get new messages.
+		$messages = Models\Message::query()->filter(
+			[
+				'read'      => 0,
+				'recipient' => get_current_user_id(),
+				'sender'    => $sender_id,
+			]
+		)->order( 'sent_date' )
+			->get();
 
-        // Set response.
-        $response = [];
+		// Set response.
+		$response = [];
 
-        // Set output.
-        $output = '';
+		// Set output.
+		$output = '';
 
-        foreach ( $messages as $message ) {
+		foreach ( $messages as $message ) {
 
-            // Mark as read.
-            $message->set_read( 1 )->save_read();
+			// Mark as read.
+			$message->set_read( 1 )->save_read();
 
-            // Render block.
-            $output .= '<div class="hp-grid__item">';
+			// Render block.
+			$output .= '<div class="hp-grid__item">';
 
-            $output .= ( new Blocks\Template(
-                [
-                    'template' => 'message_view_block',
+			$output .= ( new Blocks\Template(
+				[
+					'template' => 'message_view_block',
 
-                    'context'  => [
-                        'message'     => $message,
-                        'sender_name' => $message->get_sender__display_name(),
-                        'recipient'   => $message->get_recipient(),
-                    ],
-                ]
-            ) )->render();
+					'context'  => [
+						'message'     => $message,
+						'sender_name' => $message->get_sender__display_name(),
+						'recipient'   => $message->get_recipient(),
+					],
+				]
+			) )->render();
 
-            $output .= '</div>';
-        }
+			$output .= '</div>';
+		}
 
-        if ( $output ) {
-            $response['html'] = $output;
-        }
+		if ( $output ) {
+			$response['html'] = $output;
+		}
 
-        return hp\rest_response( 201, $response );
-    }
+		return hp\rest_response( 201, $response );
+	}
 
 	/**
 	 * Sends message.
@@ -316,32 +316,32 @@ final class Message extends Controller {
 			) )->send();
 		}
 
-        // Set response.
-        $response = [
-            'id' => $message->get_id(),
-        ];
+		// Set response.
+		$response = [
+			'id' => $message->get_id(),
+		];
 
-        if ( $request->get_param( '_render' ) ) {
+		if ( $request->get_param( '_render' ) ) {
 
-            // Render block.
-            $output = '<div class="hp-grid__item">';
+			// Render block.
+			$output = '<div class="hp-grid__item">';
 
-            $output .= ( new Blocks\Template(
-                [
-                    'template' => 'message_view_block',
+			$output .= ( new Blocks\Template(
+				[
+					'template' => 'message_view_block',
 
-                    'context'  => [
-                        'message'     => Models\Message::query()->get_by_id( $message->get_id() ),
-                        'sender_name' => $sender->get_display_name(),
-                        'recipient'   => $sender,
-                    ],
-                ]
-            ) )->render();
+					'context'  => [
+						'message'     => Models\Message::query()->get_by_id( $message->get_id() ),
+						'sender_name' => $sender->get_display_name(),
+						'recipient'   => $sender,
+					],
+				]
+			) )->render();
 
-            $output .= '</div>';
+			$output .= '</div>';
 
-            $response['html'] = $output;
-        }
+			$response['html'] = $output;
+		}
 
 		return hp\rest_response( 201, $response );
 	}
