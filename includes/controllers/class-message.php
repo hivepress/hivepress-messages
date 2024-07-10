@@ -108,6 +108,23 @@ final class Message extends Controller {
 		// Validate form.
 		$form = ( new Forms\Message_Send() )->set_values( $request->get_params() );
 
+		// Get recipient ID.
+		$recipient_id = $form->get_value( 'recipient' );
+
+		// Get blocked users.
+		$blocked_users = (array) get_user_meta( get_current_user_id(), 'hp_blocked_users', true );
+
+		if ( in_array( $recipient_id, $blocked_users ) ) {
+			return hp\rest_error( 400, esc_html__( 'You cannot send message to a blocked user.', 'hivepress-messsages' ) );
+		}
+
+		// Get recipient blocked users.
+		$blocked_users = (array) get_user_meta( $recipient_id, 'hp_blocked_users', true );
+
+		if ( in_array( get_current_user_id(), $blocked_users ) ) {
+			return hp\rest_error( 400, esc_html__( 'The recipient blocked messages from you.', 'hivepress-messsages' ) );
+		}
+
 		if ( ! $form->validate() ) {
 			return hp\rest_error( 400, $form->get_errors() );
 		}
