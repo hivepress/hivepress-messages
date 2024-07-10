@@ -44,7 +44,7 @@ class Messages extends Block {
 				$output .= '<div class="hp-messages hp-grid" data-block="messages" data-render=' . wp_json_encode(
 					[
 						'url'      => hivepress()->router->get_url( 'messages_fetch_action', [ 'sender' => hivepress()->request->get_context( 'message_sender' )->get_id() ] ),
-						'interval' => 5,
+						'interval' => 15,
 					]
 				) . '>';
 			}
