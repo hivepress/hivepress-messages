@@ -44,6 +44,14 @@ final class Message extends Controller {
 						'rest'   => true,
 					],
 
+					'message_report_action' => [
+						'base'   => 'messages_resource',
+						'path'   => '/report',
+						'method' => 'POST',
+						'action' => [ $this, 'report_user' ],
+						'rest'   => true,
+					],
+
 					'messages_thread_page'  => [
 						'title'    => hivepress()->translator->get_string( 'messages' ),
 						'base'     => 'user_account_page',
@@ -59,14 +67,6 @@ final class Message extends Controller {
 						'redirect' => [ $this, 'redirect_messages_view_page' ],
 						'action'   => [ $this, 'render_messages_view_page' ],
 					],
-
-                    'message_report_action' => [
-                        'base'   => 'messages_resource',
-                        'path'   => '/report',
-                        'method' => 'POST',
-                        'action' => [ $this, 'report_user' ],
-                        'rest'   => true,
-                    ],
 				],
 			],
 			$args
@@ -111,7 +111,7 @@ final class Message extends Controller {
                     'user_name'      => $user->get_username(),
                     'user_url'       => get_edit_user_link( $user->get_id() ),
                     'report_details' => $form->get_value( 'details' ),
-                    'user'           => hivepress()->request->get_user(),
+                    'user'           => $user,
                 ],
             ]
         ) )->send();
