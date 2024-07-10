@@ -47,6 +47,7 @@ final class Message extends Controller {
 
 					'messages_fetch_action' => [
 						'base'   => 'messages_resource',
+						'method' => 'GET',
 						'action' => [ $this, 'fetch_messages' ],
 						'rest'   => true,
 					],
@@ -77,40 +78,18 @@ final class Message extends Controller {
 	/**
 	 * Fetches messages.
 	 *
+	 * @param WP_REST_Request $request API request.
 	 * @return WP_Rest_Response
 	 */
-	public function fetch_messages() {
+	public function fetch_messages( $request ) {
 
 		// Check authentication.
 		if ( ! is_user_logged_in() ) {
 			return hp\rest_error( 401 );
 		}
 
-		// Get thread.
-		$thread_ids = hivepress()->request->get_context( 'message_thread_ids' );
-
-		// Check thread.
-		if ( ! $thread_ids ) {
-			return hp\rest_error( 400 );
-		}
-
-		// Get thread messages.
-		$thread_messages = Models\Message::query()->filter(
-			[
-				'id__in' => $thread_ids,
-			]
-		)->order( [ 'sent_date' => 'desc' ] )
-			->get();
-
-		// Set sender ID.
-		$sender_id = null;
-
-		foreach ( $thread_messages as $thread_message ) {
-			if ( $thread_message->get_sender__id() !== get_current_user_id() ) {
-				$sender_id = $thread_message->get_sender__id();
-				break;
-			}
-		}
+		// Get sender ID.
+		$sender_id = $request->get_param( 'sender' );
 
 		// Check sender ID.
 		if ( ! $sender_id ) {

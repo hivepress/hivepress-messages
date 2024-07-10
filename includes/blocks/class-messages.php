@@ -41,7 +41,12 @@ class Messages extends Block {
 			if ( 'thread' === $this->mode ) {
 				$output .= '<table class="hp-messages hp-table">';
 			} else {
-				$output .= '<div class="hp-messages hp-grid" data-block="messages">';
+				$output .= '<div class="hp-messages hp-grid" data-block="messages" data-render=' . wp_json_encode(
+					[
+						'url'      => hivepress()->router->get_url( 'messages_fetch_action', [ 'sender' => hivepress()->request->get_context( 'message_sender' )->get_id() ] ),
+						'interval' => 5,
+					]
+				) . '>';
 			}
 
 			foreach ( $messages as $message ) {
