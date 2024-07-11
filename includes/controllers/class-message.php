@@ -108,11 +108,18 @@ final class Message extends Controller {
 		// Validate form.
 		$form = ( new Forms\Message_Send() )->set_values( $request->get_params() );
 
+		if ( ! $form->validate() ) {
+			return hp\rest_error( 400, $form->get_errors() );
+		}
+
+		// Get sender ID.
+		$sender_id = $request->get_param( 'sender' ) ? $request->get_param( 'sender' ) : get_current_user_id();
+
 		// Get recipient ID.
 		$recipient_id = $form->get_value( 'recipient' );
 
 		// Get blocked users.
-		$blocked_users = (array) get_user_meta( get_current_user_id(), 'hp_blocked_users', true );
+		$blocked_users = (array) get_user_meta( $sender_id, 'hp_blocked_users', true );
 
 		if ( in_array( $recipient_id, $blocked_users ) ) {
 			return hp\rest_error( 400, esc_html__( 'You cannot send message to a blocked user.', 'hivepress-messsages' ) );
@@ -121,16 +128,9 @@ final class Message extends Controller {
 		// Get recipient blocked users.
 		$blocked_users = (array) get_user_meta( $recipient_id, 'hp_blocked_users', true );
 
-		if ( in_array( get_current_user_id(), $blocked_users ) ) {
+		if ( in_array( $sender_id, $blocked_users ) ) {
 			return hp\rest_error( 400, esc_html__( 'The recipient blocked messages from you.', 'hivepress-messsages' ) );
 		}
-
-		if ( ! $form->validate() ) {
-			return hp\rest_error( 400, $form->get_errors() );
-		}
-
-		// Get sender ID.
-		$sender_id = $request->get_param( 'sender' ) ? $request->get_param( 'sender' ) : get_current_user_id();
 
 		// Get sender.
 		$sender = Models\User::query()->get_by_id( $sender_id );
