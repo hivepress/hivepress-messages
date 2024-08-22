@@ -1,9 +1,8 @@
 === HivePress Messages ===
 Contributors: hivepress
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7785WBVGMNB44&source=url
 Tags: hivepress, messages, directory, listings, classifieds
 Requires at least: 5.0
-Tested up to: 6.0
+Tested up to: 6.6
 Requires PHP: 7.0
 Stable tag: 1.3.0
 License: GPLv3
@@ -15,7 +14,7 @@ Allow users to send private messages.
 
 HivePress Messages is an extension for [HivePress](https://wordpress.org/plugins/hivepress/) plugin. It allows users to send private messages.
 
-[Demo](https://listinghive.hivepress.io/) | [Docs](https://help.hivepress.io/category/38-messages) | [Support](https://community.hivepress.io/?utm_medium=referral&utm_source=wordpress.org)
+[Demo](https://listinghive.hivepress.io/) | [Docs](https://help.hivepress.io/) | [Support](https://community.hivepress.io/)
 
 == Changelog ==
 
