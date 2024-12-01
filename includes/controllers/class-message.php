@@ -59,6 +59,13 @@ final class Message extends Controller {
 						'redirect' => [ $this, 'redirect_messages_view_page' ],
 						'action'   => [ $this, 'render_messages_view_page' ],
 					],
+
+                    'messages_block_user'  => [
+                        'method' => 'POST',
+                        'path'   => '/users/(?P<user_id>\d+)/block',
+                        'action' => [ $this, 'block_user' ],
+                        'rest'   => true,
+                    ],
 				],
 			],
 			$args
@@ -66,6 +73,24 @@ final class Message extends Controller {
 
 		parent::__construct( $args );
 	}
+
+    /**
+     * Blocks user.
+     *
+     * @param WP_REST_Request $request API request.
+     * @return WP_Rest_Response
+     */
+    public function block_user( $request ) {
+
+        // Check authentication.
+        if ( ! is_user_logged_in() ) {
+            return hp\rest_error( 401 );
+        }
+
+		hivepress()->message->update_blocked_users( $request->get_param( 'user_id' ) );
+
+        return hp\rest_response(200, [] );
+    }
 
 	/**
 	 * Sends message.
@@ -89,6 +114,23 @@ final class Message extends Controller {
 
 		// Get sender ID.
 		$sender_id = $request->get_param( 'sender' ) ? $request->get_param( 'sender' ) : get_current_user_id();
+
+		// Get recipient ID.
+		$recipient_id = $form->get_value( 'recipient' );
+
+		// Get blocked users.
+		$blocked_users = (array) get_user_meta( $sender_id, 'hp_blocked_users', true );
+
+		if ( in_array( $recipient_id, $blocked_users ) ) {
+			return hp\rest_error( 400, esc_html__( 'You cannot send message to a blocked user.', 'hivepress-messsages' ) );
+		}
+
+		// Get recipient blocked users.
+		$blocked_users = (array) get_user_meta( $recipient_id, 'hp_blocked_users', true );
+
+		if ( in_array( $sender_id, $blocked_users ) ) {
+			return hp\rest_error( 400, esc_html__( 'The recipient blocked messages from you.', 'hivepress-messsages' ) );
+		}
 
 		// Get sender.
 		$sender = Models\User::query()->get_by_id( $sender_id );

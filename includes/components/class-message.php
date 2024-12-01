@@ -771,4 +771,36 @@ final class Message extends Component {
 			]
 		);
 	}
+
+	/**
+	 * Updates blocked users list.
+	 * @param $user_id User ID.
+	 */
+	public function update_blocked_users( $user_id ) {
+
+		// Get blocked users.
+		$blocked_users = (array) get_user_meta( get_current_user_id(), 'hp_blocked_users', true );
+
+		if ( in_array( $user_id, $blocked_users, true ) ) {
+
+			// Remove user from blocked list.
+			unset( $blocked_users[ array_search( $user_id, $blocked_users ) ] );
+		} else {
+
+			// Add user to blocked list.
+			$blocked_users[] = $user_id;
+		}
+
+		$blocked_users = array_filter( $blocked_users );
+
+		if ( empty( $blocked_users ) ) {
+
+			// Remove blocked users.
+			delete_user_meta( get_current_user_id(), 'hp_blocked_users' );
+		} else {
+
+			// Update blocked users.
+			update_user_meta( get_current_user_id(), 'hp_blocked_users', $blocked_users );
+		}
+	}
 }

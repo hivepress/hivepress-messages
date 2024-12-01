@@ -56,6 +56,24 @@ class Messages_View_Page extends User_Account_Page {
 								'type'   => 'message_send_form',
 								'_label' => hivepress()->translator->get_string( 'form' ),
 								'_order' => 20,
+
+                                'footer' => [
+                                    'form_actions' => [
+                                        'type'       => 'container',
+                                        '_order'     => 10,
+
+                                        'attributes' => [
+                                            'class' => [ 'hp-form__actions' ],
+                                        ],
+
+                                        'blocks'     => [
+                                            'message_block_toggle' => [
+                                                'type'   => 'message_block_toggle',
+                                                '_order' => 10,
+                                            ],
+                                        ],
+                                    ],
+                                ],
 							],
 						],
 					],
