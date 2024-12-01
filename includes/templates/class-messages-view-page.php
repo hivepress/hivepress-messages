@@ -56,7 +56,40 @@ class Messages_View_Page extends User_Account_Page {
 								'type'   => 'message_send_form',
 								'_label' => hivepress()->translator->get_string( 'form' ),
 								'_order' => 20,
+
+                                'footer' => [
+                                    'form_actions' => [
+                                        'type'       => 'container',
+                                        '_order'     => 10,
+
+                                        'attributes' => [
+                                            'class' => [ 'hp-form__actions' ],
+                                        ],
+
+                                        'blocks'     => [
+                                            'message_report_link' => [
+                                                'type'   => 'part',
+                                                'path'   => 'message/view/message-report-link',
+                                                '_order' => 10,
+                                            ],
+                                        ],
+                                    ],
+                                ],
 							],
+
+                            'message_report_modal' => [
+                                'type'        => 'modal',
+                                'title'       => esc_html__( 'Report User', 'hivepress-messages' ),
+                                '_capability' => 'read',
+
+                                'blocks'      => [
+                                    'message_report_form' => [
+                                        'type'   => 'form',
+                                        'form'   => 'message_report',
+                                        '_order' => 10,
+                                    ],
+                                ],
+                            ],
 						],
 					],
 				],
