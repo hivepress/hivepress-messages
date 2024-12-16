@@ -53,9 +53,20 @@ class Messages_View_Page extends User_Account_Page {
 							],
 
 							'message_send_form' => [
-								'type'   => 'message_send_form',
-								'_label' => hivepress()->translator->get_string( 'form' ),
-								'_order' => 20,
+								'type'       => 'message_send_form',
+								'message'    => '',
+								'_label'     => hivepress()->translator->get_string( 'form' ),
+								'_order'     => 20,
+
+								'attributes' => [
+									'data-render' => wp_json_encode(
+										[
+											'block' => 'messages',
+											'event' => 'submit',
+											'type'  => 'append',
+										]
+									),
+								],
 							],
 						],
 					],
