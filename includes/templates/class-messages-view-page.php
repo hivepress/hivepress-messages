@@ -54,7 +54,7 @@ class Messages_View_Page extends User_Account_Page {
 
 							'message_send_form' => [
 								'type'       => 'message_send_form',
-								'message'    => null,
+								'message'    => '',
 								'_label'     => hivepress()->translator->get_string( 'form' ),
 								'_order'     => 20,
 
