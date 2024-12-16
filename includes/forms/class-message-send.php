@@ -71,21 +71,4 @@ class Message_Send extends Model_Form {
 
 		parent::__construct( $args );
 	}
-
-	/**
-	 * Bootstraps form properties.
-	 */
-	protected function boot() {
-
-		// Set rendering.
-		$this->attributes['data-render'] = wp_json_encode(
-			[
-				'block' => 'messages',
-				'event' => 'submit',
-				'type'  => 'append',
-			]
-		);
-
-		parent::boot();
-	}
 }
