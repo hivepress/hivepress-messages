@@ -93,6 +93,7 @@ class Message extends Comment {
 	/**
 	 * Gets user ID.
 	 *
+	 * @todo Deprecate when attachments are not checked by user.
 	 * @return mixed
 	 */
 	final public function get_user__id() {
