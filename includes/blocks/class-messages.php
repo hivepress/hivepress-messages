@@ -8,7 +8,6 @@
 namespace HivePress\Blocks;
 
 use HivePress\Helpers as hp;
-use HivePress\Models;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
@@ -42,7 +41,7 @@ class Messages extends Block {
 			if ( 'thread' === $this->mode ) {
 				$output .= '<table class="hp-messages hp-table">';
 			} else {
-				$output .= '<div class="hp-messages hp-grid">';
+				$output .= '<div class="hp-messages hp-grid" data-block="' . esc_attr( $this->name ) . '">';
 			}
 
 			foreach ( $messages as $message ) {
