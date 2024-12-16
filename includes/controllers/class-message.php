@@ -220,12 +220,37 @@ final class Message extends Controller {
 			) )->send();
 		}
 
-		return hp\rest_response(
-			201,
-			[
-				'id' => $message->get_id(),
-			]
-		);
+		// Set response.
+		$response = [
+			'id' => $message->get_id(),
+		];
+
+		if ( $request->get_param( '_render' ) ) {
+
+			// Fetch message.
+			$message = Models\Message::query()->get_by_id( $message->get_id() );
+
+			if ( $message ) {
+
+				// Render message.
+				$response['html'] = '<div class="hp-grid__item">';
+
+				$response['html'] .= ( new Blocks\Template(
+					[
+						'template' => 'message_view_block',
+
+						'context'  => [
+							'message'   => $message,
+							'recipient' => $sender,
+						],
+					]
+				) )->render();
+
+				$response['html'] .= '</div>';
+			}
+		}
+
+		return hp\rest_response( 201, $response );
 	}
 
 	/**
