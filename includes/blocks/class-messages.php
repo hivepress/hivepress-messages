@@ -38,10 +38,31 @@ class Messages extends Block {
 		$messages = $this->get_context( 'messages' );
 
 		if ( $messages ) {
+
+			// Get users.
+			$sender    = $this->get_context( 'sender' );
+			$recipient = $this->get_context( 'recipient' );
+
 			if ( 'thread' === $this->mode ) {
 				$output .= '<table class="hp-messages hp-table">';
 			} else {
-				$output .= '<div class="hp-messages hp-grid" data-block="' . esc_attr( $this->name ) . '">';
+				$output .= '<div class="hp-messages hp-grid" data-block="' . esc_attr( $this->name ) . '" data-render="' . hp\esc_json(
+					wp_json_encode(
+						[
+							'block'    => $this->name,
+							'type'     => 'append',
+							'interval' => 60,
+
+							'url'      => hivepress()->router->get_url(
+								'messages_read_action',
+								[
+									'sender'    => $sender->get_id(),
+									'recipient' => $recipient->get_id(),
+								]
+							),
+						]
+					)
+				) . '">';
 			}
 
 			foreach ( $messages as $message ) {
@@ -74,7 +95,7 @@ class Messages extends Block {
 								'message'     => $message,
 								'message_url' => $message_url,
 								'sender_name' => $sender_name,
-								'recipient'   => $this->get_context( 'recipient' ),
+								'recipient'   => $recipient,
 							],
 						]
 					) )->render();
