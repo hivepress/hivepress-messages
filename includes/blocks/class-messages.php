@@ -58,7 +58,6 @@ class Messages extends Block {
 								[
 									'sender'    => $sender->get_id(),
 									'recipient' => $recipient->get_id(),
-									'read'      => 0,
 								]
 							),
 						]
