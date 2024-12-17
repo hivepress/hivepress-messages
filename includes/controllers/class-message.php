@@ -33,8 +33,10 @@ final class Message extends Controller {
 			[
 				'routes' => [
 					'messages_resource'    => [
-						'path' => '/messages',
-						'rest' => true,
+						'path'   => '/messages',
+						'method' => 'GET',
+						'action' => [ $this, 'get_messages' ],
+						'rest'   => true,
 					],
 
 					'message_send_action'  => [
@@ -65,6 +67,98 @@ final class Message extends Controller {
 		);
 
 		parent::__construct( $args );
+	}
+
+	/**
+	 * Gets messages.
+	 *
+	 * @param WP_REST_Request $request API request.
+	 * @return WP_Rest_Response
+	 */
+	public function get_messages( $request ) {
+
+		// Check authentication.
+		if ( ! is_user_logged_in() ) {
+			return hp\rest_error( 401 );
+		}
+
+		// Get recipient.
+		$recipient_id = absint( $request->get_param( 'recipient' ) );
+
+		if ( get_current_user_id() !== $recipient_id ) {
+			return hp\rest_error( 403 );
+		}
+
+		$recipient = Models\User::query()->get_by_id( $recipient_id );
+
+		if ( ! $recipient ) {
+			return hp\rest_error( 404 );
+		}
+
+		// Get sender.
+		$sender_id = absint( $request->get_param( 'sender' ) );
+
+		if ( ! $sender_id ) {
+			return hp\rest_error( 400 );
+		}
+
+		$sender = Models\User::query()->get_by_id( $sender_id );
+
+		if ( ! $sender ) {
+			return hp\rest_error( 404 );
+		}
+
+		// Get messages.
+		$messages = Models\Message::query()->filter(
+			[
+				'sender'    => $sender->get_id(),
+				'recipient' => $recipient->get_id(),
+
+				// @todo remove when turned into a common endpoint.
+				'read'      => 0,
+			]
+		)->order( [ 'sent_date' => 'asc' ] )
+		->get()
+		->serialize();
+
+		// Set response.
+		$response = [
+			'results' => [],
+		];
+
+		foreach ( $messages as $message ) {
+			$response['results'][] = [
+				'id' => $message->get_id(),
+			];
+
+			// @todo remove when turned into a common endpoint.
+			$message->set_read( 1 )->save_read();
+		}
+
+		if ( $request->get_param( '_render' ) && $messages ) {
+
+			// Render messages.
+			$response['html'] = '';
+
+			foreach ( $messages as $message ) {
+				$response['html'] .= '<div class="hp-grid__item">';
+
+				$response['html'] .= ( new Blocks\Template(
+					[
+						'template' => 'message_view_block',
+
+						'context'  => [
+							'message'   => $message,
+							'recipient' => $recipient,
+						],
+					]
+				) )->render();
+
+				$response['html'] .= '</div>';
+			}
+		}
+
+		return hp\rest_response( 200, $response );
 	}
 
 	/**
@@ -510,6 +604,7 @@ final class Message extends Controller {
 
 				'context'  => [
 					'messages'  => $messages,
+					'sender'    => hivepress()->request->get_context( 'message_sender' ),
 					'recipient' => hivepress()->request->get_context( 'message_recipient' ),
 				],
 			]
