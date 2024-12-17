@@ -54,7 +54,7 @@ class Messages extends Block {
 							'interval' => 10,
 
 							'url'      => hivepress()->router->get_url(
-								'messages_resource',
+								'messages_read_action',
 								[
 									'sender'    => $sender->get_id(),
 									'recipient' => $recipient->get_id(),

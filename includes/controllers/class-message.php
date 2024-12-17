@@ -33,9 +33,15 @@ final class Message extends Controller {
 			[
 				'routes' => [
 					'messages_resource'    => [
-						'path'   => '/messages',
+						'path' => '/messages',
+						'rest' => true,
+					],
+
+					'messages_read_action' => [
+						'base'   => 'messages_resource',
+						'path'   => '/read',
 						'method' => 'GET',
-						'action' => [ $this, 'get_messages' ],
+						'action' => [ $this, 'read_messages' ],
 						'rest'   => true,
 					],
 
@@ -70,12 +76,12 @@ final class Message extends Controller {
 	}
 
 	/**
-	 * Gets messages.
+	 * Reads messages.
 	 *
 	 * @param WP_REST_Request $request API request.
 	 * @return WP_Rest_Response
 	 */
-	public function get_messages( $request ) {
+	public function read_messages( $request ) {
 
 		// Check authentication.
 		if ( ! is_user_logged_in() ) {
@@ -113,8 +119,6 @@ final class Message extends Controller {
 			[
 				'sender'    => $sender->get_id(),
 				'recipient' => $recipient->get_id(),
-
-				// @todo remove when turned into a common endpoint.
 				'read'      => 0,
 			]
 		)->order( [ 'sent_date' => 'asc' ] )
@@ -126,35 +130,39 @@ final class Message extends Controller {
 			'results' => [],
 		];
 
-		foreach ( $messages as $message ) {
-			$response['results'][] = [
-				'id' => $message->get_id(),
-			];
-
-			// @todo remove when turned into a common endpoint.
-			$message->set_read( 1 )->save_read();
-		}
-
-		if ( $request->get_param( '_render' ) && $messages ) {
-
-			// Render messages.
-			$response['html'] = '';
-
+		if ( $messages ) {
 			foreach ( $messages as $message ) {
-				$response['html'] .= '<div class="hp-grid__item">';
 
-				$response['html'] .= ( new Blocks\Template(
-					[
-						'template' => 'message_view_block',
+				// Add result.
+				$response['results'][] = [
+					'id' => $message->get_id(),
+				];
 
-						'context'  => [
-							'message'   => $message,
-							'recipient' => $recipient,
-						],
-					]
-				) )->render();
+				// Update message.
+				$message->set_read( 1 )->save_read();
+			}
 
-				$response['html'] .= '</div>';
+			if ( $request->get_param( '_render' ) ) {
+
+				// Render messages.
+				$response['html'] = '';
+
+				foreach ( $messages as $message ) {
+					$response['html'] .= '<div class="hp-grid__item">';
+
+					$response['html'] .= ( new Blocks\Template(
+						[
+							'template' => 'message_view_block',
+
+							'context'  => [
+								'message'   => $message,
+								'recipient' => $recipient,
+							],
+						]
+					) )->render();
+
+					$response['html'] .= '</div>';
+				}
 			}
 		}
 
