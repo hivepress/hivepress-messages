@@ -51,7 +51,7 @@ class Messages extends Block {
 						[
 							'block'    => $this->name,
 							'type'     => 'append',
-							'interval' => 10,
+							'interval' => 60,
 
 							'url'      => hivepress()->router->get_url(
 								'messages_read_action',
