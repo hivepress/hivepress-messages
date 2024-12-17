@@ -104,7 +104,7 @@ final class Message extends Controller {
 		// Get sender.
 		$sender_id = absint( $request->get_param( 'sender' ) );
 
-		if ( ! $sender_id ) {
+		if ( ! $sender_id || $sender_id === $recipient_id ) {
 			return hp\rest_error( 400 );
 		}
 
