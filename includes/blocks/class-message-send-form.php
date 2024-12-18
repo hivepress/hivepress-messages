@@ -87,6 +87,14 @@ class Message_Send_Form extends Form {
 
 						if ( $request ) {
 							$this->values['recipient'] = $request->get_user__id();
+						} else {
+
+							// Get user.
+							$user = $this->get_context( 'user' );
+
+							if ( $user ) {
+								$this->values['recipient'] = $user->get_id();
+							}
 						}
 					}
 				}
