@@ -295,7 +295,7 @@ final class Message extends Controller {
 		}
 
 		// Check permissions.
-		if ( ! current_user_can( 'moderate_comments' ) && ( ! get_option( 'hp_message_allow_deletion' ) || get_current_user_id() !== $message->get_sender__id() ) ) {
+		if ( ! current_user_can( 'manage_options' ) && ( ! get_option( 'hp_message_allow_deletion' ) || get_current_user_id() !== $message->get_sender__id() ) ) {
 			return hp\rest_error( 403 );
 		}
 

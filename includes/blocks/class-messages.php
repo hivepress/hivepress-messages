@@ -46,23 +46,29 @@ class Messages extends Block {
 			if ( 'thread' === $this->mode ) {
 				$output .= '<table class="hp-messages hp-table">';
 			} else {
-				$output .= '<div class="hp-messages hp-grid" data-block="' . esc_attr( $this->name ) . '" data-render="' . hp\esc_json(
-					wp_json_encode(
-						[
-							'block'    => $this->name,
-							'type'     => 'append',
-							'interval' => 60,
+				$output .= '<div class="hp-messages hp-grid" data-block="' . esc_attr( $this->name ) . '"';
 
-							'url'      => hivepress()->router->get_url(
-								'messages_read_action',
-								[
-									'sender'    => $sender->get_id(),
-									'recipient' => $recipient->get_id(),
-								]
-							),
-						]
-					)
-				) . '">';
+				if ( get_current_user_id() === $recipient->get_id() ) {
+					$output .= ' data-render="' . hp\esc_json(
+						wp_json_encode(
+							[
+								'block'    => $this->name,
+								'type'     => 'append',
+								'interval' => absint( get_option( 'hp_message_refresh_interval', 60 ) ),
+
+								'url'      => hivepress()->router->get_url(
+									'messages_read_action',
+									[
+										'sender'    => $sender->get_id(),
+										'recipient' => $recipient->get_id(),
+									]
+								),
+							]
+						)
+					) . '"';
+				}
+
+				$output .= '>';
 			}
 
 			foreach ( $messages as $message ) {

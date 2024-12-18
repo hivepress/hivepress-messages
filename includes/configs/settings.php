@@ -16,7 +16,7 @@ return [
 		'_order'   => 110,
 
 		'sections' => [
-			'sending' => [
+			'sending'    => [
 				'title'  => esc_html__( 'Sending', 'hivepress-messages' ),
 				'_order' => 10,
 
@@ -38,27 +38,44 @@ return [
 						'_order'   => 20,
 					],
 
+					'message_refresh_interval' => [
+						'label'       => esc_html__( 'Refresh Interval', 'hivepress-messages' ),
+						'description' => esc_html__( 'Set the number of seconds it takes to refresh conversations.', 'hivepress-messages' ),
+						'type'        => 'number',
+						'default'     => 60,
+						'min_value'   => 5,
+						'required'    => true,
+						'_order'      => 30,
+					],
+				],
+			],
+
+			'moderation' => [
+				'title'  => hivepress()->translator->get_string( 'moderation' ),
+				'_order' => 20,
+
+				'fields' => [
 					'message_allow_monitoring' => [
 						'label'       => esc_html__( 'Monitoring', 'hivepress-messages' ),
 						'caption'     => esc_html__( 'Allow monitoring messages', 'hivepress-messages' ),
 						'description' => esc_html__( 'Check this option to allow administrators to monitor the conversations of other users.', 'hivepress-messages' ),
 						'type'        => 'checkbox',
-						'_order'      => 30,
+						'_order'      => 10,
 					],
 
 					'message_blocked_keywords' => [
 						'label'       => esc_html__( 'Blocked Keywords', 'hivepress-messages' ),
 						'description' => esc_html__( 'Messages containing these keywords will be blocked, enter each keyword on a new line.', 'hivepress-messages' ),
 						'type'        => 'textarea',
-						'max_length'  => 2048,
-						'_order'      => 40,
+						'max_length'  => 10240,
+						'_order'      => 20,
 					],
 				],
 			],
 
-			'storage' => [
+			'storage'    => [
 				'title'  => hivepress()->translator->get_string( 'storage' ),
-				'_order' => 20,
+				'_order' => 30,
 
 				'fields' => [
 					'message_enable_storage' => [
