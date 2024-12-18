@@ -463,18 +463,57 @@ final class Message extends Component {
 
 		if ( $message ) {
 
-			// Get classes.
+			// Get CSS classes.
 			$classes = [];
-
-			if ( $recipient && $message->get_sender__id() === $recipient->get_id() ) {
-				$classes[] = 'hp-message--sent';
-			}
 
 			if ( $message->is_read() ) {
 				$classes[] = 'hp-message--read';
 			}
 
-			// Set attributes.
+			if ( $recipient ) {
+				if ( $message->get_sender__id() === $recipient->get_id() ) {
+					$classes[] = 'hp-message--sent';
+				}
+
+				if ( current_user_can( 'moderate_comments' ) || ( get_option( 'hp_message_allow_deletion' ) && get_current_user_id() === $message->get_sender__id() ) ) {
+
+					// Add delete link.
+					$blocks = hp\merge_trees(
+						[ 'blocks' => $blocks ],
+						[
+							'blocks' => [
+								'message_header' => [
+									'blocks' => [
+										'message_delete_modal' => [
+											'type'        => 'modal',
+											'model'       => 'message',
+											'title'       => esc_html__( 'Delete Message', 'hivepress-messages' ),
+											'_capability' => 'read',
+											'_order'      => 5,
+
+											'blocks'      => [
+												'message_delete_form' => [
+													'type' => 'form',
+													'form' => 'message_delete',
+													'_order' => 10,
+												],
+											],
+										],
+
+										'message_delete_link'  => [
+											'type'   => 'part',
+											'path'   => 'message/view/message-delete-link',
+											'_order' => 5,
+										],
+									],
+								],
+							],
+						]
+					)['blocks'];
+				}
+			}
+
+			// Add HTML attributes.
 			$blocks = hp\merge_trees(
 				[ 'blocks' => $blocks ],
 				[
