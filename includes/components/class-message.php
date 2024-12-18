@@ -475,7 +475,7 @@ final class Message extends Component {
 					$classes[] = 'hp-message--sent';
 				}
 
-				if ( current_user_can( 'moderate_comments' ) || ( get_option( 'hp_message_allow_deletion' ) && get_current_user_id() === $message->get_sender__id() ) ) {
+				if ( current_user_can( 'manage_options' ) || ( get_option( 'hp_message_allow_deletion' ) && get_current_user_id() === $message->get_sender__id() ) ) {
 
 					// Add delete link.
 					$blocks = hp\merge_trees(
