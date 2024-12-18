@@ -307,12 +307,12 @@ final class Message extends Controller {
 		return hp\rest_response( 204 );
 	}
 
-		/**
-		 * Reads messages.
-		 *
-		 * @param WP_REST_Request $request API request.
-		 * @return WP_Rest_Response
-		 */
+	/**
+	 * Reads messages.
+	 *
+	 * @param WP_REST_Request $request API request.
+	 * @return WP_Rest_Response
+	 */
 	public function read_messages( $request ) {
 
 		// Check authentication.
