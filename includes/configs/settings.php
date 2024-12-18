@@ -22,10 +22,11 @@ return [
 
 				'fields' => [
 					'message_allow_attachment' => [
-						'label'   => esc_html__( 'Attachments', 'hivepress-messages' ),
-						'caption' => esc_html__( 'Allow file attachments', 'hivepress-messages' ),
-						'type'    => 'checkbox',
-						'_order'  => 10,
+						'label'       => esc_html__( 'Attachments', 'hivepress-messages' ),
+						'caption'     => esc_html__( 'Allow file attachments', 'hivepress-messages' ),
+						'description' => esc_html__( 'Check this option to allow users to attach files to messages.', 'hivepress-messages' ),
+						'type'        => 'checkbox',
+						'_order'      => 10,
 					],
 
 					'message_attachment_types' => [
@@ -69,13 +70,20 @@ return [
 						'_order'      => 10,
 					],
 
+					'message_allow_deletion' => [
+						'caption' => esc_html__( 'Allow users to delete messages', 'hivepress-messages' ),
+						'type'    => 'checkbox',
+						'_parent' => 'message_enable_storage',
+						'_order'  => 20,
+					],
+
 					'message_storage_period' => [
 						'label'       => hivepress()->translator->get_string( 'storage_period' ),
 						'description' => esc_html__( 'Set the number of days after which a message is deleted.', 'hivepress-messages' ),
 						'type'        => 'number',
 						'min_value'   => 1,
 						'_parent'     => 'message_enable_storage',
-						'_order'      => 20,
+						'_order'      => 30,
 					],
 				],
 			],
