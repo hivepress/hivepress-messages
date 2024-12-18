@@ -41,7 +41,7 @@
 
 			&::after {
 				content: '\f00c';
-				font-size: 16px;
+				font-size: 18px;
 				right: 1.25rem;
 				opacity: 0.2;
 				font-family: 'Font Awesome 5 Free';
@@ -63,6 +63,10 @@
 
 		&--view-block &__header {
 			padding-right: 1.5rem;
+		}
+
+		&--view-block&--sent &__header {
+			padding-right: 3rem;
 		}
 
 		&--view-block &__header,
@@ -105,6 +109,30 @@
 
 		&--view-block &__sent-date {
 			font-size: 80%;
+		}
+
+		&--view-block &__action--delete {
+			display: none;
+			position: absolute;
+			top: 1.6rem;
+			right: 1.25rem;
+			line-height: 1;
+
+			i {
+				font-size: 18px;
+
+				&:first-child {
+					margin-right: 0;
+				}
+			}
+		}
+
+		&--view-block&--sent &__action--delete {
+			right: 2.75rem;
+		}
+
+		&--view-block:hover &__action--delete {
+			display: block;
 		}
 
 		&__text {
