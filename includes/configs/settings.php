@@ -38,8 +38,8 @@ return [
 						'_order'   => 20,
 					],
 
-					'message_refresh_delay'    => [
-						'label'       => esc_html__( 'Refresh Delay', 'hivepress-messages' ),
+					'message_refresh_interval' => [
+						'label'       => esc_html__( 'Refresh Interval', 'hivepress-messages' ),
 						'description' => esc_html__( 'Set the number of seconds it takes to refresh conversations.', 'hivepress-messages' ),
 						'type'        => 'number',
 						'default'     => 60,
