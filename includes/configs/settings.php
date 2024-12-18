@@ -50,7 +50,7 @@ return [
 						'label'       => esc_html__( 'Blocked Keywords', 'hivepress-messages' ),
 						'description' => esc_html__( 'Messages containing these keywords will be blocked, enter each keyword on a new line.', 'hivepress-messages' ),
 						'type'        => 'textarea',
-						'max_length'  => 2048,
+						'max_length'  => 10240,
 						'_order'      => 40,
 					],
 				],
