@@ -54,7 +54,7 @@ class Messages extends Block {
 							[
 								'block'    => $this->name,
 								'type'     => 'append',
-								'interval' => 60,
+								'interval' => absint( get_option( 'hp_message_refresh_delay', 60 ) ),
 
 								'url'      => hivepress()->router->get_url(
 									'messages_read_action',
