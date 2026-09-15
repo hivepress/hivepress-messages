@@ -2,7 +2,7 @@
 Contributors: hivepress
 Tags: hivepress, messages, directory, listings, classifieds
 Requires at least: 5.0
-Tested up to: 6.7
+Tested up to: 6.9
 Requires PHP: 7.4
 Stable tag: 1.4.0
 License: GPLv3
