@@ -436,16 +436,14 @@ final class Message extends Component {
 		$recipient = $template->get_context( 'recipient' );
 
 		if ( $recipient && get_current_user_id() !== $recipient->get_id() ) {
-			$blocks = hp\merge_trees(
-				[ 'blocks' => $blocks ],
+			$blocks = hivepress()->template->merge_blocks(
+				$blocks,
 				[
-					'blocks' => [
-						'message_send_form' => [
-							'type' => 'content',
-						],
+					'message_send_form' => [
+						'type' => 'content',
 					],
 				]
-			)['blocks'];
+			);
 		}
 
 		return $blocks;
@@ -481,55 +479,51 @@ final class Message extends Component {
 				if ( current_user_can( 'manage_options' ) || ( get_option( 'hp_message_allow_deletion' ) && get_current_user_id() === $message->get_sender__id() ) ) {
 
 					// Add delete link.
-					$blocks = hp\merge_trees(
-						[ 'blocks' => $blocks ],
+					$blocks = hivepress()->template->merge_blocks(
+						$blocks,
 						[
-							'blocks' => [
-								'message_header' => [
-									'blocks' => [
-										'message_delete_modal' => [
-											'type'        => 'modal',
-											'model'       => 'message',
-											'title'       => esc_html__( 'Delete Message', 'hivepress-messages' ),
-											'_capability' => 'read',
-											'_order'      => 5,
+							'message_header' => [
+								'blocks' => [
+									'message_delete_modal' => [
+										'type'        => 'modal',
+										'model'       => 'message',
+										'title'       => esc_html__( 'Delete Message', 'hivepress-messages' ),
+										'_capability' => 'read',
+										'_order'      => 5,
 
-											'blocks'      => [
-												'message_delete_form' => [
-													'type' => 'form',
-													'form' => 'message_delete',
-													'_order' => 10,
-												],
+										'blocks'      => [
+											'message_delete_form' => [
+												'type'   => 'form',
+												'form'   => 'message_delete',
+												'_order' => 10,
 											],
 										],
+									],
 
-										'message_delete_link'  => [
-											'type'   => 'part',
-											'path'   => 'message/view/message-delete-link',
-											'_order' => 5,
-										],
+									'message_delete_link'  => [
+										'type'   => 'part',
+										'path'   => 'message/view/message-delete-link',
+										'_order' => 5,
 									],
 								],
 							],
 						]
-					)['blocks'];
+					);
 				}
 			}
 
 			// Add HTML attributes.
-			$blocks = hp\merge_trees(
-				[ 'blocks' => $blocks ],
+			$blocks = hivepress()->template->merge_blocks(
+				$blocks,
 				[
-					'blocks' => [
-						'message_container' => [
-							'attributes' => [
-								'id'    => 'message-' . $message->get_id(),
-								'class' => $classes,
-							],
+					'message_container' => [
+						'attributes' => [
+							'id'    => 'message-' . $message->get_id(),
+							'class' => $classes,
 						],
 					],
 				]
-			)['blocks'];
+			);
 		}
 
 		return $blocks;
@@ -542,32 +536,30 @@ final class Message extends Component {
 	 * @return array
 	 */
 	public function alter_listing_view_block( $template ) {
-		return hp\merge_trees(
+		return hivepress()->template->merge_blocks(
 			$template,
 			[
-				'blocks' => [
-					'listing_actions_primary' => [
-						'blocks' => [
-							'message_send_modal' => [
-								'type'        => 'modal',
-								'model'       => 'listing',
-								'title'       => hivepress()->translator->get_string( 'reply_to_listing' ),
-								'_capability' => 'read',
-								'_order'      => 5,
+				'listing_actions_primary' => [
+					'blocks' => [
+						'message_send_modal' => [
+							'type'        => 'modal',
+							'model'       => 'listing',
+							'title'       => hivepress()->translator->get_string( 'reply_to_listing' ),
+							'_capability' => 'read',
+							'_order'      => 5,
 
-								'blocks'      => [
-									'message_send_form' => [
-										'type'   => 'message_send_form',
-										'_order' => 10,
-									],
+							'blocks'      => [
+								'message_send_form' => [
+									'type'   => 'message_send_form',
+									'_order' => 10,
 								],
 							],
+						],
 
-							'message_send_link'  => [
-								'type'   => 'part',
-								'path'   => 'listing/view/block/message-send-link',
-								'_order' => 10,
-							],
+						'message_send_link'  => [
+							'type'   => 'part',
+							'path'   => 'listing/view/block/message-send-link',
+							'_order' => 10,
 						],
 					],
 				],
@@ -582,32 +574,30 @@ final class Message extends Component {
 	 * @return array
 	 */
 	public function alter_listing_view_page( $template ) {
-		return hp\merge_trees(
+		return hivepress()->template->merge_blocks(
 			$template,
 			[
-				'blocks' => [
-					'listing_actions_primary' => [
-						'blocks' => [
-							'message_send_modal' => [
-								'type'        => 'modal',
-								'model'       => 'listing',
-								'title'       => hivepress()->translator->get_string( 'reply_to_listing' ),
-								'_capability' => 'read',
-								'_order'      => 5,
+				'listing_actions_primary' => [
+					'blocks' => [
+						'message_send_modal' => [
+							'type'        => 'modal',
+							'model'       => 'listing',
+							'title'       => hivepress()->translator->get_string( 'reply_to_listing' ),
+							'_capability' => 'read',
+							'_order'      => 5,
 
-								'blocks'      => [
-									'message_send_form' => [
-										'type'   => 'message_send_form',
-										'_order' => 10,
-									],
+							'blocks'      => [
+								'message_send_form' => [
+									'type'   => 'message_send_form',
+									'_order' => 10,
 								],
 							],
+						],
 
-							'message_send_link'  => [
-								'type'   => 'part',
-								'path'   => 'listing/view/page/message-send-link',
-								'_order' => 10,
-							],
+						'message_send_link'  => [
+							'type'   => 'part',
+							'path'   => 'listing/view/page/message-send-link',
+							'_order' => 10,
 						],
 					],
 				],
@@ -622,32 +612,30 @@ final class Message extends Component {
 	 * @return array
 	 */
 	public function alter_vendor_view_block( $template ) {
-		return hp\merge_trees(
+		return hivepress()->template->merge_blocks(
 			$template,
 			[
-				'blocks' => [
-					'vendor_actions_primary' => [
-						'blocks' => [
-							'message_send_modal' => [
-								'type'        => 'modal',
-								'model'       => 'vendor',
-								'title'       => hivepress()->translator->get_string( 'send_message' ),
-								'_capability' => 'read',
-								'_order'      => 5,
+				'vendor_actions_primary' => [
+					'blocks' => [
+						'message_send_modal' => [
+							'type'        => 'modal',
+							'model'       => 'vendor',
+							'title'       => hivepress()->translator->get_string( 'send_message' ),
+							'_capability' => 'read',
+							'_order'      => 5,
 
-								'blocks'      => [
-									'message_send_form' => [
-										'type'   => 'message_send_form',
-										'_order' => 10,
-									],
+							'blocks'      => [
+								'message_send_form' => [
+									'type'   => 'message_send_form',
+									'_order' => 10,
 								],
 							],
+						],
 
-							'message_send_link'  => [
-								'type'   => 'part',
-								'path'   => 'vendor/view/block/message-send-link',
-								'_order' => 10,
-							],
+						'message_send_link'  => [
+							'type'   => 'part',
+							'path'   => 'vendor/view/block/message-send-link',
+							'_order' => 10,
 						],
 					],
 				],
@@ -662,32 +650,30 @@ final class Message extends Component {
 	 * @return array
 	 */
 	public function alter_vendor_view_page( $template ) {
-		return hp\merge_trees(
+		return hivepress()->template->merge_blocks(
 			$template,
 			[
-				'blocks' => [
-					'vendor_actions_primary' => [
-						'blocks' => [
-							'message_send_modal' => [
-								'type'        => 'modal',
-								'model'       => 'vendor',
-								'title'       => hivepress()->translator->get_string( 'send_message' ),
-								'_capability' => 'read',
-								'_order'      => 5,
+				'vendor_actions_primary' => [
+					'blocks' => [
+						'message_send_modal' => [
+							'type'        => 'modal',
+							'model'       => 'vendor',
+							'title'       => hivepress()->translator->get_string( 'send_message' ),
+							'_capability' => 'read',
+							'_order'      => 5,
 
-								'blocks'      => [
-									'message_send_form' => [
-										'type'   => 'message_send_form',
-										'_order' => 10,
-									],
+							'blocks'      => [
+								'message_send_form' => [
+									'type'   => 'message_send_form',
+									'_order' => 10,
 								],
 							],
+						],
 
-							'message_send_link'  => [
-								'type'   => 'part',
-								'path'   => 'vendor/view/page/message-send-link',
-								'_order' => 10,
-							],
+						'message_send_link'  => [
+							'type'   => 'part',
+							'path'   => 'vendor/view/page/message-send-link',
+							'_order' => 10,
 						],
 					],
 				],
@@ -702,32 +688,30 @@ final class Message extends Component {
 	 * @return array
 	 */
 	public function alter_user_view_block( $template ) {
-		return hp\merge_trees(
+		return hivepress()->template->merge_blocks(
 			$template,
 			[
-				'blocks' => [
-					'user_actions_primary' => [
-						'blocks' => [
-							'message_send_modal' => [
-								'type'        => 'modal',
-								'model'       => 'user',
-								'title'       => hivepress()->translator->get_string( 'send_message' ),
-								'_capability' => 'read',
-								'_order'      => 5,
+				'user_actions_primary' => [
+					'blocks' => [
+						'message_send_modal' => [
+							'type'        => 'modal',
+							'model'       => 'user',
+							'title'       => hivepress()->translator->get_string( 'send_message' ),
+							'_capability' => 'read',
+							'_order'      => 5,
 
-								'blocks'      => [
-									'message_send_form' => [
-										'type'   => 'message_send_form',
-										'_order' => 10,
-									],
+							'blocks'      => [
+								'message_send_form' => [
+									'type'   => 'message_send_form',
+									'_order' => 10,
 								],
 							],
+						],
 
-							'message_send_link'  => [
-								'type'   => 'part',
-								'path'   => 'user/view/block/message-send-link',
-								'_order' => 10,
-							],
+						'message_send_link'  => [
+							'type'   => 'part',
+							'path'   => 'user/view/block/message-send-link',
+							'_order' => 10,
 						],
 					],
 				],
@@ -742,32 +726,30 @@ final class Message extends Component {
 	 * @return array
 	 */
 	public function alter_user_view_page( $template ) {
-		return hp\merge_trees(
+		return hivepress()->template->merge_blocks(
 			$template,
 			[
-				'blocks' => [
-					'user_actions_primary' => [
-						'blocks' => [
-							'message_send_modal' => [
-								'type'        => 'modal',
-								'model'       => 'user',
-								'title'       => hivepress()->translator->get_string( 'send_message' ),
-								'_capability' => 'read',
-								'_order'      => 5,
+				'user_actions_primary' => [
+					'blocks' => [
+						'message_send_modal' => [
+							'type'        => 'modal',
+							'model'       => 'user',
+							'title'       => hivepress()->translator->get_string( 'send_message' ),
+							'_capability' => 'read',
+							'_order'      => 5,
 
-								'blocks'      => [
-									'message_send_form' => [
-										'type'   => 'message_send_form',
-										'_order' => 10,
-									],
+							'blocks'      => [
+								'message_send_form' => [
+									'type'   => 'message_send_form',
+									'_order' => 10,
 								],
 							],
+						],
 
-							'message_send_link'  => [
-								'type'   => 'part',
-								'path'   => 'user/view/page/message-send-link',
-								'_order' => 10,
-							],
+						'message_send_link'  => [
+							'type'   => 'part',
+							'path'   => 'user/view/page/message-send-link',
+							'_order' => 10,
 						],
 					],
 				],
@@ -782,31 +764,29 @@ final class Message extends Component {
 	 * @return array
 	 */
 	public function alter_order_footer_block( $template ) {
-		return hp\merge_trees(
+		return hivepress()->template->merge_blocks(
 			$template,
 			[
-				'blocks' => [
-					'order_actions_primary' => [
-						'blocks' => [
-							'message_send_modal' => [
-								'type'        => 'modal',
-								'title'       => hivepress()->translator->get_string( 'send_message' ),
-								'_capability' => 'read',
-								'_order'      => 5,
+				'order_actions_primary' => [
+					'blocks' => [
+						'message_send_modal' => [
+							'type'        => 'modal',
+							'title'       => hivepress()->translator->get_string( 'send_message' ),
+							'_capability' => 'read',
+							'_order'      => 5,
 
-								'blocks'      => [
-									'message_send_form' => [
-										'type'   => 'message_send_form',
-										'_order' => 10,
-									],
+							'blocks'      => [
+								'message_send_form' => [
+									'type'   => 'message_send_form',
+									'_order' => 10,
 								],
 							],
+						],
 
-							'message_send_link'  => [
-								'type'   => 'part',
-								'path'   => 'order/view/page/message-send-link',
-								'_order' => 10,
-							],
+						'message_send_link'  => [
+							'type'   => 'part',
+							'path'   => 'order/view/page/message-send-link',
+							'_order' => 10,
 						],
 					],
 				],
@@ -821,32 +801,30 @@ final class Message extends Component {
 	 * @return array
 	 */
 	public function alter_booking_view_block( $template ) {
-		return hp\merge_trees(
+		return hivepress()->template->merge_blocks(
 			$template,
 			[
-				'blocks' => [
-					'booking_actions_primary' => [
-						'blocks' => [
-							'message_send_modal' => [
-								'type'        => 'modal',
-								'model'       => 'booking',
-								'title'       => hivepress()->translator->get_string( 'send_message' ),
-								'_capability' => 'read',
-								'_order'      => 5,
+				'booking_actions_primary' => [
+					'blocks' => [
+						'message_send_modal' => [
+							'type'        => 'modal',
+							'model'       => 'booking',
+							'title'       => hivepress()->translator->get_string( 'send_message' ),
+							'_capability' => 'read',
+							'_order'      => 5,
 
-								'blocks'      => [
-									'message_send_form' => [
-										'type'   => 'message_send_form',
-										'_order' => 10,
-									],
+							'blocks'      => [
+								'message_send_form' => [
+									'type'   => 'message_send_form',
+									'_order' => 10,
 								],
 							],
+						],
 
-							'message_send_link'  => [
-								'type'   => 'part',
-								'path'   => 'booking/view/block/message-send-link',
-								'_order' => 10,
-							],
+						'message_send_link'  => [
+							'type'   => 'part',
+							'path'   => 'booking/view/block/message-send-link',
+							'_order' => 10,
 						],
 					],
 				],
@@ -861,32 +839,30 @@ final class Message extends Component {
 	 * @return array
 	 */
 	public function alter_booking_view_page( $template ) {
-		return hp\merge_trees(
+		return hivepress()->template->merge_blocks(
 			$template,
 			[
-				'blocks' => [
-					'booking_actions_primary' => [
-						'blocks' => [
-							'message_send_modal' => [
-								'type'        => 'modal',
-								'model'       => 'booking',
-								'title'       => hivepress()->translator->get_string( 'send_message' ),
-								'_capability' => 'read',
-								'_order'      => 5,
+				'booking_actions_primary' => [
+					'blocks' => [
+						'message_send_modal' => [
+							'type'        => 'modal',
+							'model'       => 'booking',
+							'title'       => hivepress()->translator->get_string( 'send_message' ),
+							'_capability' => 'read',
+							'_order'      => 5,
 
-								'blocks'      => [
-									'message_send_form' => [
-										'type'   => 'message_send_form',
-										'_order' => 10,
-									],
+							'blocks'      => [
+								'message_send_form' => [
+									'type'   => 'message_send_form',
+									'_order' => 10,
 								],
 							],
+						],
 
-							'message_send_link'  => [
-								'type'   => 'part',
-								'path'   => 'booking/view/page/message-send-link',
-								'_order' => 10,
-							],
+						'message_send_link'  => [
+							'type'   => 'part',
+							'path'   => 'booking/view/page/message-send-link',
+							'_order' => 10,
 						],
 					],
 				],
