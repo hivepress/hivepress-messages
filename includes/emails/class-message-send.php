@@ -47,7 +47,7 @@ class Message_Send extends Email {
 		$args = hp\merge_arrays(
 			[
 				'subject' => hp\sanitize_html( __( 'Message Received', 'hivepress-messages' ) ),
-				'body'    => hp\sanitize_html( __( "Hi, %user_name%! You've received a new message, click on the following link to view it: %message_url%", 'hivepress-messages' ) ),
+				'body'    => hp\sanitize_html( __( "Hi, %user_name%! You've received a new message, click on the following link to view it: %message_url%", 'hivepress-messages' ) ), // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment, WordPress.WP.I18n.UnorderedPlaceholdersText -- Email tokens, not printf placeholders.
 			],
 			$args
 		);
