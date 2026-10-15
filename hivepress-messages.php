@@ -7,6 +7,8 @@
  * Version: 1.4.1
  * Author: HivePress
  * Author URI: https://hivepress.io/
+ * License: GPLv3
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain: hivepress-messages
  * Domain Path: /languages/
  *
