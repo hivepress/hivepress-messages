@@ -241,7 +241,8 @@ final class Message extends Component {
 
 					'date_query' => [
 						[
-							'before' => date( 'Y-m-d H:i:s', time() - $storage_period * DAY_IN_SECONDS ),
+							'column' => 'comment_date_gmt',
+							'before' => gmdate( 'Y-m-d H:i:s', time() - $storage_period * DAY_IN_SECONDS ),
 						],
 					],
 				]
@@ -347,6 +348,7 @@ final class Message extends Component {
 			}
 
 			// Get thread IDs.
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Results are cached below, there is no API for grouping comments; the query is prepared above.
 			$thread_ids = array_column(
 				$wpdb->get_results(
 					$thread_query,
@@ -354,6 +356,7 @@ final class Message extends Component {
 				),
 				'comment_ID'
 			);
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 			// Cache thread IDs.
 			if ( count( $thread_ids ) <= 1000 ) {
@@ -375,6 +378,7 @@ final class Message extends Component {
 		if ( is_null( $unread_count ) ) {
 
 			// Get unread count.
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- The count is cached below, there is no API for counting comments by comment_karma.
 			$unread_count = absint(
 				$wpdb->get_var(
 					$wpdb->prepare(
@@ -388,6 +392,7 @@ final class Message extends Component {
 					)
 				)
 			);
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			// Cache unread count.
 			hivepress()->cache->set_user_cache( get_current_user_id(), 'unread_count', 'models/message', $unread_count );

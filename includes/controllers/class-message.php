@@ -194,8 +194,12 @@ final class Message extends Controller {
 		];
 
 		if ( $message->get_listing__id() ) {
+
+			/* translators: %s: listing title. */
 			$email_args['subject'] = sprintf( hp\sanitize_html( __( 'New reply to "%s"', 'hivepress-messages' ) ), $message->get_listing__title() );
 		} else {
+
+			/* translators: %s: sender name. */
 			$email_args['subject'] = sprintf( hp\sanitize_html( __( 'New message from %s', 'hivepress-messages' ) ), $sender->get_display_name() );
 		}
 
@@ -571,6 +575,7 @@ final class Message extends Controller {
 		if ( is_null( $message_ids ) ) {
 
 			// Get message IDs.
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Results are cached below, there is no API for querying comments by comment_karma.
 			$message_ids = array_column(
 				$wpdb->get_results(
 					$wpdb->prepare(
@@ -587,6 +592,7 @@ final class Message extends Controller {
 				),
 				'comment_ID'
 			);
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			// Cache message IDs.
 			if ( count( $message_ids ) <= 1000 ) {
@@ -604,6 +610,7 @@ final class Message extends Controller {
 			if ( $message_ids && get_current_user_id() === $recipient->get_id() ) {
 
 				// Read messages.
+				// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Bulk status update, there is no API for this; the cache is cleared below.
 				$wpdb->query(
 					$wpdb->prepare(
 						"UPDATE {$wpdb->comments} SET comment_approved = %s
@@ -614,6 +621,7 @@ final class Message extends Controller {
 						$recipient->get_id()
 					)
 				);
+				// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 				// Delete cache.
 				hivepress()->cache->delete_user_cache( $recipient->get_id(), 'unread_count', 'models/message' );
