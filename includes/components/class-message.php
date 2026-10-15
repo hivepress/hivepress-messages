@@ -436,14 +436,7 @@ final class Message extends Component {
 		$recipient = $template->get_context( 'recipient' );
 
 		if ( $recipient && get_current_user_id() !== $recipient->get_id() ) {
-			$blocks = hivepress()->template->merge_blocks(
-				$blocks,
-				[
-					'message_send_form' => [
-						'type' => 'content',
-					],
-				]
-			);
+			hivepress()->template->fetch_block( $blocks, 'message_send_form' );
 		}
 
 		return $blocks;
