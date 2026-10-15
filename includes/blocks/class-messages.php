@@ -84,7 +84,7 @@ class Messages extends Block {
 						if ( get_current_user_id() !== $message->get_recipient__id() ) {
 							$message_url_args['recipient_id'] = $message->get_recipient__id();
 
-							$sender_name .= '&nbsp;&rarr;&nbsp;' . $message->get_recipient__display_name();
+							$sender_name .= '&nbsp;&harr;&nbsp;' . $message->get_recipient__display_name();
 						}
 
 						$message_url = hivepress()->router->get_url( 'messages_view_page', $message_url_args ) . '#message-' . $message->get_id();

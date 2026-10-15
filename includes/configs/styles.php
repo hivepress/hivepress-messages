@@ -15,5 +15,6 @@ return [
 		'handle'  => 'hivepress-messages-frontend',
 		'src'     => hivepress()->get_url( 'messages' ) . '/assets/css/frontend.min.css',
 		'version' => hivepress()->get_version( 'messages' ),
+		'rtl'     => true,
 	],
 ];

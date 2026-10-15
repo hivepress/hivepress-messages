@@ -2,7 +2,9 @@
 /**
  * Plugin Name: HivePress Messages
  * Description: Allow users to send private messages.
- * Version: 1.4.0
+ * Requires at least: 5.7
+ * Requires PHP: 7.4
+ * Version: 1.4.1
  * Author: HivePress
  * Author URI: https://hivepress.io/
  * Text Domain: hivepress-messages
