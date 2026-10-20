@@ -161,22 +161,11 @@ final class Message extends Controller {
 		if ( get_option( 'hp_message_allow_attachment' ) ) {
 
 			// Get message draft.
-			$message_draft = hivepress()->message->get_message_draft();
+			$message_draft = hivepress()->model->get_draft( 'message' );
 
-			if ( $message_draft && $message_draft->get_attachment__id() ) {
-
-				// Get attachments.
-				$attachments = $message_draft->get_attachment();
-
-				if ( ! is_array( $attachments ) ) {
-					$attachments = [ $attachments ];
-				}
-
-				if ( $attachments ) {
-
-					// Set attachment.
-					$message->set_attachment( $message_draft->get_attachment__id() );
-				}
+			// Set attachment.
+			if ( $message_draft && $message_draft->get_attachment() ) {
+				$message->set_attachment( $message_draft->get_attachment__id() );
 			}
 		}
 
@@ -208,13 +197,9 @@ final class Message extends Controller {
 				return hp\rest_error( 400, $message->_get_errors() );
 			}
 
-			// Set attachments.
-			if ( isset( $attachments ) ) {
-				foreach ( $attachments as $attachment ) {
-					$attachment->set_parent( $message->get_id() )->save_parent();
-				}
-
-				$message_draft->set_attachment( null )->save_attachment();
+			// Move attachments.
+			if ( isset( $message_draft ) ) {
+				hivepress()->attachment->move_attachments( $message_draft, $message, 'attachment' );
 			}
 
 			// Send email.
