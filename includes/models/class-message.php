@@ -77,6 +77,11 @@ class Message extends Comment {
 						'_alias'    => 'comment_approved',
 					],
 
+					'notified'             => [
+						'type'      => 'checkbox',
+						'_external' => true,
+					],
+
 					'listing'              => [
 						'type'   => 'id',
 						'_alias' => 'comment_post_ID',

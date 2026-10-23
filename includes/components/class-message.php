@@ -224,7 +224,7 @@ final class Message extends Component {
 	}
 
 	/**
-	 * Notifies recipient about unread messages, once per unread streak.
+	 * Notifies recipient about unread messages.
 	 *
 	 * @param int $sender_id Sender ID.
 	 * @param int $recipient_id Recipient ID.
@@ -241,7 +241,7 @@ final class Message extends Component {
 		)->order( [ 'sent_date' => 'asc' ] )
 		->get_first();
 
-		if ( ! $message || get_comment_meta( $message->get_id(), 'hp_notified', true ) ) {
+		if ( ! $message || $message->is_notified() ) {
 			return;
 		}
 
@@ -250,14 +250,14 @@ final class Message extends Component {
 
 		if ( $time > time() ) {
 
-			// Check again later, the scheduler skips this while the current action is running.
+			// @todo replace with the HivePress scheduler once it can skip the scheduled check.
 			as_schedule_single_action( $time, 'hivepress/v1/models/message/notify', [ $sender_id, $recipient_id ], 'hivepress' );
 
 			return;
 		}
 
 		// Set notification flag.
-		update_comment_meta( $message->get_id(), 'hp_notified', 1 );
+		$message->set_notified( true )->save_notified();
 
 		// Send email.
 		$this->send_message_email(
