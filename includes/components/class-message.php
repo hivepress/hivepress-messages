@@ -84,6 +84,10 @@ final class Message extends Component {
 				add_filter( 'hivepress/v1/templates/booking_view_block', [ $this, 'alter_booking_view_block' ] );
 				add_filter( 'hivepress/v1/templates/booking_view_page', [ $this, 'alter_booking_view_page' ] );
 			}
+
+			if ( hivepress()->get_version( 'requests' ) ) {
+				add_filter( 'hivepress/v1/templates/offer_view_block/blocks', [ $this, 'alter_offer_view_blocks' ], 10, 2 );
+			}
 		}
 
 		parent::__construct( $args );
@@ -830,6 +834,53 @@ final class Message extends Component {
 							'type'   => 'part',
 							'path'   => 'booking/view/page/message-send-link',
 							'_order' => 10,
+						],
+					],
+				],
+			]
+		);
+	}
+
+	/**
+	 * Alters offer view blocks.
+	 *
+	 * @param array  $blocks Template blocks.
+	 * @param object $template Template object.
+	 * @return array
+	 */
+	public function alter_offer_view_blocks( $blocks, $template ) {
+
+		// Get request.
+		$request = $template->get_context( 'request' );
+
+		if ( ! $request || get_current_user_id() !== $request->get_user__id() ) {
+			return $blocks;
+		}
+
+		return hivepress()->template->merge_blocks(
+			$blocks,
+			[
+				'offer_actions_primary' => [
+					'blocks' => [
+						'offer_message_send_modal' => [
+							'type'        => 'modal',
+							'model'       => 'offer',
+							'title'       => hivepress()->translator->get_string( 'send_message' ),
+							'_capability' => 'read',
+							'_order'      => 1,
+
+							'blocks'      => [
+								'message_send_form' => [
+									'type'   => 'message_send_form',
+									'_order' => 10,
+								],
+							],
+						],
+
+						'message_send_link'        => [
+							'type'   => 'part',
+							'path'   => 'offer/view/block/message-send-link',
+							'_order' => 5,
 						],
 					],
 				],
