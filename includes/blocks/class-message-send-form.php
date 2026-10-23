@@ -49,7 +49,7 @@ class Message_Send_Form extends Form {
 			$request = $this->get_context( 'request' );
 			$user    = $this->get_context( 'user' );
 
-			// Get participant IDs, the first matching context wins.
+			// Get user IDs.
 			if ( $listing ) {
 				$user_ids = [ $listing->get_user__id(), $booking ? $booking->get_user__id() : null ];
 
@@ -66,7 +66,7 @@ class Message_Send_Form extends Form {
 				$user_ids = [ hivepress()->request->get_param( 'user_id' ) ];
 			}
 
-			// Set recipient, preferring a participant other than the current user.
+			// Set recipient ID.
 			$user_ids = array_filter( array_map( 'absint', $user_ids ) );
 
 			$this->values['recipient'] = hp\get_first_array_value(
