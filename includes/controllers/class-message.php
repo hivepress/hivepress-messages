@@ -44,17 +44,19 @@ final class Message extends Controller {
 					],
 
 					'message_send_action'   => [
-						'base'   => 'messages_resource',
-						'method' => 'POST',
-						'action' => [ $this, 'send_message' ],
-						'rest'   => true,
+						'base'     => 'messages_resource',
+						'method'   => 'POST',
+						'action'   => [ $this, 'send_message' ],
+						'throttle' => 20,
+						'rest'     => true,
 					],
 
 					'message_delete_action' => [
-						'base'   => 'message_resource',
-						'method' => 'DELETE',
-						'action' => [ $this, 'delete_message' ],
-						'rest'   => true,
+						'base'     => 'message_resource',
+						'method'   => 'DELETE',
+						'action'   => [ $this, 'delete_message' ],
+						'throttle' => 20,
+						'rest'     => true,
 					],
 
 					'messages_read_action'  => [
