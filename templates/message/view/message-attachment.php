@@ -2,7 +2,7 @@
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
-if ( $message->get_attachment__id() ) :
+if ( $message->get_attachment() ) :
 	?>
 	<a href="<?php echo esc_url( $message->get_attachment__url() ); ?>" target="_blank" class="hp-message__attachment hp-link">
 		<i class="hp-icon fas fa-file-download"></i>
