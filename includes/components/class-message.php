@@ -44,7 +44,7 @@ final class Message extends Component {
 		if ( get_option( 'hp_message_enable_storage' ) ) {
 
 			// Delete messages.
-			add_action( 'hivepress/v1/events/daily', [ $this, 'delete_old_messages' ] );
+			add_action( 'hivepress/v1/events/hourly', [ $this, 'delete_old_messages' ] );
 			add_action( 'hivepress/v1/models/user/delete', [ $this, 'delete_user_messages' ] );
 
 			// Clear message cache.
@@ -194,6 +194,8 @@ final class Message extends Component {
 			$message_ids = get_comments(
 				[
 					'type'       => 'hp_message',
+					'fields'     => 'ids',
+					'number'     => 50,
 
 					'date_query' => [
 						[
@@ -226,7 +228,8 @@ final class Message extends Component {
 						],
 					],
 				]
-			)->delete();
+			)->limit( 100 )
+			->delete();
 		}
 
 		// Delete message cache.
