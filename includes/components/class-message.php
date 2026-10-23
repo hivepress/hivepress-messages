@@ -862,9 +862,9 @@ final class Message extends Component {
 			[
 				'offer_actions_primary' => [
 					'blocks' => [
-						'offer_message_send_modal' => [
+						'message_send_modal' => [
 							'type'        => 'modal',
-							'model'       => 'offer',
+							'model'       => 'vendor',
 							'title'       => hivepress()->translator->get_string( 'send_message' ),
 							'_capability' => 'read',
 							'_order'      => 1,
@@ -877,7 +877,7 @@ final class Message extends Component {
 							],
 						],
 
-						'message_send_link'        => [
+						'message_send_link'  => [
 							'type'   => 'part',
 							'path'   => 'offer/view/block/message-send-link',
 							'_order' => 5,
