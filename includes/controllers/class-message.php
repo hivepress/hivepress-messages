@@ -11,7 +11,6 @@ use HivePress\Helpers as hp;
 use HivePress\Models;
 use HivePress\Forms;
 use HivePress\Blocks;
-use HivePress\Emails;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
@@ -171,29 +170,6 @@ final class Message extends Controller {
 			}
 		}
 
-		// Set email arguments.
-		$email_args = [
-			'recipient' => $recipient->get_email(),
-
-			'tokens'    => [
-				'sender'       => $sender,
-				'recipient'    => $recipient,
-				'message'      => $message,
-				'user_name'    => $recipient->get_display_name(),
-				'message_text' => $message->display_text(),
-			],
-		];
-
-		if ( $message->get_listing__id() ) {
-
-			/* translators: %s: listing title. */
-			$email_args['subject'] = sprintf( hp\sanitize_html( __( 'New reply to "%s"', 'hivepress-messages' ) ), $message->get_listing__title() );
-		} else {
-
-			/* translators: %s: sender name. */
-			$email_args['subject'] = sprintf( hp\sanitize_html( __( 'New message from %s', 'hivepress-messages' ) ), $sender->get_display_name() );
-		}
-
 		if ( get_option( 'hp_message_enable_storage' ) ) {
 			if ( ! $message->save() ) {
 				return hp\rest_error( 400, $message->_get_errors() );
@@ -204,32 +180,21 @@ final class Message extends Controller {
 				hivepress()->attachment->move_attachments( $message_draft, $message, 'attachment' );
 			}
 
-			// Send email.
-			( new Emails\Message_Send(
-				hp\merge_arrays(
-					$email_args,
-					[
-						'tokens' => [
-							'message_url' => hivepress()->router->get_url( 'messages_view_page', [ 'user_id' => $sender->get_id() ] ) . '#message-' . $message->get_id(),
-						],
-					]
-				)
-			) )->send();
+			// Notify recipient.
+			hivepress()->scheduler->add_action( 'hivepress/v1/models/message/notify', [ $sender->get_id(), $recipient->get_id() ] );
 		} else {
 
 			// Send email.
-			( new Emails\Message_Send(
-				hp\merge_arrays(
-					$email_args,
-					[
-						'body'    => '%message_text%',
+			hivepress()->message->send_message_email(
+				$message,
+				[
+					'body'    => '%message_text%',
 
-						'headers' => [
-							'reply-to' => $sender->get_display_name() . ' <' . $sender->get_email() . '>',
-						],
-					]
-				)
-			) )->send();
+					'headers' => [
+						'reply-to' => $sender->get_display_name() . ' <' . $sender->get_email() . '>',
+					],
+				]
+			);
 		}
 
 		// Set response.
@@ -459,6 +424,10 @@ final class Message extends Controller {
 						'read'                 => 1,
 					]
 				);
+			} elseif ( $message->get_recipient__id() !== get_current_user_id() ) {
+
+				// Set read status.
+				$message->set_read( 1 );
 			}
 
 			// Get thread key.

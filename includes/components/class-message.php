@@ -10,6 +10,7 @@ namespace HivePress\Components;
 use HivePress\Helpers as hp;
 use HivePress\Models;
 use HivePress\Blocks;
+use HivePress\Emails;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
@@ -51,6 +52,9 @@ final class Message extends Component {
 			add_action( 'hivepress/v1/models/message/create', [ $this, 'clear_message_cache' ], 10, 2 );
 			add_action( 'hivepress/v1/models/message/update', [ $this, 'clear_message_cache' ], 10, 2 );
 			add_action( 'hivepress/v1/models/message/delete', [ $this, 'clear_message_cache' ], 10, 2 );
+
+			// Notify recipient.
+			add_action( 'hivepress/v1/models/message/notify', [ $this, 'notify_recipient' ], 10, 2 );
 		}
 
 		if ( ! is_admin() ) {
@@ -101,6 +105,49 @@ final class Message extends Component {
 	 */
 	public function get_message_draft() {
 		return hivepress()->model->get_draft( 'message' );
+	}
+
+	/**
+	 * Sends message email.
+	 *
+	 * @param object $message Message object.
+	 * @param array  $args Email arguments.
+	 */
+	public function send_message_email( $message, $args = [] ) {
+
+		// Get users.
+		$sender    = $message->get_sender();
+		$recipient = $message->get_recipient();
+
+		if ( ! $sender || ! $recipient ) {
+			return;
+		}
+
+		// Set email arguments.
+		$email_args = [
+			'recipient' => $recipient->get_email(),
+
+			'tokens'    => [
+				'sender'       => $sender,
+				'recipient'    => $recipient,
+				'message'      => $message,
+				'user_name'    => $recipient->get_display_name(),
+				'message_text' => $message->display_text(),
+			],
+		];
+
+		if ( $message->get_listing__id() ) {
+
+			/* translators: %s: listing title. */
+			$email_args['subject'] = sprintf( hp\sanitize_html( __( 'New reply to "%s"', 'hivepress-messages' ) ), $message->get_listing__title() );
+		} else {
+
+			/* translators: %s: sender name. */
+			$email_args['subject'] = sprintf( hp\sanitize_html( __( 'New message from %s', 'hivepress-messages' ) ), $sender->get_display_name() );
+		}
+
+		// Send email.
+		( new Emails\Message_Send( hp\merge_arrays( $email_args, $args ) ) )->send();
 	}
 
 	/**
@@ -174,6 +221,53 @@ final class Message extends Component {
 		];
 
 		return $form;
+	}
+
+	/**
+	 * Notifies recipient about unread messages, once per unread streak.
+	 *
+	 * @param int $sender_id Sender ID.
+	 * @param int $recipient_id Recipient ID.
+	 */
+	public function notify_recipient( $sender_id, $recipient_id ) {
+
+		// Get first unread message.
+		$message = Models\Message::query()->filter(
+			[
+				'sender'    => $sender_id,
+				'recipient' => $recipient_id,
+				'read'      => 0,
+			]
+		)->order( [ 'sent_date' => 'asc' ] )
+		->get_first();
+
+		if ( ! $message || get_comment_meta( $message->get_id(), 'hp_notified', true ) ) {
+			return;
+		}
+
+		// Get notification time.
+		$time = (int) get_gmt_from_date( $message->get_sent_date(), 'U' ) + 15 * MINUTE_IN_SECONDS;
+
+		if ( $time > time() ) {
+
+			// Check again later, the scheduler skips this while the current action is running.
+			as_schedule_single_action( $time, 'hivepress/v1/models/message/notify', [ $sender_id, $recipient_id ], 'hivepress' );
+
+			return;
+		}
+
+		// Set notification flag.
+		update_comment_meta( $message->get_id(), 'hp_notified', 1 );
+
+		// Send email.
+		$this->send_message_email(
+			$message,
+			[
+				'tokens' => [
+					'message_url' => hivepress()->router->get_url( 'messages_view_page', [ 'user_id' => $sender_id ] ) . '#message-' . $message->get_id(),
+				],
+			]
+		);
 	}
 
 	/**
@@ -440,6 +534,10 @@ final class Message extends Component {
 
 			if ( $message->is_read() ) {
 				$classes[] = 'hp-message--read';
+			}
+
+			if ( ! in_array( get_current_user_id(), [ $message->get_sender__id(), $message->get_recipient__id() ], true ) ) {
+				$classes[] = 'hp-message--monitored';
 			}
 
 			if ( $recipient ) {
