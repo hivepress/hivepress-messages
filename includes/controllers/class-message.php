@@ -139,7 +139,7 @@ final class Message extends Controller {
 		if ( $form->get_value( 'listing' ) ) {
 			$listing = Models\Listing::query()->get_by_id( $form->get_value( 'listing' ) );
 
-			if ( ! $listing || $listing->get_status() !== 'publish' ) {
+			if ( ! $listing || $listing->get_status() !== 'publish' || ! in_array( $listing->get_user__id(), [ $sender->get_id(), $recipient->get_id() ], true ) ) {
 				return hp\rest_error( 400 );
 			}
 		}
