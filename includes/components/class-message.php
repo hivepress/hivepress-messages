@@ -864,7 +864,7 @@ final class Message extends Component {
 					'blocks' => [
 						'message_send_modal' => [
 							'type'        => 'modal',
-							'model'       => 'vendor',
+							'model'       => 'offer',
 							'title'       => hivepress()->translator->get_string( 'send_message' ),
 							'_capability' => 'read',
 							'_order'      => 1,
