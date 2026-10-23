@@ -102,7 +102,7 @@ class Message_Send_Form extends Form {
 
 			// Set draft.
 			if ( get_option( 'hp_message_allow_attachment' ) ) {
-				$this->context['message'] = hivepress()->message->get_message_draft();
+				$this->context['message'] = hivepress()->model->get_draft( 'message' );
 
 				$this->attributes['data-reset'] = 'true';
 			}

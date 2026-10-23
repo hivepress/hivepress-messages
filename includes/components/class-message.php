@@ -92,55 +92,11 @@ final class Message extends Component {
 	/**
 	 * Gets message draft.
 	 *
+	 * @deprecated since version 1.4.1.
 	 * @return object
 	 */
 	public function get_message_draft() {
-		$draft = hivepress()->request->get_context( 'message_draft' );
-
-		if ( ! $draft ) {
-
-			// Get cached draft ID.
-			$draft_id = hivepress()->cache->get_user_cache( get_current_user_id(), 'draft_id', 'models/message' );
-
-			if ( is_null( $draft_id ) ) {
-
-				// Get draft ID.
-				$draft_id = Models\Message::query()->filter(
-					[
-						'sender'    => get_current_user_id(),
-						'recipient' => 0,
-					]
-				)->get_first_id();
-
-				if ( ! $draft_id ) {
-
-					// Add draft.
-					$draft_id = (int) wp_insert_comment(
-						[
-							'comment_type'  => 'hp_message',
-							'user_id'       => get_current_user_id(),
-							'comment_karma' => 0,
-						]
-					);
-				}
-
-				// Cache draft ID.
-				if ( $draft_id ) {
-					hivepress()->cache->set_user_cache( get_current_user_id(), 'draft_id', 'models/message', $draft_id );
-				}
-			}
-
-			if ( $draft_id ) {
-
-				// Get draft.
-				$draft = Models\Message::query()->get_by_id( $draft_id );
-
-				// Set request context.
-				hivepress()->request->set_context( 'message_draft', $draft );
-			}
-		}
-
-		return $draft;
+		return hivepress()->model->get_draft( 'message' );
 	}
 
 	/**
@@ -255,10 +211,20 @@ final class Message extends Component {
 		}
 
 		// Delete message drafts.
+		// @deprecated since version 1.4.1.
 		if ( get_option( 'hp_message_allow_attachment' ) ) {
 			Models\Message::query()->filter(
 				[
 					'recipient' => 0,
+				]
+			)->set_args(
+				[
+					'meta_query' => [
+						[
+							'key'     => 'hp_drafted',
+							'compare' => 'NOT EXISTS',
+						],
+					],
 				]
 			)->delete();
 		}
